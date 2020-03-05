@@ -1,0 +1,5 @@
+# Exceptions
+
+# Don't ignore Debug and Release folders in the DLLs folder
+!debug/
+!release/

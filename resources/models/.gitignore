@@ -1,0 +1,4 @@
+# Exceptions
+
+# Don't ignore .objs in this directory because models can have that extension
+!*.obj
