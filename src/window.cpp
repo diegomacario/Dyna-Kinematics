@@ -70,13 +70,15 @@ bool Window::initialize()
       return false;
    }
 
+   setFullScreen(false);
+
    glfwGetFramebufferSize(mWindow, &mWidthOfFramebufferInPix, &mHeightOfFramebufferInPix);
 
    glfwMakeContextCurrent(mWindow);
 
    setInputCallbacks();
 
-   enableCursor(false);
+   enableCursor(true);
 
    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
    {
