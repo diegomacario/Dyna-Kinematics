@@ -13,12 +13,7 @@ public:
              const std::shared_ptr<Window>&                 window,
              const std::shared_ptr<irrklang::ISoundEngine>& soundEngine,
              const std::shared_ptr<Camera>&                 camera,
-             const std::shared_ptr<Shader>&                 gameObject3DShader,
-             const std::shared_ptr<GameObject3D>&           table,
-             const std::shared_ptr<Paddle>&                 leftPaddle,
-             const std::shared_ptr<Paddle>&                 rightPaddle,
-             const std::shared_ptr<Ball>&                   ball,
-             const std::shared_ptr<GameObject3D>&           point);
+             const std::shared_ptr<Shader>&                 gameObject3DShader);
    ~PlayState() = default;
 
    PlayState(const PlayState&) = delete;
@@ -33,24 +28,9 @@ public:
    void render() override;
    void exit() override;
 
-   unsigned int getPointsScoredByLeftPaddle() const;
-   unsigned int getPointsScoredByRightPaddle() const;
-
 private:
 
-   void calculateInitialDirectionOfBall();
-
-   bool ballIsOutsideOfHorizontalRange();
-
-   void updateScore();
-
-   void resetScene();
-
    void resetCamera();
-
-   void playSoundOfCollision();
-
-   void displayScore();
 
    std::shared_ptr<FiniteStateMachine>     mFSM;
 
@@ -61,21 +41,6 @@ private:
    std::shared_ptr<Camera>                 mCamera;
 
    std::shared_ptr<Shader>                 mGameObject3DShader;
-
-   std::shared_ptr<GameObject3D>           mTable;
-   std::shared_ptr<Paddle>                 mLeftPaddle;
-   std::shared_ptr<Paddle>                 mRightPaddle;
-   std::shared_ptr<Ball>                   mBall;
-   std::shared_ptr<GameObject3D>           mPoint;
-
-   bool                                    mBallIsInPlay;
-   bool                                    mBallIsFalling;
-
-   unsigned int                            mPointsScoredByLeftPaddle;
-   unsigned int                            mPointsScoredByRightPaddle;
-
-   std::array<glm::vec3, 3>                mPositionsOfPointsScoredByLeftPaddle;
-   std::array<glm::vec3, 3>                mPositionsOfPointsScoredByRightPaddle;
 };
 
 #endif

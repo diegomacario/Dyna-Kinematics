@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\inc\ball.h" />
     <ClInclude Include="..\inc\camera.h" />
     <ClInclude Include="..\inc\collision.h" />
     <ClInclude Include="..\inc\finite_state_machine.h" />
@@ -32,7 +31,6 @@
     <ClInclude Include="..\inc\model_loader.h" />
     <ClInclude Include="..\inc\movable_game_object_2D.h" />
     <ClInclude Include="..\inc\movable_game_object_3D.h" />
-    <ClInclude Include="..\inc\paddle.h" />
     <ClInclude Include="..\inc\pause_state.h" />
     <ClInclude Include="..\inc\play_state.h" />
     <ClInclude Include="..\inc\renderer_2D.h" />
@@ -44,10 +42,8 @@
     <ClInclude Include="..\inc\texture.h" />
     <ClInclude Include="..\inc\texture_loader.h" />
     <ClInclude Include="..\inc\window.h" />
-    <ClInclude Include="..\inc\win_state.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\ball.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\collision.cpp" />
     <ClCompile Include="..\src\finite_state_machine.cpp" />
@@ -62,7 +58,6 @@
     <ClCompile Include="..\src\model_loader.cpp" />
     <ClCompile Include="..\src\movable_game_object_2D.cpp" />
     <ClCompile Include="..\src\movable_game_object_3D.cpp" />
-    <ClCompile Include="..\src\paddle.cpp" />
     <ClCompile Include="..\src\pause_state.cpp" />
     <ClCompile Include="..\src\play_state.cpp" />
     <ClCompile Include="..\src\renderer_2D.cpp" />
@@ -72,7 +67,6 @@
     <ClCompile Include="..\src\texture.cpp" />
     <ClCompile Include="..\src\texture_loader.cpp" />
     <ClCompile Include="..\src\window.cpp" />
-    <ClCompile Include="..\src\win_state.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

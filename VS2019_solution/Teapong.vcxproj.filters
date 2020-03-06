@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\inc\ball.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\inc\camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,9 +51,6 @@
     <ClInclude Include="..\inc\movable_game_object_3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\inc\paddle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\inc\pause_state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,17 +81,11 @@
     <ClInclude Include="..\inc\texture_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\inc\win_state.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\inc\window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\ball.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -140,9 +128,6 @@
     <ClCompile Include="..\src\movable_game_object_3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\paddle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\pause_state.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -165,9 +150,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\texture_loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\win_state.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\window.cpp">

@@ -7,8 +7,6 @@
 #include "renderer_2D.h"
 #include "movable_game_object_2D.h"
 #include "movable_game_object_3D.h"
-#include "ball.h"
-#include "paddle.h"
 #include "camera.h"
 #include "window.h"
 #include "state.h"
@@ -45,15 +43,6 @@ private:
    ResourceManager<Model>                  mModelManager;
    ResourceManager<Texture>                mTextureManager;
    ResourceManager<Shader>                 mShaderManager;
-
-   std::shared_ptr<GameObject3D>           mTitle;
-   std::shared_ptr<GameObject3D>           mTable;
-   std::shared_ptr<Paddle>                 mLeftPaddle;
-   std::shared_ptr<Paddle>                 mRightPaddle;
-   std::shared_ptr<Ball>                   mBall;
-   std::shared_ptr<GameObject3D>           mPoint;
-   std::shared_ptr<GameObject3D>           mLeftPaddleWins;
-   std::shared_ptr<GameObject3D>           mRightPaddleWins;
 };
 
 #endif

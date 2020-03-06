@@ -4,38 +4,18 @@
    PauseState::PauseState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
                           const std::shared_ptr<Window>&             window,
                           const std::shared_ptr<Camera>&             camera,
-                          const std::shared_ptr<Shader>&             gameObject3DShader,
-                          const std::shared_ptr<GameObject3D>&       table,
-                          const std::shared_ptr<Paddle>&             leftPaddle,
-                          const std::shared_ptr<Paddle>&             rightPaddle,
-                          const std::shared_ptr<Ball>&               ball,
-                          const std::shared_ptr<GameObject3D>&       point)
+                          const std::shared_ptr<Shader>&             gameObject3DShader)
    : mFSM(finiteStateMachine)
    , mWindow(window)
    , mCamera(camera)
    , mGameObject3DShader(gameObject3DShader)
-   , mTable(table)
-   , mLeftPaddle(leftPaddle)
-   , mRightPaddle(rightPaddle)
-   , mBall(ball)
-   , mPoint(point)
-   , mPointsScoredByLeftPaddle(0)
-   , mPointsScoredByRightPaddle(0)
-   , mPositionsOfPointsScoredByLeftPaddle({glm::vec3(-47.5f, -34.0f, 0.0f),
-                                           glm::vec3(-43.5f, -34.0f, 0.0f),
-                                           glm::vec3(-39.5f, -34.0f, 0.0f)})
-   , mPositionsOfPointsScoredByRightPaddle({glm::vec3(47.5f, -34.0f, 0.0f),
-                                            glm::vec3(43.5f, -34.0f, 0.0f),
-                                            glm::vec3(39.5f, -34.0f, 0.0f)})
 {
 
 }
 
 void PauseState::enter()
 {
-   const PlayState& playState = dynamic_cast<PlayState&>(*mFSM->getPreviousState());
-   mPointsScoredByLeftPaddle  = playState.getPointsScoredByLeftPaddle();
-   mPointsScoredByRightPaddle = playState.getPointsScoredByRightPaddle();
+
 }
 
 void PauseState::processInput(float deltaTime)
@@ -158,8 +138,6 @@ void PauseState::processInput(float deltaTime)
          mWindow->resetScrollWheelMoved();
       }
    }
-
-   mWindow->pollEvents();
 }
 
 void PauseState::update(float /*deltaTime*/)
@@ -174,21 +152,9 @@ void PauseState::render()
    // Enable depth testing for 3D objects
    glEnable(GL_DEPTH_TEST);
 
-   mGameObject3DShader->use();
-   mGameObject3DShader->setMat4("projectionView", mCamera->getPerspectiveProjectionViewMatrix());
-   mGameObject3DShader->setVec3("cameraPos", mCamera->getPosition());
+   // Use shader and set uniforms
 
-   mTable->render(*mGameObject3DShader);
-
-   mLeftPaddle->render(*mGameObject3DShader);
-   mRightPaddle->render(*mGameObject3DShader);
-
-   // Disable face culling so that we render the inside of the teapot
-   glDisable(GL_CULL_FACE);
-   mBall->render(*mGameObject3DShader);
-   glEnable(GL_CULL_FACE);
-
-   displayScore();
+   // Render objects
 
    mWindow->generateAntiAliasedImage();
 
@@ -208,19 +174,4 @@ void PauseState::resetCamera()
                        0.0f,
                        0.0f,
                        45.0f);
-}
-
-void PauseState::displayScore()
-{
-   for (unsigned int i = 0; i < mPointsScoredByLeftPaddle; ++i)
-   {
-      mPoint->setPosition(mPositionsOfPointsScoredByLeftPaddle[i]);
-      mPoint->render(*mGameObject3DShader);
-   }
-
-   for (unsigned int i = 0; i < mPointsScoredByRightPaddle; ++i)
-   {
-      mPoint->setPosition(mPositionsOfPointsScoredByRightPaddle[i]);
-      mPoint->render(*mGameObject3DShader);
-   }
 }
