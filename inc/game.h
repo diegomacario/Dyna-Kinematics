@@ -5,8 +5,6 @@
 
 #include "model.h"
 #include "renderer_2D.h"
-#include "movable_game_object_2D.h"
-#include "movable_game_object_3D.h"
 #include "camera.h"
 #include "window.h"
 #include "state.h"

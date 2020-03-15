@@ -29,19 +29,20 @@
     <ClInclude Include="..\inc\mesh.h" />
     <ClInclude Include="..\inc\model.h" />
     <ClInclude Include="..\inc\model_loader.h" />
-    <ClInclude Include="..\inc\movable_game_object_2D.h" />
-    <ClInclude Include="..\inc\movable_game_object_3D.h" />
     <ClInclude Include="..\inc\pause_state.h" />
     <ClInclude Include="..\inc\play_state.h" />
     <ClInclude Include="..\inc\renderer_2D.h" />
     <ClInclude Include="..\inc\resource_manager.h" />
+    <ClInclude Include="..\inc\rigid_body_2D.h" />
     <ClInclude Include="..\inc\shader.h" />
     <ClInclude Include="..\inc\shader_loader.h" />
     <ClInclude Include="..\inc\state.h" />
     <ClInclude Include="..\inc\stb_image.h" />
     <ClInclude Include="..\inc\texture.h" />
     <ClInclude Include="..\inc\texture_loader.h" />
+    <ClInclude Include="..\inc\wall.h" />
     <ClInclude Include="..\inc\window.h" />
+    <ClInclude Include="..\inc\world.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\camera.cpp" />
@@ -56,23 +57,25 @@
     <ClCompile Include="..\src\mesh.cpp" />
     <ClCompile Include="..\src\model.cpp" />
     <ClCompile Include="..\src\model_loader.cpp" />
-    <ClCompile Include="..\src\movable_game_object_2D.cpp" />
-    <ClCompile Include="..\src\movable_game_object_3D.cpp" />
     <ClCompile Include="..\src\pause_state.cpp" />
     <ClCompile Include="..\src\play_state.cpp" />
     <ClCompile Include="..\src\renderer_2D.cpp" />
+    <ClCompile Include="..\src\rigid_body_2D.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\shader_loader.cpp" />
     <ClCompile Include="..\src\stb_image.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
     <ClCompile Include="..\src\texture_loader.cpp" />
+    <ClCompile Include="..\src\wall.cpp" />
     <ClCompile Include="..\src\window.cpp" />
+    <ClCompile Include="..\src\world.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{35C217EB-B659-4C23-AF00-17883368029F}</ProjectGuid>
     <RootNamespace>Teapong</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>2D-Rigid-Body-Simulator</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
