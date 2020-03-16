@@ -8,12 +8,12 @@ PlayState::PlayState(const std::shared_ptr<FiniteStateMachine>&     finiteStateM
                      const std::shared_ptr<Window>&                 window,
                      const std::shared_ptr<irrklang::ISoundEngine>& soundEngine,
                      const std::shared_ptr<Camera>&                 camera,
-                     const std::shared_ptr<Shader>&                 gameObject3DShader)
+                     const std::shared_ptr<Renderer2D>&             renderer2D)
    : mFSM(finiteStateMachine)
    , mWindow(window)
    , mSoundEngine(soundEngine)
    , mCamera(camera)
-   , mGameObject3DShader(gameObject3DShader)
+   , mRenderer2D(renderer2D)
 {
 
 }

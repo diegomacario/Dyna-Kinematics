@@ -3,6 +3,8 @@
 
 #include <glm/glm.hpp>
 
+#include "shader.h"
+
 // A wall is defined using the 2D plane equation:
 // ax + by + c = 0
 // Where [a, b] is the normal of the plane
@@ -17,14 +19,28 @@ public:
    Wall(glm::vec2 normal,
         glm::vec2 startPoint,
         glm::vec2 endPoint);
+   ~Wall();
+
+   Wall(const Wall&) = delete;
+   Wall& operator=(const Wall&) = delete;
+
+   Wall(Wall&& rhs) noexcept;
+   Wall& operator=(Wall&& rhs) noexcept;
+
+   void render(const Shader& shader) const;
 
 private:
 
-   glm::vec2 mNormal;
-   float     mC;
+   void configureVAO();
 
-   glm::vec2 mStartPoint;
-   glm::vec2 mEndPoint;
+   glm::vec2    mNormal;
+   float        mC;
+
+   glm::vec2    mStartPoint;
+   glm::vec2    mEndPoint;
+
+   unsigned int mVAO;
+   unsigned int mVBO;
 };
 
 #endif

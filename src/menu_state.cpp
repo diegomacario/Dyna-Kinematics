@@ -1,15 +1,24 @@
 #include "menu_state.h"
 
+// TODO: Remove
+#include "texture_loader.h"
+GameObject2D* testGameObj2D = nullptr;
+
 MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
                      const std::shared_ptr<Window>&             window,
                      const std::shared_ptr<Camera>&             camera,
-                     const std::shared_ptr<Shader>&             gameObject3DShader)
+                     const std::shared_ptr<Renderer2D>&         renderer2D)
    : mFSM(finiteStateMachine)
    , mWindow(window)
    , mCamera(camera)
-   , mGameObject3DShader(gameObject3DShader)
+   , mRenderer2D(renderer2D)
 {
-
+   // TODO: Remove
+   testGameObj2D = new GameObject2D(ResourceManager<Texture>().loadUnmanagedResource<TextureLoader>("resources/textures/awesomeface.png"),
+                                    glm::vec2(640 - 50, 360 - 50),
+                                    45,
+                                    100,
+                                    100);
 }
 
 void MenuState::enter()
@@ -68,7 +77,10 @@ void MenuState::render()
 
    // Use the shader and set uniforms
 
+   // TODO: Remove
    // Render objects
+   //mRenderer2D->renderTexturedQuad(*testGameObj2D);
+   mRenderer2D->renderColoredQuad(*testGameObj2D);
 
    mWindow->generateAntiAliasedImage();
 

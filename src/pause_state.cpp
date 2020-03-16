@@ -4,11 +4,11 @@
    PauseState::PauseState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
                           const std::shared_ptr<Window>&             window,
                           const std::shared_ptr<Camera>&             camera,
-                          const std::shared_ptr<Shader>&             gameObject3DShader)
+                          const std::shared_ptr<Renderer2D>&         renderer2D)
    : mFSM(finiteStateMachine)
    , mWindow(window)
    , mCamera(camera)
-   , mGameObject3DShader(gameObject3DShader)
+   , mRenderer2D(renderer2D)
 {
 
 }

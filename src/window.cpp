@@ -58,10 +58,14 @@ bool Window::initialize()
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-   const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-   mWidthOfWindowInPix = mode->width;
-   mHeightOfWindowInPix = mode->height;
-   mWindow = glfwCreateWindow(mWidthOfWindowInPix, mHeightOfWindowInPix, mTitle.c_str(), glfwGetPrimaryMonitor(), nullptr);
+   //const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+   //mWidthOfWindowInPix = mode->width;
+   //mHeightOfWindowInPix = mode->height;
+   //mWindow = glfwCreateWindow(mWidthOfWindowInPix, mHeightOfWindowInPix, mTitle.c_str(), glfwGetPrimaryMonitor(), nullptr);
+   mIsFullScreen = false;
+   mWidthOfWindowInPix = 1280;
+   mHeightOfWindowInPix = 720;
+   mWindow = glfwCreateWindow(mWidthOfWindowInPix, mHeightOfWindowInPix, mTitle.c_str(), nullptr, nullptr);
    if (!mWindow)
    {
       std::cout << "Error - Window::initialize - Failed to create the GLFW window" << "\n";
@@ -70,15 +74,13 @@ bool Window::initialize()
       return false;
    }
 
-   setFullScreen(false);
-
    glfwGetFramebufferSize(mWindow, &mWidthOfFramebufferInPix, &mHeightOfFramebufferInPix);
 
    glfwMakeContextCurrent(mWindow);
 
    setInputCallbacks();
 
-   enableCursor(true);
+   //enableCursor(false);
 
    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
    {

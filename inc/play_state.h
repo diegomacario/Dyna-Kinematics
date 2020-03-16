@@ -13,7 +13,7 @@ public:
              const std::shared_ptr<Window>&                 window,
              const std::shared_ptr<irrklang::ISoundEngine>& soundEngine,
              const std::shared_ptr<Camera>&                 camera,
-             const std::shared_ptr<Shader>&                 gameObject3DShader);
+             const std::shared_ptr<Renderer2D>&             renderer2D);
    ~PlayState() = default;
 
    PlayState(const PlayState&) = delete;
@@ -40,7 +40,7 @@ private:
 
    std::shared_ptr<Camera>                 mCamera;
 
-   std::shared_ptr<Shader>                 mGameObject3DShader;
+   std::shared_ptr<Renderer2D>             mRenderer2D;
 };
 
 #endif

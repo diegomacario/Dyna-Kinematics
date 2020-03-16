@@ -11,7 +11,7 @@
 Game::Game()
    : mFSM()
    , mWindow()
-   , mSoundEngine(irrklang::createIrrKlangDevice(), [=](irrklang::ISoundEngine* soundEngine){soundEngine->drop();})
+   //, mSoundEngine(irrklang::createIrrKlangDevice(), [=](irrklang::ISoundEngine* soundEngine){soundEngine->drop();})
    , mCamera()
    , mRenderer2D()
    , mModelManager()
@@ -61,27 +61,20 @@ bool Game::initialize(const std::string& title)
                                    -1.0f,        // Near
                                     1.0f);       // Far
 
-   auto gameObj2DShader = mShaderManager.loadResource<ShaderLoader>("game_object_2D",
-                                                                    "resources/shaders/game_object_2D.vs",
-                                                                    "resources/shaders/game_object_2D.fs");
-   gameObj2DShader->use();
-   gameObj2DShader->setInt("image", 0);
-   gameObj2DShader->setMat4("projection", orthoProj);
-   mRenderer2D = std::make_unique<Renderer2D>(gameObj2DShader);
+   auto texture2DShader = mShaderManager.loadResource<ShaderLoader>("texture_2D",
+                                                                    "resources/shaders/texture_2D.vs",
+                                                                    "resources/shaders/texture_2D.fs");
+   texture2DShader->use();
+   texture2DShader->setInt("image", 0);
+   texture2DShader->setMat4("projection", orthoProj);
 
-   // Initialize the 3D shader
-   auto gameObj3DShader = mShaderManager.loadResource<ShaderLoader>("game_object_3D",
-                                                                    "resources/shaders/game_object_3D.vs",
-                                                                    "resources/shaders/game_object_3D.fs");
-   gameObj3DShader->use();
-   gameObj3DShader->setVec3("pointLights[0].worldPos", glm::vec3(0.0f, 0.0f, 100.0f));
-   gameObj3DShader->setVec3("pointLights[0].color", glm::vec3(1.0f, 1.0f, 1.0f));
-   gameObj3DShader->setFloat("pointLights[0].constantAtt", 1.0f);
-   gameObj3DShader->setFloat("pointLights[0].linearAtt", 0.01f);
-   gameObj3DShader->setFloat("pointLights[0].quadraticAtt", 0.0f);
-   gameObj3DShader->setInt("numPointLightsInScene", 1);
+   auto color2DShader = mShaderManager.loadResource<ShaderLoader>("color_2D",
+                                                                  "resources/shaders/color_2D.vs",
+                                                                  "resources/shaders/color_2D.fs");
+   color2DShader->use();
+   color2DShader->setMat4("projection", orthoProj);
 
-   // Load the models
+   mRenderer2D = std::make_unique<Renderer2D>(texture2DShader, color2DShader);
 
    // Create the FSM
    mFSM = std::make_shared<FiniteStateMachine>();
@@ -92,18 +85,18 @@ bool Game::initialize(const std::string& title)
    mStates["menu"] = std::make_shared<MenuState>(mFSM,
                                                  mWindow,
                                                  mCamera,
-                                                 gameObj3DShader);
+                                                 mRenderer2D);
 
    mStates["play"] = std::make_shared<PlayState>(mFSM,
                                                  mWindow,
                                                  mSoundEngine,
                                                  mCamera,
-                                                 gameObj3DShader);
+                                                 mRenderer2D);
 
    mStates["pause"] = std::make_shared<PauseState>(mFSM,
                                                    mWindow,
                                                    mCamera,
-                                                   gameObj3DShader);
+                                                   mRenderer2D);
 
    // Initialize the FSM
    mFSM->initialize(std::move(mStates), "menu");

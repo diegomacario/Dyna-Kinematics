@@ -10,7 +10,7 @@ public:
    MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
              const std::shared_ptr<Window>&             window,
              const std::shared_ptr<Camera>&             camera,
-             const std::shared_ptr<Shader>&             gameObject3DShader);
+             const std::shared_ptr<Renderer2D>&         renderer2D);
    ~MenuState() = default;
 
    MenuState(const MenuState&) = delete;
@@ -33,7 +33,7 @@ private:
 
    std::shared_ptr<Camera>             mCamera;
 
-   std::shared_ptr<Shader>             mGameObject3DShader;
+   std::shared_ptr<Renderer2D>         mRenderer2D;
 };
 
 #endif
