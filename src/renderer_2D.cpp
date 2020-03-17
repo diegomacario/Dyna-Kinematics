@@ -67,6 +67,13 @@ void Renderer2D::renderColoredQuad(const GameObject2D& gameObj2D) const
    glBindVertexArray(0);
 }
 
+void Renderer2D::renderLine(const Wall& wall) const
+{
+   mColorShader->use();
+   mColorShader->setMat4("model", glm::mat4(1.0f));
+   wall.render(*mColorShader);
+}
+
 void Renderer2D::configureVAOs()
 {
    /*
@@ -74,13 +81,13 @@ void Renderer2D::configureVAOs()
       ABC = Counterclockwise
       ADB = Counterclockwise
 
-      (0,0)
         C-----------B
+        |          /|
         |         / |
         |        /  |
         |       /   |
         |      /    |
-        |  1  /  2  |
+        | 1 (0,0) 2 |
         |    /      |
         |   /       |
         |  /        |
@@ -89,11 +96,11 @@ void Renderer2D::configureVAOs()
         A-----------D
    */
 
-                                          // Pos      // Tex coords
-   std::array<float, 24> vertices      = {0.0f, 1.0f, 0.0f, 1.0f,  // A
-                                          1.0f, 0.0f, 1.0f, 0.0f,  // B
-                                          0.0f, 0.0f, 0.0f, 0.0f,  // C
-                                          1.0f, 1.0f, 1.0f, 1.0f}; // D
+                                          // Pos        // Tex coords
+   std::array<float, 24> vertices      = {-0.5f, -0.5f, 0.0f, 1.0f,  // A
+                                           0.5f,  0.5f, 1.0f, 0.0f,  // B
+                                          -0.5f,  0.5f, 0.0f, 0.0f,  // C
+                                           0.5f, -0.5f, 1.0f, 1.0f}; // D
 
    std::array<unsigned int, 6> indices = {0, 1, 2,  // Triangle 1
                                           0, 3, 1}; // Triangle 2

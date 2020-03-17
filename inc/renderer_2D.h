@@ -21,6 +21,7 @@ public:
 
    void renderTexturedQuad(const GameObject2D& gameObj2D) const;
    void renderColoredQuad(const GameObject2D& gameObj2D) const;
+   void renderLine(const Wall& wall) const;
 
 private:
 

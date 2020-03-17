@@ -58,10 +58,12 @@ bool Window::initialize()
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+   // TODO: Uncomment
    //const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
    //mWidthOfWindowInPix = mode->width;
    //mHeightOfWindowInPix = mode->height;
    //mWindow = glfwCreateWindow(mWidthOfWindowInPix, mHeightOfWindowInPix, mTitle.c_str(), glfwGetPrimaryMonitor(), nullptr);
+   // TODO: Remove
    mIsFullScreen = false;
    mWidthOfWindowInPix = 1280;
    mHeightOfWindowInPix = 720;
@@ -80,6 +82,7 @@ bool Window::initialize()
 
    setInputCallbacks();
 
+   // TODO: Uncomment
    //enableCursor(false);
 
    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

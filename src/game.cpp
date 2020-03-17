@@ -54,12 +54,18 @@ bool Game::initialize(const std::string& title)
                                       0.1f);       // Mouse sensitivity
 
    // Initialize the 2D renderer
-   glm::mat4 orthoProj = glm::ortho(0.0f,        // Left
-                                    widthInPix,  // Right
-                                    heightInPix, // Bottom
-                                    0.0f,        // Top
-                                   -1.0f,        // Near
-                                    1.0f);       // Far
+   //glm::mat4 orthoProj = glm::ortho(0.0f,        // Left
+   //                                 widthInPix,  // Right
+   //                                 heightInPix, // Bottom
+   //                                 0.0f,        // Top
+   //                                -1.0f,        // Near
+   //                                 1.0f);       // Far
+   glm::mat4 orthoProj = glm::ortho(-widthInPix / 2,  // Left
+                                     widthInPix / 2,  // Right
+                                    -heightInPix / 2, // Bottom
+                                     heightInPix / 2, // Top
+                                    -1.0f,            // Near
+                                     1.0f);           // Far
 
    auto texture2DShader = mShaderManager.loadResource<ShaderLoader>("texture_2D",
                                                                     "resources/shaders/texture_2D.vs",

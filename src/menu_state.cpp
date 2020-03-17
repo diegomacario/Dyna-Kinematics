@@ -2,7 +2,9 @@
 
 // TODO: Remove
 #include "texture_loader.h"
+#include "wall.h"
 GameObject2D* testGameObj2D = nullptr;
+Wall* testWall              = nullptr;
 
 MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
                      const std::shared_ptr<Window>&             window,
@@ -14,11 +16,22 @@ MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachi
    , mRenderer2D(renderer2D)
 {
    // TODO: Remove
+   //testGameObj2D = new GameObject2D(ResourceManager<Texture>().loadUnmanagedResource<TextureLoader>("resources/textures/awesomeface.png"),
+   //                                 glm::vec2(640 - 50, 360 - 50),
+   //                                 0,
+   //                                 100,
+   //                                 100);
+   //testWall = new Wall(glm::vec2(1.0f, 1.0f),
+   //                    glm::vec2(20.0f, 20.0f),
+   //                    glm::vec2(1260.0f, 700.0f));
    testGameObj2D = new GameObject2D(ResourceManager<Texture>().loadUnmanagedResource<TextureLoader>("resources/textures/awesomeface.png"),
-                                    glm::vec2(640 - 50, 360 - 50),
-                                    45,
+                                    glm::vec2(0, 0),
+                                    0,
                                     100,
                                     100);
+   testWall = new Wall(glm::vec2(1.0f, 1.0f),
+                       glm::vec2(-1280 / 2, -720 / 2),
+                       glm::vec2( 1280 / 2,  720 / 2));
 }
 
 void MenuState::enter()
@@ -72,15 +85,14 @@ void MenuState::render()
 {
    mWindow->clearAndBindMultisampleFramebuffer();
 
-   // Enable depth testing for 3D objects
-   glEnable(GL_DEPTH_TEST);
-
    // Use the shader and set uniforms
 
-   // TODO: Remove
    // Render objects
-   //mRenderer2D->renderTexturedQuad(*testGameObj2D);
-   mRenderer2D->renderColoredQuad(*testGameObj2D);
+
+   // TODO: Remove
+   //mRenderer2D->renderColoredQuad(*testGameObj2D);
+   mRenderer2D->renderTexturedQuad(*testGameObj2D);
+   mRenderer2D->renderLine(*testWall);
 
    mWindow->generateAntiAliasedImage();
 

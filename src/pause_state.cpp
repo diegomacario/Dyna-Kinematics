@@ -149,9 +149,6 @@ void PauseState::render()
 {
    mWindow->clearAndBindMultisampleFramebuffer();
 
-   // Enable depth testing for 3D objects
-   glEnable(GL_DEPTH_TEST);
-
    // Use shader and set uniforms
 
    // Render objects
