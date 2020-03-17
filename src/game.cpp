@@ -17,6 +17,7 @@ Game::Game()
    , mModelManager()
    , mTextureManager()
    , mShaderManager()
+   , mWorld()
 {
 
 }
@@ -78,6 +79,24 @@ bool Game::initialize(const std::string& title)
 
    mRenderer2D = std::make_unique<Renderer2D>(texture2DShader, color2DShader, line2DShader);
 
+   // Create the walls
+   float halfWidth  = (widthInPix / 2) - 10;
+   float halfHeight = (heightInPix / 2) - 10;
+   std::vector<Wall> walls;
+   walls.push_back(Wall(glm::vec2( 1.0f,  0.0f), glm::vec2( -halfWidth, -halfHeight), glm::vec2( -halfWidth,  halfHeight))); // Left wall
+   walls.push_back(Wall(glm::vec2( 0.0f, -1.0f), glm::vec2( -halfWidth,  halfHeight), glm::vec2(  halfWidth,  halfHeight))); // Top wall
+   walls.push_back(Wall(glm::vec2(-1.0f,  0.0f), glm::vec2(  halfWidth,  halfHeight), glm::vec2(  halfWidth, -halfHeight))); // Right wall
+   walls.push_back(Wall(glm::vec2( 0.0f,  1.0f), glm::vec2(  halfWidth, -halfHeight), glm::vec2( -halfWidth, -halfHeight))); // Bottom wall
+
+   // Create the rigid bodies
+   std::vector<RigidBody2D> rigidBodies;
+   rigidBodies.push_back(RigidBody2D(10.0f, 400.0f, 200.0f, 1));
+   rigidBodies[0].mCurrentState.positionOfCenterOfMass = glm::vec2(0.0f, 0.0f);
+   rigidBodies[0].mCurrentState.orientation = 45.0f;
+
+   // Create the world
+   mWorld = std::make_shared<World>(std::move(walls), rigidBodies);
+
    // Create the FSM
    mFSM = std::make_shared<FiniteStateMachine>();
 
@@ -87,7 +106,8 @@ bool Game::initialize(const std::string& title)
    mStates["menu"] = std::make_shared<MenuState>(mFSM,
                                                  mWindow,
                                                  mCamera,
-                                                 mRenderer2D);
+                                                 mRenderer2D,
+                                                 mWorld);
 
    mStates["play"] = std::make_shared<PlayState>(mFSM,
                                                  mWindow,

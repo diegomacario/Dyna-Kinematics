@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
    Game game;
 
-   if (!game.initialize("2d Rigid Body Simulator"))
+   if (!game.initialize("2D Rigid Body Simulator"))
    {
       std::cout << "Error - main - Failed to initialize the game" << "\n";
       return -1;

@@ -1,34 +1,17 @@
 #include "menu_state.h"
 
-// TODO: Remove
-#include "texture_loader.h"
-#include "wall.h"
-#include "rigid_body_2D.h"
-GameObject2D* testGameObj2D = nullptr;
-Wall* testWall              = nullptr;
-RigidBody2D* testRigidBody  = nullptr;
-
 MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
                      const std::shared_ptr<Window>&             window,
                      const std::shared_ptr<Camera>&             camera,
-                     const std::shared_ptr<Renderer2D>&         renderer2D)
+                     const std::shared_ptr<Renderer2D>&         renderer2D,
+                     const std::shared_ptr<World>&              world)
    : mFSM(finiteStateMachine)
    , mWindow(window)
    , mCamera(camera)
    , mRenderer2D(renderer2D)
+   , mWorld(world)
 {
-   // TODO: Remove
-   testGameObj2D = new GameObject2D(ResourceManager<Texture>().loadUnmanagedResource<TextureLoader>("resources/textures/awesomeface.png"),
-                                    glm::vec2(0, 0),
-                                    45,
-                                    100,
-                                    100);
-   testWall = new Wall(glm::vec2(1.0f, 1.0f),
-                       glm::vec2(-1280 / 2, -720 / 2),
-                       glm::vec2( 1280 / 2,  720 / 2));
-   testRigidBody = new RigidBody2D(10.0f, 400.0f, 200.0f, 1);
-   testRigidBody->mCurrentState.positionOfCenterOfMass = glm::vec2(0.0f, 0.0f);
-   testRigidBody->mCurrentState.orientation = 45.0f;
+
 }
 
 void MenuState::enter()
@@ -85,12 +68,7 @@ void MenuState::render()
    // Use the shader and set uniforms
 
    // Render objects
-
-   // TODO: Remove
-   //mRenderer2D->renderColoredQuad(*testGameObj2D);
-   //mRenderer2D->renderTexturedQuad(*testGameObj2D);
-   mRenderer2D->renderRigidBody(*testRigidBody);
-   mRenderer2D->renderLine(*testWall);
+   mWorld->render(*mRenderer2D);
 
    mWindow->generateAntiAliasedImage();
 

@@ -5,6 +5,7 @@
 
 #include "wall.h"
 #include "rigid_body_2D.h"
+#include "renderer_2D.h"
 
 class World
 {
@@ -14,6 +15,7 @@ public:
          const std::vector<RigidBody2D>& rigidBodies);
 
    void           simulate(float deltaTime);
+   void           render(const Renderer2D& renderer2D);
 
 private:
 

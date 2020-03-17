@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Teapong", "Teapong.vcxproj", "{35C217EB-B659-4C23-AF00-17883368029F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2D-Rigid-Body-Simulator", "2D-Rigid-Body-Simulator.vcxproj", "{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{35C217EB-B659-4C23-AF00-17883368029F}.Debug|x64.ActiveCfg = Debug|x64
-		{35C217EB-B659-4C23-AF00-17883368029F}.Debug|x64.Build.0 = Debug|x64
-		{35C217EB-B659-4C23-AF00-17883368029F}.Debug|x86.ActiveCfg = Debug|Win32
-		{35C217EB-B659-4C23-AF00-17883368029F}.Debug|x86.Build.0 = Debug|Win32
-		{35C217EB-B659-4C23-AF00-17883368029F}.Release|x64.ActiveCfg = Release|x64
-		{35C217EB-B659-4C23-AF00-17883368029F}.Release|x64.Build.0 = Release|x64
-		{35C217EB-B659-4C23-AF00-17883368029F}.Release|x86.ActiveCfg = Release|Win32
-		{35C217EB-B659-4C23-AF00-17883368029F}.Release|x86.Build.0 = Release|Win32
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x64.ActiveCfg = Debug|x64
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x64.Build.0 = Debug|x64
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x86.ActiveCfg = Debug|Win32
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x86.Build.0 = Debug|Win32
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x64.ActiveCfg = Release|x64
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x64.Build.0 = Release|x64
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x86.ActiveCfg = Release|Win32
+		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

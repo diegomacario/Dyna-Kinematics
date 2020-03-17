@@ -3,6 +3,7 @@
 
 #include <irrklang/irrKlang.h>
 
+#include "world.h"
 #include "model.h"
 #include "renderer_2D.h"
 #include "camera.h"
@@ -41,6 +42,8 @@ private:
    ResourceManager<Model>                  mModelManager;
    ResourceManager<Texture>                mTextureManager;
    ResourceManager<Shader>                 mShaderManager;
+
+   std::shared_ptr<World>                  mWorld;
 };
 
 #endif
