@@ -27,7 +27,7 @@ public:
    Wall(Wall&& rhs) noexcept;
    Wall& operator=(Wall&& rhs) noexcept;
 
-   void render(const Shader& shader) const;
+   void bindVAO() const;
 
 private:
 

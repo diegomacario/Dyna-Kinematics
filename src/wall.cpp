@@ -43,11 +43,9 @@ Wall& Wall::operator=(Wall&& rhs) noexcept
    return *this;
 }
 
-void Wall::render(const Shader& shader) const
+void Wall::bindVAO() const
 {
    glBindVertexArray(mVAO);
-   glDrawArrays(GL_LINES, 0, 2);
-   glBindVertexArray(0);
 }
 
 void Wall::configureVAO()

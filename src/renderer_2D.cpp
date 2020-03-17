@@ -5,9 +5,11 @@
 #include "renderer_2D.h"
 
 Renderer2D::Renderer2D(const std::shared_ptr<Shader>& texShader,
-                       const std::shared_ptr<Shader>& colorShader)
+                       const std::shared_ptr<Shader>& colorShader,
+                       const std::shared_ptr<Shader>& lineShader)
    : mTexShader(texShader)
    , mColorShader(colorShader)
+   , mLineShader(lineShader)
 {
    configureVAOs();
 }
@@ -23,6 +25,7 @@ Renderer2D::~Renderer2D()
 Renderer2D::Renderer2D(Renderer2D&& rhs) noexcept
    : mTexShader(std::move(rhs.mTexShader))
    , mColorShader(std::move(rhs.mColorShader))
+   , mLineShader(std::move(rhs.mLineShader))
    , mTexturedQuadVAO(std::exchange(rhs.mTexturedQuadVAO, 0))
    , mColoredQuadVAO(std::exchange(rhs.mColoredQuadVAO, 0))
    , mQuadVBO(std::exchange(rhs.mQuadVBO, 0))
@@ -35,6 +38,7 @@ Renderer2D& Renderer2D::operator=(Renderer2D&& rhs) noexcept
 {
    mTexShader       = std::move(rhs.mTexShader);
    mColorShader     = std::move(rhs.mColorShader);
+   mLineShader      = std::move(rhs.mLineShader);
    mTexturedQuadVAO = std::exchange(rhs.mTexturedQuadVAO, 0);
    mColoredQuadVAO  = std::exchange(rhs.mColoredQuadVAO, 0);
    mQuadVBO         = std::exchange(rhs.mQuadVBO, 0);
@@ -67,11 +71,25 @@ void Renderer2D::renderColoredQuad(const GameObject2D& gameObj2D) const
    glBindVertexArray(0);
 }
 
-void Renderer2D::renderLine(const Wall& wall) const
+void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D) const
 {
    mColorShader->use();
-   mColorShader->setMat4("model", glm::mat4(1.0f));
-   wall.render(*mColorShader);
+   mColorShader->setMat4("model", rigidBody2D.getModelMatrix());
+
+   // Render quad
+   glBindVertexArray(mColoredQuadVAO);
+   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+   glBindVertexArray(0);
+}
+
+void Renderer2D::renderLine(const Wall& wall) const
+{
+   mLineShader->use();
+
+   // Render line
+   wall.bindVAO();
+   glDrawArrays(GL_LINES, 0, 2);
+   glBindVertexArray(0);
 }
 
 void Renderer2D::configureVAOs()

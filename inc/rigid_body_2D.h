@@ -18,9 +18,13 @@ public:
                float height,
                float coefficientOfRestitution);
 
-private:
+   glm::mat4 getModelMatrix() const;
+
+//private: // TODO: Decide what to do here
 
    float                       mMass;
+   float                       mWidth;
+   float                       mHeight;
    float                       mMomentOfInertia;
    float                       mCoefficientOfRestitution;
 

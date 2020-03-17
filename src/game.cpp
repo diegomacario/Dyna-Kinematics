@@ -53,13 +53,6 @@ bool Game::initialize(const std::string& title)
                                       20.0f,       // Movement speed
                                       0.1f);       // Mouse sensitivity
 
-   // Initialize the 2D renderer
-   //glm::mat4 orthoProj = glm::ortho(0.0f,        // Left
-   //                                 widthInPix,  // Right
-   //                                 heightInPix, // Bottom
-   //                                 0.0f,        // Top
-   //                                -1.0f,        // Near
-   //                                 1.0f);       // Far
    glm::mat4 orthoProj = glm::ortho(-widthInPix / 2,  // Left
                                      widthInPix / 2,  // Right
                                     -heightInPix / 2, // Bottom
@@ -67,20 +60,23 @@ bool Game::initialize(const std::string& title)
                                     -1.0f,            // Near
                                      1.0f);           // Far
 
-   auto texture2DShader = mShaderManager.loadResource<ShaderLoader>("texture_2D",
-                                                                    "resources/shaders/texture_2D.vs",
-                                                                    "resources/shaders/texture_2D.fs");
+   auto texture2DShader = mShaderManager.loadUnmanagedResource<ShaderLoader>("resources/shaders/texture_2D.vs",
+                                                                             "resources/shaders/texture_2D.fs");
    texture2DShader->use();
    texture2DShader->setInt("image", 0);
    texture2DShader->setMat4("projection", orthoProj);
 
-   auto color2DShader = mShaderManager.loadResource<ShaderLoader>("color_2D",
-                                                                  "resources/shaders/color_2D.vs",
-                                                                  "resources/shaders/color_2D.fs");
+   auto color2DShader = mShaderManager.loadUnmanagedResource<ShaderLoader>("resources/shaders/color_2D.vs",
+                                                                           "resources/shaders/color_2D.fs");
    color2DShader->use();
    color2DShader->setMat4("projection", orthoProj);
 
-   mRenderer2D = std::make_unique<Renderer2D>(texture2DShader, color2DShader);
+   auto line2DShader = mShaderManager.loadUnmanagedResource<ShaderLoader>("resources/shaders/line_2D.vs",
+                                                                          "resources/shaders/line_2D.fs");
+   line2DShader->use();
+   line2DShader->setMat4("projection", orthoProj);
+
+   mRenderer2D = std::make_unique<Renderer2D>(texture2DShader, color2DShader, line2DShader);
 
    // Create the FSM
    mFSM = std::make_shared<FiniteStateMachine>();

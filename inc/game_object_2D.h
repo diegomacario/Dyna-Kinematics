@@ -12,10 +12,10 @@ class GameObject2D
 public:
 
    GameObject2D(const std::shared_ptr<Texture>& texture,
-                const glm::vec2&                posOfTopLeftCornerInPix,
+                const glm::vec2&                position,
                 float                           angleOfRotInDeg,
-                float                           widthInPix,
-                float                           heightInPix);
+                float                           width,
+                float                           height);
    ~GameObject2D() = default;
 
    GameObject2D(const GameObject2D&) = default;
@@ -37,10 +37,10 @@ private:
 
    std::shared_ptr<Texture> mTexture;
 
-   glm::vec2                mPosOfTopLeftCornerInPix;
+   glm::vec2                mPosition;
    float                    mAngleOfRotInDeg;
-   float                    mWidthInPix;
-   float                    mHeightInPix;
+   float                    mWidth;
+   float                    mHeight;
 
    mutable glm::mat4        mModelMatrix;
    mutable bool             mCalculateModelMatrix;

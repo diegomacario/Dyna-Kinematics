@@ -3,15 +3,15 @@
 #include "game_object_2D.h"
 
 GameObject2D::GameObject2D(const std::shared_ptr<Texture>& texture,
-                           const glm::vec2&                posOfTopLeftCornerInPix,
+                           const glm::vec2&                position,
                            float                           angleOfRotInDeg,
-                           float                           widthInPix,
-                           float                           heightInPix)
+                           float                           width,
+                           float                           height)
    : mTexture(texture)
-   , mPosOfTopLeftCornerInPix(posOfTopLeftCornerInPix)
+   , mPosition(position)
    , mAngleOfRotInDeg(angleOfRotInDeg)
-   , mWidthInPix(widthInPix != 0.0f ? widthInPix : 1.0f)
-   , mHeightInPix(heightInPix != 0.0f ? heightInPix : 1.0f)
+   , mWidth(width != 0.0f ? width : 1.0f)
+   , mHeight(height != 0.0f ? height : 1.0f)
    , mModelMatrix(1.0f)
    , mCalculateModelMatrix(true)
 {
@@ -20,10 +20,10 @@ GameObject2D::GameObject2D(const std::shared_ptr<Texture>& texture,
 
 GameObject2D::GameObject2D(GameObject2D&& rhs) noexcept
    : mTexture(std::move(rhs.mTexture))
-   , mPosOfTopLeftCornerInPix(std::exchange(rhs.mPosOfTopLeftCornerInPix, glm::vec2(0.0f)))
+   , mPosition(std::exchange(rhs.mPosition, glm::vec2(0.0f)))
    , mAngleOfRotInDeg(std::exchange(rhs.mAngleOfRotInDeg, 0.0f))
-   , mWidthInPix(std::exchange(rhs.mWidthInPix, 1.0f))
-   , mHeightInPix(std::exchange(rhs.mHeightInPix, 1.0f))
+   , mWidth(std::exchange(rhs.mWidth, 1.0f))
+   , mHeight(std::exchange(rhs.mHeight, 1.0f))
    , mModelMatrix(std::exchange(rhs.mModelMatrix, glm::mat4(1.0f)))
    , mCalculateModelMatrix(std::exchange(rhs.mCalculateModelMatrix, true))
 {
@@ -32,13 +32,13 @@ GameObject2D::GameObject2D(GameObject2D&& rhs) noexcept
 
 GameObject2D& GameObject2D::operator=(GameObject2D&& rhs) noexcept
 {
-   mTexture                 = std::move(rhs.mTexture);
-   mPosOfTopLeftCornerInPix = std::exchange(rhs.mPosOfTopLeftCornerInPix, glm::vec2(0.0f));
-   mAngleOfRotInDeg         = std::exchange(rhs.mAngleOfRotInDeg, 0.0f);
-   mWidthInPix              = std::exchange(rhs.mWidthInPix, 1.0f);
-   mHeightInPix             = std::exchange(rhs.mHeightInPix, 1.0f);
-   mModelMatrix             = std::exchange(rhs.mModelMatrix, glm::mat4(1.0f));
-   mCalculateModelMatrix    = std::exchange(rhs.mCalculateModelMatrix, true);
+   mTexture              = std::move(rhs.mTexture);
+   mPosition             = std::exchange(rhs.mPosition, glm::vec2(0.0f));
+   mAngleOfRotInDeg      = std::exchange(rhs.mAngleOfRotInDeg, 0.0f);
+   mWidth                = std::exchange(rhs.mWidth, 1.0f);
+   mHeight               = std::exchange(rhs.mHeight, 1.0f);
+   mModelMatrix          = std::exchange(rhs.mModelMatrix, glm::mat4(1.0f));
+   mCalculateModelMatrix = std::exchange(rhs.mCalculateModelMatrix, true);
    return *this;
 }
 
@@ -59,7 +59,7 @@ glm::mat4 GameObject2D::getModelMatrix() const
 
 void GameObject2D::translate(const glm::vec2& translation)
 {
-   mPosOfTopLeftCornerInPix += translation;
+   mPosition += translation;
    mCalculateModelMatrix = true;
 }
 
@@ -73,26 +73,22 @@ void GameObject2D::scale(const glm::vec2& scalingFactors)
 {
    if ((scalingFactors.x != 0.0f) && (scalingFactors.y != 0.0f))
    {
-      mWidthInPix *= scalingFactors.x;
-      mHeightInPix *= scalingFactors.y;
+      mWidth *= scalingFactors.x;
+      mHeight *= scalingFactors.y;
       mCalculateModelMatrix = true;
    }
 }
 
 void GameObject2D::calculateModelMatrix() const
 {
-   // 5) Translate the quad
-   mModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(mPosOfTopLeftCornerInPix, 0.0f));
+   // 3) Translate the quad
+   mModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(mPosition, 0.0f));
 
-   // 4) Move the center of rotation back to the top left corner
-   mModelMatrix = glm::translate(mModelMatrix, glm::vec3(0.5f * mWidthInPix, 0.5f * mHeightInPix, 0.0f));
-   // 3) Rotate the quad around the Z axis
+   // 2) Rotate the quad around the Z axis
    mModelMatrix = glm::rotate(mModelMatrix, mAngleOfRotInDeg, glm::vec3(0.0f, 0.0f, 1.0f));
-   // 2) Move the center of rotation to the center of the quad
-   mModelMatrix = glm::translate(mModelMatrix, glm::vec3(-0.5f * mWidthInPix, -0.5f * mHeightInPix, 0.0f));
 
    // 1) Scale the quad
-   mModelMatrix = glm::scale(mModelMatrix, glm::vec3(mWidthInPix, mHeightInPix, 1.0f));
+   mModelMatrix = glm::scale(mModelMatrix, glm::vec3(mWidth, mHeight, 1.0f));
 
    mCalculateModelMatrix = false;
 }
