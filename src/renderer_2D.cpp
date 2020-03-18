@@ -74,7 +74,7 @@ void Renderer2D::renderColoredQuad(const GameObject2D& gameObj2D) const
 void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D) const
 {
    mColorShader->use();
-   mColorShader->setMat4("model", rigidBody2D.getModelMatrix());
+   mColorShader->setMat4("model", rigidBody2D.getModelMatrix(current));
 
    // Render quad
    glBindVertexArray(mColoredQuadVAO);

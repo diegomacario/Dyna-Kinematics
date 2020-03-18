@@ -90,9 +90,7 @@ bool Game::initialize(const std::string& title)
 
    // Create the rigid bodies
    std::vector<RigidBody2D> rigidBodies;
-   rigidBodies.push_back(RigidBody2D(10.0f, 400.0f, 200.0f, 1));
-   rigidBodies[0].mCurrentState.positionOfCenterOfMass = glm::vec2(0.0f, 0.0f);
-   rigidBodies[0].mCurrentState.orientation = 45.0f;
+   rigidBodies.push_back(RigidBody2D(10.0f, 400.0f, 200.0f, 1, glm::vec2(0.0f, 0.0f), 45.0f));
 
    // Create the world
    mWorld = std::make_shared<World>(std::move(walls), rigidBodies);
