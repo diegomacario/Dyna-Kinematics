@@ -33,6 +33,10 @@ private:
 
    std::vector<Wall>        mWalls;
    std::vector<RigidBody2D> mRigidBodies;
+
+   glm::vec2                mCollisionNormal;
+   int                      mCollidingBodyIndex;
+   int                      mCollidingVertexIndex;
 };
 
 #endif

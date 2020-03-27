@@ -24,23 +24,28 @@ public:
                float     height,
                float     coefficientOfRestitution,
                glm::vec2 positionOfCenterOfMass,
-               float     orientation);
+               float     orientation,
+               glm::vec2 velocityOfCenterOfMass,
+               float     angularVelocity);
 
    void      calculateVertices(RigidBodyState state);
    glm::mat4 getModelMatrix(RigidBodyState state) const;
 
 //private: // TODO: Decide what to do here
 
-   float                                   mMass;
+   float                                   mOneOverMass;
    float                                   mWidth;
    float                                   mHeight;
-   float                                   mMomentOfInertia;
+   float                                   mOneOverMomentOfInertia;
    float                                   mCoefficientOfRestitution;
 
    struct KinematicAndDynamicState
    {
       KinematicAndDynamicState();
-      KinematicAndDynamicState(glm::vec2 positionOfCenterOfMass, float orientation);
+      KinematicAndDynamicState(glm::vec2 positionOfCenterOfMass,
+                               float     orientation,
+                               glm::vec2 velocityOfCenterOfMass,
+                               float     angularVelocity);
 
       glm::vec2                            positionOfCenterOfMass;
       float                                orientation;

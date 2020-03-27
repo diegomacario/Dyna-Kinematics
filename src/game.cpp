@@ -39,8 +39,8 @@ bool Game::initialize(const std::string& title)
    }
 
    // Initialize the camera
-   float widthInPix = 1280.0f;
-   float heightInPix = 720.0f;
+   float widthInPix = 400.0f;
+   float heightInPix = 400.0f;
    float aspectRatio = (widthInPix / heightInPix);
 
    mCamera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 95.0f),
@@ -80,8 +80,8 @@ bool Game::initialize(const std::string& title)
    mRenderer2D = std::make_unique<Renderer2D>(texture2DShader, color2DShader, line2DShader);
 
    // Create the walls
-   float halfWidth  = (widthInPix / 2) - 10;
-   float halfHeight = (heightInPix / 2) - 10;
+   float halfWidth  = (widthInPix / 2) - 3;
+   float halfHeight = (heightInPix / 2) - 3;
    std::vector<Wall> walls;
    walls.push_back(Wall(glm::vec2( 1.0f,  0.0f), glm::vec2( -halfWidth, -halfHeight), glm::vec2( -halfWidth,  halfHeight))); // Left wall
    walls.push_back(Wall(glm::vec2( 0.0f, -1.0f), glm::vec2( -halfWidth,  halfHeight), glm::vec2(  halfWidth,  halfHeight))); // Top wall
@@ -90,7 +90,7 @@ bool Game::initialize(const std::string& title)
 
    // Create the rigid bodies
    std::vector<RigidBody2D> rigidBodies;
-   rigidBodies.push_back(RigidBody2D(10.0f, 400.0f, 200.0f, 1, glm::vec2(0.0f, 0.0f), 45.0f));
+   rigidBodies.push_back(RigidBody2D(8.0f, 40.0f, 20.0f, 1.0f, glm::vec2(0.0f, 0.0f), 3.14159265358979323846f / 8, glm::vec2(1.0f, 0.0f), 0.0f));
 
    // Create the world
    mWorld = std::make_shared<World>(std::move(walls), rigidBodies);

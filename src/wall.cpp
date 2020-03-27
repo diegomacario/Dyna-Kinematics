@@ -6,13 +6,11 @@ Wall::Wall(glm::vec2 normal,
            glm::vec2 startPoint,
            glm::vec2 endPoint)
    : mNormal(glm::normalize(normal))
-   , mC(-glm::dot(mNormal, startPoint))
-   , mStartPoint(startPoint)
-   , mEndPoint(endPoint)
+   , mC(-glm::dot(mNormal, (startPoint + endPoint) / 2.0f))
    , mVAO(0)
    , mVBO(0)
 {
-   configureVAO();
+   configureVAO(startPoint, endPoint);
 }
 
 Wall::~Wall()
@@ -24,8 +22,6 @@ Wall::~Wall()
 Wall::Wall(Wall&& rhs) noexcept
    : mNormal(std::exchange(rhs.mNormal, glm::vec2(0.0f)))
    , mC(std::exchange(rhs.mC, 0.0f))
-   , mStartPoint(std::exchange(rhs.mStartPoint, glm::vec2(0.0f)))
-   , mEndPoint(std::exchange(rhs.mEndPoint, glm::vec2(0.0f)))
    , mVAO(std::exchange(rhs.mVAO, 0))
    , mVBO(std::exchange(rhs.mVBO, 0))
 {
@@ -36,11 +32,19 @@ Wall& Wall::operator=(Wall&& rhs) noexcept
 {
    mNormal     = std::exchange(rhs.mNormal, glm::vec2(0.0f));
    mC          = std::exchange(rhs.mC, 0.0f);
-   mStartPoint = std::exchange(rhs.mStartPoint, glm::vec2(0.0f));
-   mEndPoint   = std::exchange(rhs.mEndPoint, glm::vec2(0.0f));
    mVAO        = std::exchange(rhs.mVAO, 0);
    mVBO        = std::exchange(rhs.mVBO, 0);
    return *this;
+}
+
+glm::vec2 Wall::getNormal() const
+{
+   return mNormal;
+}
+
+float Wall::getC() const
+{
+   return mC;
 }
 
 void Wall::bindVAO() const
@@ -48,12 +52,12 @@ void Wall::bindVAO() const
    glBindVertexArray(mVAO);
 }
 
-void Wall::configureVAO()
+void Wall::configureVAO(glm::vec2 startPoint, glm::vec2 endPoint)
 {
    glGenVertexArrays(1, &mVAO);
    glGenBuffers(1, &mVBO);
 
-   std::array<float, 4> vertices = {mStartPoint.x, mStartPoint.y, mEndPoint.x, mEndPoint.y};
+   std::array<float, 4> vertices = {startPoint.x, startPoint.y, endPoint.x, endPoint.y};
 
    std::array<unsigned int, 2> indices = {0, 1};
 

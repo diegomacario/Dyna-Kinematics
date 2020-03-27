@@ -1,5 +1,7 @@
 #include "menu_state.h"
 
+#include <windows.h>
+
 MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
                      const std::shared_ptr<Window>&             window,
                      const std::shared_ptr<Camera>&             camera,
@@ -56,14 +58,37 @@ void MenuState::processInput(float deltaTime)
    }
 }
 
+float GetTime( void )
+{
+   static DWORD StartMilliseconds;
+   if(!StartMilliseconds)
+   {
+      // yes, the first time through will be a 0 timestep
+      StartMilliseconds = timeGetTime();
+   }
+
+   DWORD CurrentMilliseconds = timeGetTime();
+   return float(CurrentMilliseconds - StartMilliseconds) / 1000.0f;
+}
+
 void MenuState::update(float deltaTime)
 {
+   static float LastTime = GetTime();
 
+   // use a fixed timestep until we implement a better integrator
+   // real Time = GetTime();
+   float Time = LastTime + 0.02f;
+
+   mWorld->simulate(Time - LastTime);
+
+   LastTime = Time;
 }
 
 void MenuState::render()
 {
    mWindow->clearAndBindMultisampleFramebuffer();
+
+   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
    // Use the shader and set uniforms
 

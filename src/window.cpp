@@ -65,8 +65,8 @@ bool Window::initialize()
    //mWindow = glfwCreateWindow(mWidthOfWindowInPix, mHeightOfWindowInPix, mTitle.c_str(), glfwGetPrimaryMonitor(), nullptr);
    // TODO: Remove
    mIsFullScreen = false;
-   mWidthOfWindowInPix = 1280;
-   mHeightOfWindowInPix = 720;
+   mWidthOfWindowInPix = 400;
+   mHeightOfWindowInPix = 400;
    mWindow = glfwCreateWindow(mWidthOfWindowInPix, mHeightOfWindowInPix, mTitle.c_str(), nullptr, nullptr);
    if (!mWindow)
    {

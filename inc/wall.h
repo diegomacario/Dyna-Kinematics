@@ -27,17 +27,18 @@ public:
    Wall(Wall&& rhs) noexcept;
    Wall& operator=(Wall&& rhs) noexcept;
 
-   void bindVAO() const;
+   glm::vec2 getNormal() const;
+   float     getC() const;
+
+   void      bindVAO() const;
 
 private:
 
-   void configureVAO();
+   void      configureVAO(glm::vec2 startPoint,
+                          glm::vec2 endPoint);
 
    glm::vec2    mNormal;
    float        mC;
-
-   glm::vec2    mStartPoint;
-   glm::vec2    mEndPoint;
 
    unsigned int mVAO;
    unsigned int mVBO;
