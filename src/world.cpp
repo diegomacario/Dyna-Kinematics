@@ -20,21 +20,24 @@ World::World(std::vector<Wall>&&             walls,
 // TODO: Remove this
 static long long int simCounter = 0;
 static bool first = true;
-//static bool firstClock = true;
-//static std::clock_t start;
 void World::simulate(float deltaTime)
 {
-   //if (firstClock)
-   //{
-   //   start = std::clock();
-   //   firstClock = false;
-   //}
-
    float currentTime = 0.0f;
    float targetTime  = deltaTime;
 
    while (currentTime < deltaTime)
    {
+      static std::ofstream file;
+      if (first)
+      {
+         file.open("cout.txt");
+         std::streambuf* sbuf = std::cout.rdbuf();
+         std::cout.rdbuf(file.rdbuf());
+         std::cout << std::setprecision(16);
+         first = false;
+         std::cout << "Mio!" << '\n';
+      }
+
       computeForces();
 
       integrate(targetTime - currentTime);
@@ -65,7 +68,6 @@ void World::simulate(float deltaTime)
             while ((checkForCollisions() == CollisionState::colliding) && (counter < 100));
 
             // TODO: Remove this
-            //std::cout << "Counter = " << counter << '\n';
             std::cout << "Resolved collison!" << '\n';
             std::cout << "counter                = " << counter << '\n';
             std::cout << "positionOfCenterOfMass = " << mRigidBodies[0].mStates[1].positionOfCenterOfMass.x << " " << mRigidBodies[0].mStates[1].positionOfCenterOfMass.y << '\n';
@@ -93,33 +95,11 @@ void World::simulate(float deltaTime)
             iter->mStates[1] = tempState;
          }
 
-         static std::ofstream file;
-         if (first)
-         {
-            file.open("cout.txt");
-            std::streambuf* sbuf = std::cout.rdbuf();
-            std::cout.rdbuf(file.rdbuf());
-            std::cout << std::setprecision(16);
-            first = false;
-         }
-
          // TODO: Remove this
-         //double duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-         //std::cout << "time                   = " << duration << '\n';
          std::cout << "simCounter             = " << simCounter << '\n';
          ++simCounter;
-         std::cout << "positionOfCenterOfMass = " << mRigidBodies[0].mStates[0].positionOfCenterOfMass.x << " " << mRigidBodies[0].mStates[1].positionOfCenterOfMass.y << '\n';
-         std::cout << "orientation            = " << mRigidBodies[0].mStates[0].orientation << "\n\n";
-         //if (first)
-         //{
-         //   std::cout << "positionOfCenterOfMass = " << mRigidBodies[0].mStates[0].positionOfCenterOfMass.x << " " << mRigidBodies[0].mStates[1].positionOfCenterOfMass.y << '\n';
-         //   std::cout << "orientation            = " << mRigidBodies[0].mStates[0].orientation << '\n';
-         //   std::cout << "velocityOfCenterOfMass = " << mRigidBodies[0].mStates[0].velocityOfCenterOfMass.x << " " << mRigidBodies[0].mStates[1].velocityOfCenterOfMass.y << '\n';
-         //   std::cout << "angularVelocity        = " << mRigidBodies[0].mStates[0].angularVelocity << '\n';
-         //   std::cout << "forceOfCenterOfMass    = " << mRigidBodies[0].mStates[0].forceOfCenterOfMass.x << " " << mRigidBodies[0].mStates[1].forceOfCenterOfMass.y << '\n';
-         //   std::cout << "torque                 = " << mRigidBodies[0].mStates[0].torque << '\n' << '\n';
-         //   first = false;
-         //}
+         std::cout << "curr.positionOfCenterOfMass = " << mRigidBodies[0].mStates[0].positionOfCenterOfMass.x << " " << mRigidBodies[0].mStates[0].positionOfCenterOfMass.y << '\n';
+         std::cout << "curr.orientation            = " << mRigidBodies[0].mStates[0].orientation << "\n\n";
       }
    }
 }
@@ -143,8 +123,8 @@ void World::computeForces()
    for (std::vector<RigidBody2D>::iterator iter = mRigidBodies.begin(); iter != mRigidBodies.end(); ++iter)
    {
       RigidBody2D::KinematicAndDynamicState& currentState = iter->mStates[0];
-      currentState.forceOfCenterOfMass = glm::vec2(0.0f);
-      currentState.torque = 0.0f;
+      currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f);
+      currentState.torque = 5.0f;
    }
 }
 
@@ -156,31 +136,38 @@ void World::integrate(float deltaTime)
       RigidBody2D::KinematicAndDynamicState& futureState  = iter->mStates[1];
 
       // Calculate new position and orientation
-      //futureState.positionOfCenterOfMass = currentState.positionOfCenterOfMass + (deltaTime * currentState.velocityOfCenterOfMass);
-      futureState.positionOfCenterOfMass = currentState.positionOfCenterOfMass + deltaTime * currentState.velocityOfCenterOfMass;
-      //futureState.orientation = currentState.orientation + (deltaTime * currentState.angularVelocity);
-      futureState.orientation = currentState.orientation + deltaTime * currentState.angularVelocity;
+      futureState.positionOfCenterOfMass = currentState.positionOfCenterOfMass + (currentState.velocityOfCenterOfMass * deltaTime);
+      futureState.orientation = currentState.orientation + (currentState.angularVelocity * deltaTime);
 
       std::cout << "---------- INTEGRATION STUFF ----------" << '\n';
+
+      std::cout << "currentState.positionOfCenterOfMass      = " << currentState.positionOfCenterOfMass.x << " " << currentState.positionOfCenterOfMass.y << '\n';
+      std::cout << "currentState.velocityOfCenterOfMass      = " << currentState.velocityOfCenterOfMass.x << " " << currentState.velocityOfCenterOfMass.y << '\n';
+      std::cout << "deltaTime                                = " << deltaTime << '\n';
+      std::cout << "futureState.positionOfCenterOfMass       = " << futureState.positionOfCenterOfMass.x << " " << futureState.positionOfCenterOfMass.y << '\n';
+
       std::cout << "currentState.orientation     = " << currentState.orientation << '\n';
       std::cout << "deltaTime                    = " << deltaTime << '\n';
       std::cout << "currentState.angularVelocity = " << currentState.angularVelocity << '\n';
       std::cout << "futureState.orientation      = " << futureState.orientation << '\n';
-      std::cout << "-----------------------------------" << '\n';
 
       // Calculate new velocity and angular velocity
 
       // F = (d/dt)P = M * A
       // A = F / M
       // V_n+1 = V_n + (h * A) = V_n + (h * (F / M))
-      //futureState.velocityOfCenterOfMass = currentState.velocityOfCenterOfMass + (deltaTime * (currentState.forceOfCenterOfMass * iter->mOneOverMass));
+      //futureState.velocityOfCenterOfMass = currentState.velocityOfCenterOfMass + ((currentState.forceOfCenterOfMass * iter->mOneOverMass) * deltaTime);
       futureState.velocityOfCenterOfMass = currentState.velocityOfCenterOfMass + (deltaTime * iter->mOneOverMass) * currentState.forceOfCenterOfMass;
+      std::cout << "futureState.velocityOfCenterOfMass      = " << futureState.velocityOfCenterOfMass.x << " " << futureState.velocityOfCenterOfMass.y << '\n';
 
       // T = (d/dt)L = I * Alpha
       // Alpha = T / I
       // W_n+1 = W_n + (h * Alpha) = W_n + (h * (T / I))
-      //futureState.angularVelocity = currentState.angularVelocity + (deltaTime * (currentState.torque * iter->mOneOverMomentOfInertia));
+      //futureState.angularVelocity = currentState.angularVelocity + ((currentState.torque * iter->mOneOverMomentOfInertia) * deltaTime);
       futureState.angularVelocity = currentState.angularVelocity + (deltaTime * iter->mOneOverMomentOfInertia) * currentState.torque;
+      std::cout << "futureState.angularVelocity      = " << futureState.angularVelocity << '\n';
+
+      std::cout << "-----------------------------------" << '\n';
    }
 }
 
@@ -259,8 +246,7 @@ void World::resolveCollisions()
    // Chasles' Theorem
    // We consider any of movement of a rigid body as a simple translation of a single point in the body (the center of mass)
    // and a simple rotation of the rest of the body around that point
-   //glm::vec2 vertexVelocity = futureState.velocityOfCenterOfMass + (futureState.angularVelocity * CMToVertexPerpendicular);
-   glm::vec2 vertexVelocity = futureState.velocityOfCenterOfMass + futureState.angularVelocity * CMToVertexPerpendicular;
+   glm::vec2 vertexVelocity = futureState.velocityOfCenterOfMass + (futureState.angularVelocity * CMToVertexPerpendicular);
    std::cout << "vertexVelocity             = " << vertexVelocity.x << " " << vertexVelocity.y << '\n';
 
    // The wall doesn't move and has an infinite mass, which simplifies the collision response equations
@@ -276,8 +262,8 @@ void World::resolveCollisions()
    std::cout << "   CMToVertPerpDotColliNormal = " << CMToVertPerpDotColliNormal << '\n';
    std::cout << "   mOneOverMass               = " << body.mOneOverMass << '\n';
    std::cout << "   mOneOverMomentOfInertia    = " << body.mOneOverMomentOfInertia << '\n';
-   //float impulseDenominator         = body.mOneOverMass + ((CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal) * body.mOneOverMomentOfInertia);
-   float impulseDenominator         = body.mOneOverMass + body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal;
+   //float impulseDenominator         = body.mOneOverMass + (body.mOneOverMomentOfInertia * (CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal));
+   float impulseDenominator         = body.mOneOverMass + (body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal);
    std::cout << "impulseDenominator         = " << impulseDenominator << '\n';
 
    float impulse = impulseNumerator / impulseDenominator;
@@ -285,11 +271,9 @@ void World::resolveCollisions()
    // TODO: Remove this
    std::cout << "Impulse                    = " << impulse << '\n';
 
-   //futureState.velocityOfCenterOfMass += ((impulse * mCollisionNormal) * body.mOneOverMass);
-   futureState.velocityOfCenterOfMass += impulse * body.mOneOverMass * mCollisionNormal;
+   futureState.velocityOfCenterOfMass += ((impulse * body.mOneOverMass) * mCollisionNormal);
    std::cout << "CMVelocity                 = " << futureState.velocityOfCenterOfMass.x << " " << futureState.velocityOfCenterOfMass.y << '\n';
-   //futureState.angularVelocity        += ((impulse * CMToVertPerpDotColliNormal) * body.mOneOverMomentOfInertia);
-   futureState.angularVelocity        += impulse * body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal;
+   futureState.angularVelocity        += ((impulse * body.mOneOverMomentOfInertia) * CMToVertPerpDotColliNormal);
    std::cout << "AngularVelocity            = " << futureState.angularVelocity << '\n';
 
    std::cout << "-----------------------------------" << '\n';

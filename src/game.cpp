@@ -90,7 +90,7 @@ bool Game::initialize(const std::string& title)
 
    // Create the rigid bodies
    std::vector<RigidBody2D> rigidBodies;
-   rigidBodies.push_back(RigidBody2D(8.0f, 40.0f, 20.0f, 1.0f, glm::vec2(0.0f, 0.0f), 3.14159265358979323846f / 8, glm::vec2(1.0f, 0.0f), 0.0f));
+   rigidBodies.push_back(RigidBody2D(8.0f, 40.0f, 20.0f, 0.75f, glm::vec2(0.0f, 0.0f), 3.14159265358979323846f / 8, glm::vec2(0.0f, 0.0f), 0.0f));
 
    // Create the world
    mWorld = std::make_shared<World>(std::move(walls), rigidBodies);
