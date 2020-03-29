@@ -83,10 +83,10 @@ bool Game::initialize(const std::string& title)
    float halfWidth  = (widthInPix / 2) - 3;
    float halfHeight = (heightInPix / 2) - 3;
    std::vector<Wall> walls;
-   walls.push_back(Wall(glm::vec2( 1.0f,  0.0f), glm::vec2( -halfWidth, -halfHeight), glm::vec2( -halfWidth,  halfHeight))); // Left wall
    walls.push_back(Wall(glm::vec2( 0.0f, -1.0f), glm::vec2( -halfWidth,  halfHeight), glm::vec2(  halfWidth,  halfHeight))); // Top wall
-   walls.push_back(Wall(glm::vec2(-1.0f,  0.0f), glm::vec2(  halfWidth,  halfHeight), glm::vec2(  halfWidth, -halfHeight))); // Right wall
    walls.push_back(Wall(glm::vec2( 0.0f,  1.0f), glm::vec2(  halfWidth, -halfHeight), glm::vec2( -halfWidth, -halfHeight))); // Bottom wall
+   walls.push_back(Wall(glm::vec2(-1.0f,  0.0f), glm::vec2(  halfWidth,  halfHeight), glm::vec2(  halfWidth, -halfHeight))); // Right wall
+   walls.push_back(Wall(glm::vec2( 1.0f,  0.0f), glm::vec2( -halfWidth, -halfHeight), glm::vec2( -halfWidth,  halfHeight))); // Left wall
 
    // Create the rigid bodies
    std::vector<RigidBody2D> rigidBodies;

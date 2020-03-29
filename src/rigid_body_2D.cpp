@@ -1,7 +1,5 @@
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <math.h>
-
 #include "rigid_body_2D.h"
 
 RigidBody2D::RigidBody2D(float     mass,
