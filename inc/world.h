@@ -27,16 +27,40 @@ private:
    };
 
    void           computeForces();
+
    void           integrate(float deltaTime);
-   CollisionState checkForCollisions();
-   void           resolveCollisions();
+
+   CollisionState checkForBodyWallCollision();
+   void           resolveBodyWallCollision();
+
+   CollisionState checkForBodyBodyCollision();
+   void           resolveBodyBodyCollision();
 
    std::vector<Wall>        mWalls;
    std::vector<RigidBody2D> mRigidBodies;
 
-   glm::vec2                mCollisionNormal;
-   int                      mCollidingBodyIndex;
-   int                      mCollidingVertexIndex;
+   struct BodyWallCollision
+   {
+      BodyWallCollision();
+
+      glm::vec2             collisionNormal;
+      int                   collidingBodyIndex;
+      int                   collidingVertexIndex;
+   };
+
+   struct BodyBodyCollision
+   {
+      BodyBodyCollision();
+
+      glm::vec2             collisionNormal;
+      int                   collidingBodyAIndex;
+      int                   collidingBodyBIndex;
+      int                   collidingVertexAIndex;
+      int                   collidingVertexBIndex;
+   };
+
+   BodyWallCollision        mBodyWallCollision;
+   BodyBodyCollision        mBodyBodyCollision;
 };
 
 #endif

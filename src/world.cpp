@@ -4,9 +4,8 @@ World::World(std::vector<Wall>&&             walls,
              const std::vector<RigidBody2D>& rigidBodies)
    : mWalls(std::move(walls))
    , mRigidBodies(rigidBodies)
-   , mCollisionNormal(glm::vec2(0.0f))
-   , mCollidingBodyIndex(0)
-   , mCollidingVertexIndex(0)
+   , mBodyWallCollision()
+   , mBodyBodyCollision()
 {
 
 }
@@ -16,6 +15,7 @@ void World::simulate(float deltaTime)
    float currentTime = 0.0f;
    float targetTime  = deltaTime;
 
+   bool resolvingBodyBodyCollision = false;
    while (currentTime < deltaTime)
    {
       computeForces();
@@ -28,38 +28,67 @@ void World::simulate(float deltaTime)
          iter->calculateVertices(future);
       }
 
-      CollisionState collisionState = checkForCollisions();
-
-      if (collisionState == CollisionState::penetrating)
+      bool resolvedBodyWallCollision = false;
+      if (!resolvingBodyBodyCollision)
       {
-         // We simulated too far, so subdivide time and try again
-         targetTime = (currentTime + targetTime) / 2.0f;
-      }
-      else
-      {
-         if (collisionState == CollisionState::colliding)
+         CollisionState bodyWallCollisionState = checkForBodyWallCollision();
+         if (bodyWallCollisionState == CollisionState::penetrating)
+         {
+            // We simulated too far, so subdivide time and try again
+            targetTime = (currentTime + targetTime) / 2.0f;
+            continue;
+         }
+         else if (bodyWallCollisionState == CollisionState::colliding)
          {
             int counter = 0;
             do
             {
-               resolveCollisions();
+               resolveBodyWallCollision();
                counter++;
             }
-            while ((checkForCollisions() == CollisionState::colliding) && (counter < 100));
+            while ((checkForBodyWallCollision() == CollisionState::colliding) && (counter < 100));
 
             assert(counter < 100);
+
+            resolvedBodyWallCollision = true;
          }
+      }
 
-         // We made a successful step, so swap configurations to save the data for the next step
-         currentTime = targetTime;
-         targetTime = deltaTime;
-
-         for (std::vector<RigidBody2D>::iterator iter = mRigidBodies.begin(); iter != mRigidBodies.end(); ++iter)
+      if (!resolvedBodyWallCollision)
+      {
+         CollisionState bodyBodyCollisionState = checkForBodyBodyCollision();
+         if (bodyBodyCollisionState == CollisionState::penetrating)
          {
-            RigidBody2D::KinematicAndDynamicState tempState = iter->mStates[0];
-            iter->mStates[0] = iter->mStates[1];
-            iter->mStates[1] = tempState;
+            // We simulated too far, so subdivide time and try again
+            targetTime = (currentTime + targetTime) / 2.0f;
+            resolvingBodyBodyCollision = true;
+            continue;
          }
+         else if (bodyBodyCollisionState == CollisionState::colliding)
+         {
+            int counter = 0;
+            do
+            {
+               resolveBodyBodyCollision();
+               counter++;
+            }
+            while ((checkForBodyBodyCollision() == CollisionState::colliding) && (counter < 100));
+
+            assert(counter < 100);
+
+            resolvingBodyBodyCollision = false;
+         }
+      }
+
+      // We made a successful step, so swap configurations to save the data for the next step
+      currentTime = targetTime;
+      targetTime = deltaTime;
+
+      for (std::vector<RigidBody2D>::iterator iter = mRigidBodies.begin(); iter != mRigidBodies.end(); ++iter)
+      {
+         RigidBody2D::KinematicAndDynamicState tempState = iter->mStates[0];
+         iter->mStates[0] = iter->mStates[1];
+         iter->mStates[1] = tempState;
       }
    }
 }
@@ -83,8 +112,10 @@ void World::computeForces()
    for (std::vector<RigidBody2D>::iterator iter = mRigidBodies.begin(); iter != mRigidBodies.end(); ++iter)
    {
       RigidBody2D::KinematicAndDynamicState& currentState = iter->mStates[0];
-      currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f);
-      currentState.torque = 5.0f;
+      currentState.forceOfCenterOfMass = glm::vec2(0.0f, 0.0f);
+      currentState.torque = 0.0f;
+      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f);
+      //currentState.torque = 5.0f;
    }
 }
 
@@ -210,16 +241,15 @@ void World::integrate(float deltaTime)
    }
 }
 
-World::CollisionState World::checkForCollisions()
+World::CollisionState World::checkForBodyWallCollision()
 {
-   CollisionState collisionState = CollisionState::clear;
    float depthEpsilon = 1.0f;
 
-   for (std::vector<RigidBody2D>::iterator bodyIter = mRigidBodies.begin(); ((bodyIter != mRigidBodies.end()) && (collisionState != CollisionState::penetrating)); ++bodyIter)
+   for (std::vector<RigidBody2D>::iterator bodyIter = mRigidBodies.begin(); bodyIter != mRigidBodies.end(); ++bodyIter)
    {
       RigidBody2D::KinematicAndDynamicState& futureState = bodyIter->mStates[1];
 
-      for (int vertexIndex = 0; ((vertexIndex < 4) && (collisionState != CollisionState::penetrating)); ++vertexIndex)
+      for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex)
       {
          glm::vec2 vertexPos = futureState.vertices[vertexIndex];
          glm::vec2 CMToVertex = vertexPos - futureState.positionOfCenterOfMass;
@@ -230,7 +260,7 @@ World::CollisionState World::checkForCollisions()
          // and a simple rotation of the rest of the body around that point
          glm::vec2 vertexVelocity = futureState.velocityOfCenterOfMass + (futureState.angularVelocity * CMToVertexPerpendicular);
 
-         for (std::vector<Wall>::iterator wallIter = mWalls.begin(); ((wallIter != mWalls.end()) && (collisionState != CollisionState::penetrating)); ++wallIter)
+         for (std::vector<Wall>::iterator wallIter = mWalls.begin(); wallIter != mWalls.end(); ++wallIter)
          {
             // Position of vertex = Pv
             // Any point on wall  = Po
@@ -247,7 +277,7 @@ World::CollisionState World::checkForCollisions()
 
             if (distanceFromVertexToClosestPointOnWall < -depthEpsilon)
             {
-               collisionState = CollisionState::penetrating;
+               return CollisionState::penetrating;
             }
             else if (distanceFromVertexToClosestPointOnWall < depthEpsilon)
             {
@@ -258,25 +288,25 @@ World::CollisionState World::checkForCollisions()
                // If the relative normal velocity is negative, we have a collision
                if (relativeNormalVelocity < 0.0f)
                {
-                  collisionState        = CollisionState::colliding;
-                  mCollisionNormal      = wallIter->getNormal();
-                  mCollidingBodyIndex   = static_cast<int>(bodyIter - mRigidBodies.begin());
-                  mCollidingVertexIndex = vertexIndex;
+                  mBodyWallCollision.collisionNormal      = wallIter->getNormal();
+                  mBodyWallCollision.collidingBodyIndex   = static_cast<int>(bodyIter - mRigidBodies.begin());
+                  mBodyWallCollision.collidingVertexIndex = vertexIndex;
+                  return CollisionState::colliding;
                }
             }
          }
       }
    }
 
-   return collisionState;
+   return CollisionState::clear;
 }
 
-void World::resolveCollisions()
+void World::resolveBodyWallCollision()
 {
-   RigidBody2D& body = mRigidBodies[mCollidingBodyIndex];
+   RigidBody2D& body = mRigidBodies[mBodyWallCollision.collidingBodyIndex];
    RigidBody2D::KinematicAndDynamicState& futureState = body.mStates[1];
 
-   glm::vec2 vertexPos = futureState.vertices[mCollidingVertexIndex];
+   glm::vec2 vertexPos = futureState.vertices[mBodyWallCollision.collidingVertexIndex];
    glm::vec2 CMToVertex = vertexPos - futureState.positionOfCenterOfMass;
    glm::vec2 CMToVertexPerpendicular = glm::vec2(-CMToVertex.y, CMToVertex.x);
 
@@ -289,14 +319,260 @@ void World::resolveCollisions()
 
    // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
    // Because the wall is not moving, the relative velocity is the velocity of the vertex
-   float relativeNormalVelocity = glm::dot(vertexVelocity, mCollisionNormal);
+   float relativeNormalVelocity = glm::dot(vertexVelocity, mBodyWallCollision.collisionNormal);
    float impulseNumerator       = -(1.0f + body.mCoefficientOfRestitution) * relativeNormalVelocity;
 
-   float CMToVertPerpDotColliNormal = glm::dot(CMToVertexPerpendicular, mCollisionNormal);
+   float CMToVertPerpDotColliNormal = glm::dot(CMToVertexPerpendicular, mBodyWallCollision.collisionNormal);
    float impulseDenominator         = body.mOneOverMass + (body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal);
 
    float impulse = impulseNumerator / impulseDenominator;
 
-   futureState.velocityOfCenterOfMass += ((impulse * body.mOneOverMass) * mCollisionNormal);
+   futureState.velocityOfCenterOfMass += ((impulse * body.mOneOverMass) * mBodyWallCollision.collisionNormal);
    futureState.angularVelocity        += ((impulse * body.mOneOverMomentOfInertia) * CMToVertPerpDotColliNormal);
+}
+
+bool doesPointProjectOntoSegment(const glm::vec2& pointToTest, const glm::vec2& segmentStartPoint, const glm::vec2& segmentEndPoint)
+{
+   glm::vec2 segment = segmentEndPoint - segmentStartPoint;
+
+   // Project pointToTest onto segment, computing the parameterized position d(t) = segmentStartPoint + distFromSegStartPointToProjectedPointToTest * (segmentEndPoint - segmentStartPoint)
+   float distFromSegStartPointToProjectedPointToTest = glm::dot(pointToTest - segmentStartPoint, segment) / glm::dot(segment, segment);
+
+   // If pointToTest projects outside of the segment, distFromSegStartPointToProjectedPointToTest is smaller than 0 or greater than 1
+   if ((distFromSegStartPointToProjectedPointToTest < 0.0f) || (distFromSegStartPointToProjectedPointToTest > 1.0f))
+   {
+      return false;
+   }
+
+   return true;
+}
+
+glm::vec2 calculateClosestPointOnSegmentToPoint(const glm::vec2& pointToTest, const glm::vec2& segmentStartPoint, const glm::vec2& segmentEndPoint)
+{
+   glm::vec2 segment = segmentEndPoint - segmentStartPoint;
+
+   // Project pointToTest onto segment, computing the parameterized position d(t) = segmentStartPoint + distFromSegStartPointToProjectedPointToTest * (segmentEndPoint - segmentStartPoint)
+   float distFromSegStartPointToProjectedPointToTest = glm::dot(pointToTest - segmentStartPoint, segment) / glm::dot(segment, segment);
+
+   // If pointToTest projects outside of the segment, distFromSegStartPointToProjectedPointToTest is smaller than 0 or greater than 1
+   // If this is the case, clamp distFromSegStartPointToProjectedPointToTest to the closest endpoint
+   if (distFromSegStartPointToProjectedPointToTest < 0.0f)
+   {
+      distFromSegStartPointToProjectedPointToTest = 0.0f;
+   }
+   else if (distFromSegStartPointToProjectedPointToTest > 1.0f)
+   {
+      distFromSegStartPointToProjectedPointToTest = 1.0f;
+   }
+
+   glm::vec2 closestPointOnSegmentToPoint = segmentStartPoint + (distFromSegStartPointToProjectedPointToTest * segment);
+
+   return closestPointOnSegmentToPoint;
+}
+
+World::CollisionState World::checkForBodyBodyCollision()
+{
+   // Check for penetration
+   for (std::vector<RigidBody2D>::iterator bodyIterA = mRigidBodies.begin(); bodyIterA != mRigidBodies.end(); ++bodyIterA)
+   {
+      for (std::vector<RigidBody2D>::iterator bodyIterB = mRigidBodies.begin(); bodyIterB != mRigidBodies.end(); ++bodyIterB)
+      {
+         if (bodyIterA == bodyIterB)
+         {
+            continue;
+         }
+
+         // Check if any of the vertices of body A is inside of body B
+         // To do this we check if any of the vertices of body A is to the left of all the CCWISE edges of body B
+         for (int bodyAVertexIndex = 0; bodyAVertexIndex < 4; ++bodyAVertexIndex)
+         {
+            bool penetrating = true;
+            for (int bodyBVertexIndex = 0; bodyBVertexIndex < 4; ++bodyBVertexIndex)
+            {
+               // Calculate a CCWISE edge using adjacent vertices
+               glm::vec2 bodyBEdge;
+               if (bodyBVertexIndex == 3)
+               {
+                  bodyBEdge = bodyIterB->mStates[1].vertices[0] - bodyIterB->mStates[1].vertices[bodyBVertexIndex];
+               }
+               else
+               {
+                  bodyBEdge = bodyIterB->mStates[1].vertices[bodyBVertexIndex + 1] - bodyIterB->mStates[1].vertices[bodyBVertexIndex];
+               }
+
+               glm::vec2 bodyBEdgePerpendicular = glm::vec2(-bodyBEdge.y, bodyBEdge.x);
+               glm::vec2 firstVertexOfEdgeToVertexBeingTested = bodyIterA->mStates[1].vertices[bodyAVertexIndex] - bodyIterB->mStates[1].vertices[bodyBVertexIndex];
+
+               // If this dot product is smaller than zero, the vertex is to the right of the edge, which means that there is no penetration
+               if (glm::dot(firstVertexOfEdgeToVertexBeingTested, bodyBEdgePerpendicular) < 0)
+               {
+                  penetrating = false;
+                  break;
+               }
+            }
+
+            if (penetrating)
+            {
+               return CollisionState::penetrating;
+            }
+         }
+      }
+   }
+
+   // Check for vertex-vertex collision
+   for (std::vector<RigidBody2D>::iterator bodyIterA = mRigidBodies.begin(); bodyIterA != mRigidBodies.end(); ++bodyIterA)
+   {
+      for (std::vector<RigidBody2D>::iterator bodyIterB = mRigidBodies.begin(); bodyIterB != mRigidBodies.end(); ++bodyIterB)
+      {
+         if (bodyIterA == bodyIterB)
+         {
+            continue;
+         }
+
+         for (int bodyAVertexIndex = 0; bodyAVertexIndex < 4; ++bodyAVertexIndex)
+         {
+            for (int bodyBVertexIndex = 0; bodyBVertexIndex < 4; ++bodyBVertexIndex)
+            {
+               glm::vec2 bodyAVertex = bodyIterA->mStates[1].vertices[bodyAVertexIndex];
+               glm::vec2 bodyBVertex = bodyIterB->mStates[1].vertices[bodyBVertexIndex];
+
+               // If the distance between two vertices is smaller than 0.1f, then we check for a collison
+               if (glm::length(bodyAVertex - bodyBVertex) < 0.1f)
+               {
+                  // Calculate the velocity of the vertex on body A
+                  glm::vec2 bodyACMToVertex              = bodyAVertex - bodyIterA->mStates[1].positionOfCenterOfMass;
+                  glm::vec2 bodyACMToVertexPerpendicular = glm::vec2(-bodyACMToVertex.y, bodyACMToVertex.x);
+                  glm::vec2 bodyAVertexVelocity          = bodyIterA->mStates[1].velocityOfCenterOfMass + (bodyIterA->mStates[1].angularVelocity * bodyACMToVertexPerpendicular);
+
+                  // Calculate the velocity of the vertex on body B
+                  glm::vec2 bodyBCMToVertex              = bodyBVertex - bodyIterB->mStates[1].positionOfCenterOfMass;
+                  glm::vec2 bodyBCMToVertexPerpendicular = glm::vec2(-bodyBCMToVertex.y, bodyBCMToVertex.x);
+                  glm::vec2 bodyBVertexVelocity          = bodyIterB->mStates[1].velocityOfCenterOfMass + (bodyIterB->mStates[1].angularVelocity * bodyBCMToVertexPerpendicular);
+
+                  // Calculate the relative velocity
+                  glm::vec2 relativeVelocity = bodyAVertexVelocity - bodyBVertexVelocity;
+
+                  // We assume the collision normal is the line that connects the CMs of the two bodies
+                  glm::vec2 collisionNormal = bodyIterA->mStates[1].positionOfCenterOfMass - bodyIterB->mStates[1].positionOfCenterOfMass;
+
+                  // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
+                  float relativeNormalVelocity = glm::dot(relativeVelocity, collisionNormal);
+
+                  // If the relative normal velocity is negative, we have a collision
+                  if (relativeNormalVelocity < 0.0f)
+                  {
+                     mBodyBodyCollision.collisionNormal       = collisionNormal;
+                     mBodyBodyCollision.collidingBodyAIndex   = static_cast<int>(bodyIterA - mRigidBodies.begin());
+                     mBodyBodyCollision.collidingBodyBIndex   = static_cast<int>(bodyIterB - mRigidBodies.begin());
+                     mBodyBodyCollision.collidingVertexAIndex = bodyAVertexIndex;
+                     mBodyBodyCollision.collidingVertexBIndex = bodyBVertexIndex;
+                     return CollisionState::colliding;
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   // Check for vertex-edge collision
+   for (std::vector<RigidBody2D>::iterator bodyIterA = mRigidBodies.begin(); bodyIterA != mRigidBodies.end(); ++bodyIterA)
+   {
+      for (std::vector<RigidBody2D>::iterator bodyIterB = mRigidBodies.begin(); bodyIterB != mRigidBodies.end(); ++bodyIterB)
+      {
+         if (bodyIterA == bodyIterB)
+         {
+            continue;
+         }
+
+         for (int bodyAVertexIndex = 0; bodyAVertexIndex < 4; ++bodyAVertexIndex)
+         {
+            for (int bodyBVertexIndex = 0; bodyBVertexIndex < 4; ++bodyBVertexIndex)
+            {
+               glm::vec2 bodyAVertex = bodyIterA->mStates[1].vertices[bodyAVertexIndex];
+
+               // Calculate a CCWISE edge using adjacent vertices
+               glm::vec2 startPointOfBodyBEdge;
+               glm::vec2 endPointOfBodyBEdge;
+               glm::vec2 bodyBEdge;
+               if (bodyBVertexIndex == 3)
+               {
+                  startPointOfBodyBEdge = bodyIterB->mStates[1].vertices[bodyBVertexIndex];
+                  endPointOfBodyBEdge   = bodyIterB->mStates[1].vertices[0];
+                  bodyBEdge             = endPointOfBodyBEdge - startPointOfBodyBEdge;
+               }
+               else
+               {
+                  startPointOfBodyBEdge = bodyIterB->mStates[1].vertices[bodyBVertexIndex];
+                  endPointOfBodyBEdge   = bodyIterB->mStates[1].vertices[bodyBVertexIndex + 1];
+                  bodyBEdge             = endPointOfBodyBEdge - startPointOfBodyBEdge;
+               }
+
+               // If bodyAVertex doesn't project onto bodyBEdge, then they cannot collide
+               if (!doesPointProjectOntoSegment(bodyAVertex, startPointOfBodyBEdge, endPointOfBodyBEdge))
+               {
+                  continue;
+               }
+
+               glm::vec2 closestPointOnBodyBEdgeToBodyAVertex = calculateClosestPointOnSegmentToPoint(bodyAVertex, startPointOfBodyBEdge, endPointOfBodyBEdge);
+
+               // If the distance between bodyAVertex and its closest point on bodyBEdge is smaller than 0.1f, then we check for a collison
+               float distanceFromBodyAVertexToClosestPointOnBodyBEdge = glm::length(closestPointOnBodyBEdgeToBodyAVertex - bodyAVertex);
+               if (distanceFromBodyAVertexToClosestPointOnBodyBEdge < 0.1f)
+               {
+                  // Calculate the velocity of bodyAVertex
+                  glm::vec2 bodyACMToVertex              = bodyAVertex - bodyIterA->mStates[1].positionOfCenterOfMass;
+                  glm::vec2 bodyACMToVertexPerpendicular = glm::vec2(-bodyACMToVertex.y, bodyACMToVertex.x);
+                  glm::vec2 bodyAVertexVelocity          = bodyIterA->mStates[1].velocityOfCenterOfMass + (bodyIterA->mStates[1].angularVelocity * bodyACMToVertexPerpendicular);
+
+                  // Calculate the velocity of the closest point on bodyBEdge to bodyAVertex
+                  glm::vec2 bodyBCMToClosestPoint              = closestPointOnBodyBEdgeToBodyAVertex - bodyIterB->mStates[1].positionOfCenterOfMass;
+                  glm::vec2 bodyBCMToClosestPointPerpendicular = glm::vec2(-bodyBCMToClosestPoint.y, bodyBCMToClosestPoint.x);
+                  glm::vec2 bodyBClosestPointVelocity          = bodyIterB->mStates[1].velocityOfCenterOfMass + (bodyIterB->mStates[1].angularVelocity * bodyBCMToClosestPointPerpendicular);
+
+                  // Calculate the relative velocity
+                  glm::vec2 relativeVelocity = bodyAVertexVelocity - bodyBClosestPointVelocity;
+
+                  // The collision normal is the normal of bodyBEdge
+                  // We can calculate it by normalizing the vector that goes from closestPointOnBodyBEdgeToBodyAVertex to bodyAVertex
+                  glm::vec2 collisionNormal = glm::normalize(bodyAVertex - closestPointOnBodyBEdgeToBodyAVertex);
+
+                  // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
+                  float relativeNormalVelocity = glm::dot(relativeVelocity, collisionNormal);
+
+                  // If the relative normal velocity is negative, we have a collision
+                  if (relativeNormalVelocity < 0.0f)
+                  {
+                     // TODO: Fill this in
+                     return CollisionState::colliding;
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   return CollisionState::clear;
+}
+
+void World::resolveBodyBodyCollision()
+{
+
+}
+
+World::BodyWallCollision::BodyWallCollision()
+   : collisionNormal(glm::vec2(0.0f))
+   , collidingBodyIndex(0)
+   , collidingVertexIndex(0)
+{
+
+}
+
+World::BodyBodyCollision::BodyBodyCollision()
+   : collisionNormal(glm::vec2(0.0f))
+   , collidingBodyAIndex(0)
+   , collidingBodyBIndex(0)
+   , collidingVertexAIndex(0)
+   , collidingVertexBIndex(0)
+{
+
 }

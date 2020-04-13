@@ -37,9 +37,9 @@ void RigidBody2D::calculateVertices(RigidBodyState state)
    float halfHeight = mHeight / 2.0f;
 
    mStates[state].vertices[0] = translation + (rotation * glm::vec2( halfWidth,  halfHeight));
-   mStates[state].vertices[1] = translation + (rotation * glm::vec2( halfWidth, -halfHeight));
+   mStates[state].vertices[1] = translation + (rotation * glm::vec2(-halfWidth,  halfHeight));
    mStates[state].vertices[2] = translation + (rotation * glm::vec2(-halfWidth, -halfHeight));
-   mStates[state].vertices[3] = translation + (rotation * glm::vec2(-halfWidth,  halfHeight));
+   mStates[state].vertices[3] = translation + (rotation * glm::vec2( halfWidth, -halfHeight));
 }
 
 glm::mat4 RigidBody2D::getModelMatrix(RigidBodyState state) const
