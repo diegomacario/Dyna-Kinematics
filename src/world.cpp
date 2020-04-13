@@ -5,7 +5,8 @@ World::World(std::vector<Wall>&&             walls,
    : mWalls(std::move(walls))
    , mRigidBodies(rigidBodies)
    , mBodyWallCollision()
-   , mBodyBodyCollision()
+   , mVertexVertexCollision()
+   , mVertexEdgeCollision()
 {
 
 }
@@ -64,15 +65,18 @@ void World::simulate(float deltaTime)
             resolvingBodyBodyCollision = true;
             continue;
          }
-         else if (bodyBodyCollisionState == CollisionState::colliding)
+         else if ((bodyBodyCollisionState == CollisionState::collidingVertexVertex) ||
+                  (bodyBodyCollisionState == CollisionState::collidingVertexEdge))
          {
             int counter = 0;
             do
             {
-               resolveBodyBodyCollision();
+               resolveBodyBodyCollision(bodyBodyCollisionState);
                counter++;
+               bodyBodyCollisionState = checkForBodyBodyCollision();
             }
-            while ((checkForBodyBodyCollision() == CollisionState::colliding) && (counter < 100));
+            while (((bodyBodyCollisionState == CollisionState::collidingVertexVertex) ||
+                    (bodyBodyCollisionState == CollisionState::collidingVertexEdge)) && (counter < 100));
 
             assert(counter < 100);
 
@@ -453,7 +457,7 @@ World::CollisionState World::checkForBodyBodyCollision()
                   glm::vec2 relativeVelocity = bodyAVertexVelocity - bodyBVertexVelocity;
 
                   // We assume the collision normal is the line that connects the CMs of the two bodies
-                  glm::vec2 collisionNormal = bodyIterA->mStates[1].positionOfCenterOfMass - bodyIterB->mStates[1].positionOfCenterOfMass;
+                  glm::vec2 collisionNormal = glm::normalize(bodyIterA->mStates[1].positionOfCenterOfMass - bodyIterB->mStates[1].positionOfCenterOfMass);
 
                   // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
                   float relativeNormalVelocity = glm::dot(relativeVelocity, collisionNormal);
@@ -461,12 +465,12 @@ World::CollisionState World::checkForBodyBodyCollision()
                   // If the relative normal velocity is negative, we have a collision
                   if (relativeNormalVelocity < 0.0f)
                   {
-                     mBodyBodyCollision.collisionNormal       = collisionNormal;
-                     mBodyBodyCollision.collidingBodyAIndex   = static_cast<int>(bodyIterA - mRigidBodies.begin());
-                     mBodyBodyCollision.collidingBodyBIndex   = static_cast<int>(bodyIterB - mRigidBodies.begin());
-                     mBodyBodyCollision.collidingVertexAIndex = bodyAVertexIndex;
-                     mBodyBodyCollision.collidingVertexBIndex = bodyBVertexIndex;
-                     return CollisionState::colliding;
+                     mVertexVertexCollision.collisionNormal       = collisionNormal;
+                     mVertexVertexCollision.collidingBodyAIndex   = static_cast<int>(bodyIterA - mRigidBodies.begin());
+                     mVertexVertexCollision.collidingBodyBIndex   = static_cast<int>(bodyIterB - mRigidBodies.begin());
+                     mVertexVertexCollision.collidingVertexAIndex = bodyAVertexIndex;
+                     mVertexVertexCollision.collidingVertexBIndex = bodyBVertexIndex;
+                     return CollisionState::collidingVertexVertex;
                   }
                }
             }
@@ -542,8 +546,12 @@ World::CollisionState World::checkForBodyBodyCollision()
                   // If the relative normal velocity is negative, we have a collision
                   if (relativeNormalVelocity < 0.0f)
                   {
-                     // TODO: Fill this in
-                     return CollisionState::colliding;
+                     mVertexEdgeCollision.collisionNormal       = collisionNormal;
+                     mVertexEdgeCollision.collidingBodyAIndex   = static_cast<int>(bodyIterA - mRigidBodies.begin());
+                     mVertexEdgeCollision.collidingBodyBIndex   = static_cast<int>(bodyIterB - mRigidBodies.begin());
+                     mVertexEdgeCollision.collidingVertexAIndex = bodyAVertexIndex;
+                     mVertexEdgeCollision.collidingBodyBPoint   = closestPointOnBodyBEdgeToBodyAVertex;
+                     return CollisionState::collidingVertexEdge;
                   }
                }
             }
@@ -554,9 +562,90 @@ World::CollisionState World::checkForBodyBodyCollision()
    return CollisionState::clear;
 }
 
-void World::resolveBodyBodyCollision()
+void World::resolveBodyBodyCollision(CollisionState collisionState)
 {
+   if (collisionState == CollisionState::collidingVertexVertex)
+   {
+      RigidBody2D& bodyA = mRigidBodies[mVertexVertexCollision.collidingBodyAIndex];
+      RigidBody2D& bodyB = mRigidBodies[mVertexVertexCollision.collidingBodyBIndex];
 
+      glm::vec2 bodyAVertex = bodyA.mStates[1].vertices[mVertexVertexCollision.collidingVertexAIndex];
+      glm::vec2 bodyBVertex = bodyB.mStates[1].vertices[mVertexVertexCollision.collidingVertexBIndex];
+
+      // Calculate the velocity of the vertex on body A
+      glm::vec2 bodyACMToVertex              = bodyAVertex - bodyA.mStates[1].positionOfCenterOfMass;
+      glm::vec2 bodyACMToVertexPerpendicular = glm::vec2(-bodyACMToVertex.y, bodyACMToVertex.x);
+      glm::vec2 bodyAVertexVelocity          = bodyA.mStates[1].velocityOfCenterOfMass + (bodyA.mStates[1].angularVelocity * bodyACMToVertexPerpendicular);
+
+      // Calculate the velocity of the vertex on body B
+      glm::vec2 bodyBCMToVertex              = bodyBVertex - bodyB.mStates[1].positionOfCenterOfMass;
+      glm::vec2 bodyBCMToVertexPerpendicular = glm::vec2(-bodyBCMToVertex.y, bodyBCMToVertex.x);
+      glm::vec2 bodyBVertexVelocity          = bodyB.mStates[1].velocityOfCenterOfMass + (bodyB.mStates[1].angularVelocity * bodyBCMToVertexPerpendicular);
+
+      // Calculate the relative normal velocity
+      glm::vec2 relativeVelocity   = bodyAVertexVelocity - bodyBVertexVelocity;
+      float relativeNormalVelocity = glm::dot(relativeVelocity, mVertexVertexCollision.collisionNormal);
+
+      // Calculate the impulse's numerator
+      float impulseNumerator = -(1.0f + bodyA.mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
+
+      float bodyACMToVertPerpDotColliNormal = glm::dot(bodyACMToVertexPerpendicular, mVertexVertexCollision.collisionNormal);
+      float bodyBCMToVertPerpDotColliNormal = glm::dot(bodyBCMToVertexPerpendicular, mVertexVertexCollision.collisionNormal);
+
+      // Calculate the impulse's denominator
+      float impulseDenominator = (bodyA.mOneOverMass + bodyB.mOneOverMass) +
+                                 (bodyA.mOneOverMomentOfInertia * bodyACMToVertPerpDotColliNormal * bodyACMToVertPerpDotColliNormal) +
+                                 (bodyB.mOneOverMomentOfInertia * bodyBCMToVertPerpDotColliNormal * bodyBCMToVertPerpDotColliNormal);
+
+      float impulse = impulseNumerator / impulseDenominator;
+
+      bodyA.mStates[1].velocityOfCenterOfMass += ((impulse * bodyA.mOneOverMass) * mVertexVertexCollision.collisionNormal);
+      bodyA.mStates[1].angularVelocity        += ((impulse * bodyA.mOneOverMomentOfInertia) * bodyACMToVertPerpDotColliNormal);
+
+      bodyB.mStates[1].velocityOfCenterOfMass += ((-impulse * bodyB.mOneOverMass) * mVertexVertexCollision.collisionNormal);
+      bodyB.mStates[1].angularVelocity        += ((-impulse * bodyB.mOneOverMomentOfInertia) * bodyBCMToVertPerpDotColliNormal);
+   }
+   else if (collisionState == CollisionState::collidingVertexEdge)
+   {
+      RigidBody2D& bodyA = mRigidBodies[mVertexEdgeCollision.collidingBodyAIndex];
+      RigidBody2D& bodyB = mRigidBodies[mVertexEdgeCollision.collidingBodyBIndex];
+
+      glm::vec2 bodyAVertex = bodyA.mStates[1].vertices[mVertexEdgeCollision.collidingVertexAIndex];
+      glm::vec2 bodyBPoint  = mVertexEdgeCollision.collidingBodyBPoint;
+
+      // Calculate the velocity of the vertex on body A
+      glm::vec2 bodyACMToVertex              = bodyAVertex - bodyA.mStates[1].positionOfCenterOfMass;
+      glm::vec2 bodyACMToVertexPerpendicular = glm::vec2(-bodyACMToVertex.y, bodyACMToVertex.x);
+      glm::vec2 bodyAVertexVelocity          = bodyA.mStates[1].velocityOfCenterOfMass + (bodyA.mStates[1].angularVelocity * bodyACMToVertexPerpendicular);
+
+      // Calculate the velocity of the vertex on body B
+      glm::vec2 bodyBCMToPoint              = bodyBPoint - bodyB.mStates[1].positionOfCenterOfMass;
+      glm::vec2 bodyBCMToPointPerpendicular = glm::vec2(-bodyBCMToPoint.y, bodyBCMToPoint.x);
+      glm::vec2 bodyBPointVelocity          = bodyB.mStates[1].velocityOfCenterOfMass + (bodyB.mStates[1].angularVelocity * bodyBCMToPointPerpendicular);
+
+      // Calculate the relative normal velocity
+      glm::vec2 relativeVelocity   = bodyAVertexVelocity - bodyBPointVelocity;
+      float relativeNormalVelocity = glm::dot(relativeVelocity, mVertexEdgeCollision.collisionNormal);
+
+      // Calculate the impulse's numerator
+      float impulseNumerator = -(1.0f + bodyA.mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
+
+      float bodyACMToVertPerpDotColliNormal  = glm::dot(bodyACMToVertexPerpendicular, mVertexEdgeCollision.collisionNormal);
+      float bodyBCMToPointPerpDotColliNormal = glm::dot(bodyBCMToPointPerpendicular, mVertexEdgeCollision.collisionNormal);
+
+      // Calculate the impulse's denominator
+      float impulseDenominator = (bodyA.mOneOverMass + bodyB.mOneOverMass) +
+                                 (bodyA.mOneOverMomentOfInertia * bodyACMToVertPerpDotColliNormal * bodyACMToVertPerpDotColliNormal) +
+                                 (bodyB.mOneOverMomentOfInertia * bodyBCMToPointPerpDotColliNormal * bodyBCMToPointPerpDotColliNormal);
+
+      float impulse = impulseNumerator / impulseDenominator;
+
+      bodyA.mStates[1].velocityOfCenterOfMass += ((impulse * bodyA.mOneOverMass) * mVertexEdgeCollision.collisionNormal);
+      bodyA.mStates[1].angularVelocity        += ((impulse * bodyA.mOneOverMomentOfInertia) * bodyACMToVertPerpDotColliNormal);
+
+      bodyB.mStates[1].velocityOfCenterOfMass += ((-impulse * bodyB.mOneOverMass) * mVertexEdgeCollision.collisionNormal);
+      bodyB.mStates[1].angularVelocity        += ((-impulse * bodyB.mOneOverMomentOfInertia) * bodyBCMToPointPerpDotColliNormal);
+   }
 }
 
 World::BodyWallCollision::BodyWallCollision()
@@ -567,12 +656,22 @@ World::BodyWallCollision::BodyWallCollision()
 
 }
 
-World::BodyBodyCollision::BodyBodyCollision()
+World::VertexVertexCollision::VertexVertexCollision()
    : collisionNormal(glm::vec2(0.0f))
    , collidingBodyAIndex(0)
    , collidingBodyBIndex(0)
    , collidingVertexAIndex(0)
    , collidingVertexBIndex(0)
+{
+
+}
+
+World::VertexEdgeCollision::VertexEdgeCollision()
+   : collisionNormal(glm::vec2(0.0f))
+   , collidingBodyAIndex(0)
+   , collidingBodyBIndex(0)
+   , collidingVertexAIndex(0)
+   , collidingBodyBPoint(glm::vec2(0.0f))
 {
 
 }

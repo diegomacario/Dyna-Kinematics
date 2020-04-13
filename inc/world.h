@@ -21,9 +21,11 @@ private:
 
    enum class CollisionState : unsigned int
    {
-      penetrating = 0,
-      colliding   = 1,
-      clear       = 2,
+      penetrating           = 0,
+      colliding             = 1,
+      collidingVertexVertex = 2,
+      collidingVertexEdge   = 3,
+      clear                 = 4,
    };
 
    void           computeForces();
@@ -34,7 +36,7 @@ private:
    void           resolveBodyWallCollision();
 
    CollisionState checkForBodyBodyCollision();
-   void           resolveBodyBodyCollision();
+   void           resolveBodyBodyCollision(CollisionState collisionState);
 
    std::vector<Wall>        mWalls;
    std::vector<RigidBody2D> mRigidBodies;
@@ -48,9 +50,9 @@ private:
       int                   collidingVertexIndex;
    };
 
-   struct BodyBodyCollision
+   struct VertexVertexCollision
    {
-      BodyBodyCollision();
+      VertexVertexCollision();
 
       glm::vec2             collisionNormal;
       int                   collidingBodyAIndex;
@@ -59,8 +61,20 @@ private:
       int                   collidingVertexBIndex;
    };
 
+   struct VertexEdgeCollision
+   {
+      VertexEdgeCollision();
+
+      glm::vec2             collisionNormal;
+      int                   collidingBodyAIndex;
+      int                   collidingBodyBIndex;
+      int                   collidingVertexAIndex;
+      glm::vec2             collidingBodyBPoint;
+   };
+
    BodyWallCollision        mBodyWallCollision;
-   BodyBodyCollision        mBodyBodyCollision;
+   VertexVertexCollision    mVertexVertexCollision;
+   VertexEdgeCollision      mVertexEdgeCollision;
 };
 
 #endif
