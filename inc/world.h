@@ -28,53 +28,67 @@ private:
       clear                 = 4,
    };
 
-   void           computeForces();
-
-   void           integrate(float deltaTime);
-
-   CollisionState checkForBodyWallCollision();
-   void           resolveBodyWallCollision();
-
-   CollisionState checkForBodyBodyCollision();
-   void           resolveBodyBodyCollision(CollisionState collisionState);
-
-   std::vector<Wall>        mWalls;
-   std::vector<RigidBody2D> mRigidBodies;
-
    struct BodyWallCollision
    {
       BodyWallCollision();
 
-      glm::vec2             collisionNormal;
-      int                   collidingBodyIndex;
-      int                   collidingVertexIndex;
+      BodyWallCollision(glm::vec2 collisionNormal,
+                        int       collidingBodyIndex,
+                        int       collidingVertexIndex,
+                        int       collidingWallIndex);
+
+      glm::vec2                   collisionNormal;
+      int                         collidingBodyIndex;
+      int                         collidingVertexIndex;
+      int                         collidingWallIndex;
    };
 
    struct VertexVertexCollision
    {
       VertexVertexCollision();
 
-      glm::vec2             collisionNormal;
-      int                   collidingBodyAIndex;
-      int                   collidingBodyBIndex;
-      int                   collidingVertexAIndex;
-      int                   collidingVertexBIndex;
+      glm::vec2                   collisionNormal;
+      int                         collidingBodyAIndex;
+      int                         collidingBodyBIndex;
+      int                         collidingVertexAIndex;
+      int                         collidingVertexBIndex;
    };
 
    struct VertexEdgeCollision
    {
       VertexEdgeCollision();
 
-      glm::vec2             collisionNormal;
-      int                   collidingBodyAIndex;
-      int                   collidingBodyBIndex;
-      int                   collidingVertexAIndex;
-      glm::vec2             collidingBodyBPoint;
+      glm::vec2                   collisionNormal;
+      int                         collidingBodyAIndex;
+      int                         collidingBodyBIndex;
+      int                         collidingVertexAIndex;
+      glm::vec2                   collidingBodyBPoint;
    };
 
-   BodyWallCollision        mBodyWallCollision;
-   VertexVertexCollision    mVertexVertexCollision;
-   VertexEdgeCollision      mVertexEdgeCollision;
+   void                         computeForces();
+
+   void                         integrate(float deltaTime);
+
+   CollisionState               checkForBodyWallPenetration();
+   CollisionState               checkForBodyWallCollision();
+   std::tuple<glm::vec2, float> resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision);
+   std::tuple<glm::vec2, float> resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision,
+                                                         const glm::vec2&         linearVelocity,
+                                                         float                    angularVelocity);
+   bool                         isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollision,
+                                                            const glm::vec2&         linearVelocity,
+                                                            float                    angularVelocity);
+
+   CollisionState               checkForBodyBodyPenetration();
+   CollisionState               checkForBodyBodyCollision();
+   void                         resolveBodyBodyCollision(CollisionState collisionState);
+
+   std::vector<Wall>                           mWalls;
+   std::vector<RigidBody2D>                    mRigidBodies;
+
+   std::vector<std::vector<BodyWallCollision>> mBodyWallCollisions;
+   VertexVertexCollision                       mVertexVertexCollision;
+   VertexEdgeCollision                         mVertexEdgeCollision;
 };
 
 #endif

@@ -1,10 +1,12 @@
 #include "world.h"
 
+#include <iostream>
+
 World::World(std::vector<Wall>&&             walls,
              const std::vector<RigidBody2D>& rigidBodies)
    : mWalls(std::move(walls))
    , mRigidBodies(rigidBodies)
-   , mBodyWallCollision()
+   , mBodyWallCollisions(mRigidBodies.size())
    , mVertexVertexCollision()
    , mVertexEdgeCollision()
 {
@@ -16,12 +18,16 @@ void World::simulate(float deltaTime)
    float currentTime = 0.0f;
    float targetTime  = deltaTime;
 
-   bool resolvingBodyBodyCollision = false;
    while (currentTime < deltaTime)
    {
       computeForces();
 
       integrate(targetTime - currentTime);
+
+      if (mRigidBodies[0].mStates[1].orientation == 230.991379f)
+      {
+         int z = 42;
+      }
 
       // Calculate the vertices of each rigid body at the target time
       for (std::vector<RigidBody2D>::iterator iter = mRigidBodies.begin(); iter != mRigidBodies.end(); ++iter)
@@ -29,59 +35,150 @@ void World::simulate(float deltaTime)
          iter->calculateVertices(future);
       }
 
-      bool resolvedBodyWallCollision = false;
-      if (!resolvingBodyBodyCollision)
+      if ((checkForBodyWallPenetration() == CollisionState::penetrating) ||
+          (checkForBodyBodyPenetration() == CollisionState::penetrating))
       {
-         CollisionState bodyWallCollisionState = checkForBodyWallCollision();
-         if (bodyWallCollisionState == CollisionState::penetrating)
+         // We simulated too far, so subdivide time and try again
+         targetTime = (currentTime + targetTime) / 2.0f;
+         continue;
+      }
+
+      CollisionState bodyWallCollisionState = checkForBodyWallCollision();
+      if (bodyWallCollisionState == CollisionState::colliding)
+      {
+         std::vector<std::vector<BodyWallCollision>>::iterator bodyIter;
+         std::vector<BodyWallCollision>::iterator              bodyWallCollisionIter;
+         for (bodyIter = mBodyWallCollisions.begin(); bodyIter != mBodyWallCollisions.end(); ++bodyIter)
          {
-            // We simulated too far, so subdivide time and try again
-            targetTime = (currentTime + targetTime) / 2.0f;
-            continue;
-         }
-         else if (bodyWallCollisionState == CollisionState::colliding)
-         {
-            int counter = 0;
-            do
+            std::vector<glm::vec2> linearVelocities;
+            std::vector<float>     angularVelocities;
+
+            for (bodyWallCollisionIter = bodyIter->begin(); bodyWallCollisionIter != bodyIter->end(); ++bodyWallCollisionIter)
             {
-               resolveBodyWallCollision();
+               int       counter = 0;
+               glm::vec2 linearVelocityOfCurrentCollision  = glm::vec2(0.0f);
+               float     angularVelocityOfCurrentCollision = 0.0f;
+
+               std::tuple<glm::vec2, float> velocities = resolveBodyWallCollision(*bodyWallCollisionIter);
+               linearVelocityOfCurrentCollision  = std::get<0>(velocities);
+               angularVelocityOfCurrentCollision = std::get<1>(velocities);
                counter++;
+
+               while (!isBodyWallCollisionResolved(*bodyWallCollisionIter, linearVelocityOfCurrentCollision, angularVelocityOfCurrentCollision) && (counter < 100))
+               {
+                  std::tuple<glm::vec2, float> velocities = resolveBodyWallCollision(*bodyWallCollisionIter, linearVelocityOfCurrentCollision, angularVelocityOfCurrentCollision);
+                  linearVelocityOfCurrentCollision  = std::get<0>(velocities);
+                  angularVelocityOfCurrentCollision = std::get<1>(velocities);
+                  counter++;
+               }
+
+               assert(counter < 100);
+
+               linearVelocities.push_back(linearVelocityOfCurrentCollision);
+               angularVelocities.push_back(angularVelocityOfCurrentCollision);
             }
-            while ((checkForBodyWallCollision() == CollisionState::colliding) && (counter < 100));
 
-            assert(counter < 100);
+            // --------------------------------------------------------------------------------------------------------------------------------
 
-            resolvedBodyWallCollision = true;
+            int collidingBodyIndex   = static_cast<int>(bodyIter - mBodyWallCollisions.begin());
+            RigidBody2D& currentBody = mRigidBodies[collidingBodyIndex];
+
+            std::cout << "Before - Velocity of CM         = " << glm::length(currentBody.mStates[1].velocityOfCenterOfMass) << '\n';
+            std::cout << "Before - Angular velocity       = " << currentBody.mStates[1].angularVelocity << '\n';
+
+            float linearKineticEnergy = ((1 / 2.0f) *
+                                         (1 / currentBody.mOneOverMass) *
+                                         (glm::length(currentBody.mStates[1].velocityOfCenterOfMass) *
+                                          glm::length(currentBody.mStates[1].velocityOfCenterOfMass)));
+            std::cout << "Before - Linear kinetic energy  = " << linearKineticEnergy << '\n';
+
+            float angularKineticEnergy = ((1 / 2.0f) *
+                                          (1 / currentBody.mOneOverMomentOfInertia) *
+                                          (currentBody.mStates[1].angularVelocity *
+                                           currentBody.mStates[1].angularVelocity));
+            std::cout << "Before - Angular kinetic energy = " << angularKineticEnergy << '\n';
+
+            float totalKineticEnergy = linearKineticEnergy + angularKineticEnergy;
+            std::cout << "Before - Total kinetic energy   = " << totalKineticEnergy << '\n' << '\n';
+
+            // --------------------------------------------------------------------------------------------------------------------------------
+
+            glm::vec2 linearVelocityDirection = glm::vec2(0.0f);
+            float     avgLinearKineticEnergy  = 0.0f;
+            for (std::vector<glm::vec2>::iterator linearVelocityIter = linearVelocities.begin(); linearVelocityIter != linearVelocities.end(); ++linearVelocityIter)
+            {
+               linearVelocityDirection += glm::normalize(*linearVelocityIter); // Should I normalize here?
+
+               avgLinearKineticEnergy += ((1 / 2.0f) * (1 / currentBody.mOneOverMass) * (glm::length(*linearVelocityIter) * glm::length(*linearVelocityIter)));
+            }
+            //linearVelocityDirection /= linearVelocities.size(); // Should I divide here?
+            linearVelocityDirection = glm::normalize(linearVelocityDirection);
+            avgLinearKineticEnergy /= linearVelocities.size();
+
+            float avgAngularKineticEnergy = 0.0f;
+            float totalAngularVelocity = 0.0f;
+            bool  ccwiseRotation = false;
+            for (std::vector<float>::iterator angularVelocityIter = angularVelocities.begin(); angularVelocityIter != angularVelocities.end(); ++angularVelocityIter)
+            {
+               totalAngularVelocity += *angularVelocityIter;
+
+               avgAngularKineticEnergy += ((1 / 2.0f) * (1 / currentBody.mOneOverMomentOfInertia) * ((*angularVelocityIter) * (*angularVelocityIter)));
+            }
+
+            if (totalAngularVelocity >= 0.0f)
+            {
+               ccwiseRotation = true;
+            }
+
+            avgAngularKineticEnergy /= angularVelocities.size();
+
+            currentBody.mStates[1].velocityOfCenterOfMass = sqrt(2 * avgLinearKineticEnergy * currentBody.mOneOverMass) * linearVelocityDirection;
+            currentBody.mStates[1].angularVelocity        = sqrt(2 * avgAngularKineticEnergy * currentBody.mOneOverMomentOfInertia) * (ccwiseRotation ? 1.0f : -1.0f);
+
+            //currentBody.mStates[1].velocityOfCenterOfMass += (totalLinearImpulseOfBody * currentBody.mOneOverMass);
+            //currentBody.mStates[1].angularVelocity        += (totalAngularImpulseOfBody * currentBody.mOneOverMomentOfInertia);
+
+            // --------------------------------------------------------------------------------------------------------------------------------
+
+            std::cout << "After - Velocity of CM          = " << glm::length(currentBody.mStates[1].velocityOfCenterOfMass) << '\n';
+            std::cout << "After - Angular velocity        = " << currentBody.mStates[1].angularVelocity << '\n';
+
+            linearKineticEnergy = ((1 / 2.0f) *
+                                   (1 / currentBody.mOneOverMass) *
+                                   (glm::length(currentBody.mStates[1].velocityOfCenterOfMass) *
+                                    glm::length(currentBody.mStates[1].velocityOfCenterOfMass)));
+            std::cout << "After - Linear kinetic energy   = " << linearKineticEnergy << '\n';
+
+            angularKineticEnergy = ((1 / 2.0f) *
+                                    (1 / currentBody.mOneOverMomentOfInertia) *
+                                    (currentBody.mStates[1].angularVelocity *
+                                     currentBody.mStates[1].angularVelocity));
+            std::cout << "After - Angular kinetic energy  = " << angularKineticEnergy << '\n';
+
+            totalKineticEnergy = linearKineticEnergy + angularKineticEnergy;
+            std::cout << "After - Total kinetic energy    = " << totalKineticEnergy << '\n' << '\n';
+
+            // --------------------------------------------------------------------------------------------------------------------------------
+
+            mBodyWallCollisions[collidingBodyIndex].clear();
          }
       }
 
-      if (!resolvedBodyWallCollision)
+      CollisionState bodyBodyCollisionState = checkForBodyBodyCollision();
+      if ((bodyBodyCollisionState == CollisionState::collidingVertexVertex) ||
+          (bodyBodyCollisionState == CollisionState::collidingVertexEdge))
       {
-         CollisionState bodyBodyCollisionState = checkForBodyBodyCollision();
-         if (bodyBodyCollisionState == CollisionState::penetrating)
+         int counter = 0;
+         do
          {
-            // We simulated too far, so subdivide time and try again
-            targetTime = (currentTime + targetTime) / 2.0f;
-            resolvingBodyBodyCollision = true;
-            continue;
+            resolveBodyBodyCollision(bodyBodyCollisionState);
+            counter++;
+            bodyBodyCollisionState = checkForBodyBodyCollision();
          }
-         else if ((bodyBodyCollisionState == CollisionState::collidingVertexVertex) ||
-                  (bodyBodyCollisionState == CollisionState::collidingVertexEdge))
-         {
-            int counter = 0;
-            do
-            {
-               resolveBodyBodyCollision(bodyBodyCollisionState);
-               counter++;
-               bodyBodyCollisionState = checkForBodyBodyCollision();
-            }
-            while (((bodyBodyCollisionState == CollisionState::collidingVertexVertex) ||
-                    (bodyBodyCollisionState == CollisionState::collidingVertexEdge)) && (counter < 100));
+         while (((bodyBodyCollisionState == CollisionState::collidingVertexVertex) ||
+                 (bodyBodyCollisionState == CollisionState::collidingVertexEdge)) && (counter < 100));
 
-            assert(counter < 100);
-
-            resolvingBodyBodyCollision = false;
-         }
+         assert(counter < 100);
       }
 
       // We made a successful step, so swap configurations to save the data for the next step
@@ -118,8 +215,10 @@ void World::computeForces()
       RigidBody2D::KinematicAndDynamicState& currentState = iter->mStates[0];
       currentState.forceOfCenterOfMass = glm::vec2(0.0f, 0.0f);
       currentState.torque = 0.0f;
-      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f);
+      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -100.0f);
       //currentState.torque = 5.0f;
+      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f) / iter->mOneOverMass;
+      //currentState.torque = 0.1f;
    }
 }
 
@@ -245,7 +344,7 @@ void World::integrate(float deltaTime)
    }
 }
 
-World::CollisionState World::checkForBodyWallCollision()
+World::CollisionState World::checkForBodyWallPenetration()
 {
    float depthEpsilon = 1.0f;
 
@@ -283,7 +382,50 @@ World::CollisionState World::checkForBodyWallCollision()
             {
                return CollisionState::penetrating;
             }
-            else if (distanceFromVertexToClosestPointOnWall < depthEpsilon)
+         }
+      }
+   }
+
+   return CollisionState::clear;
+}
+
+World::CollisionState World::checkForBodyWallCollision()
+{
+   World::CollisionState collisionState = CollisionState::clear;
+
+   float depthEpsilon = 1.0f;
+
+   for (std::vector<RigidBody2D>::iterator bodyIter = mRigidBodies.begin(); bodyIter != mRigidBodies.end(); ++bodyIter)
+   {
+      RigidBody2D::KinematicAndDynamicState& futureState = bodyIter->mStates[1];
+
+      for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex)
+      {
+         glm::vec2 vertexPos = futureState.vertices[vertexIndex];
+         glm::vec2 CMToVertex = vertexPos - futureState.positionOfCenterOfMass;
+         glm::vec2 CMToVertexPerpendicular = glm::vec2(-CMToVertex.y, CMToVertex.x);
+
+         // Chasles' Theorem
+         // We consider any of movement of a rigid body as a simple translation of a single point in the body (the center of mass)
+         // and a simple rotation of the rest of the body around that point
+         glm::vec2 vertexVelocity = futureState.velocityOfCenterOfMass + (futureState.angularVelocity * CMToVertexPerpendicular);
+
+         for (std::vector<Wall>::iterator wallIter = mWalls.begin(); wallIter != mWalls.end(); ++wallIter)
+         {
+            // Position of vertex = Pv
+            // Any point on wall  = Po
+            // Normal of wall     = N
+
+            // We can use the projection of (Pv - Po) onto N to determine if we are penetrating the wall
+            // That quantity is the distance between the vertex and its closest point on the wall
+
+            // If it's negative, we are penetrating
+            // If it's positive, we are not penetrating
+
+            // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
+            float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, wallIter->getNormal()) + wallIter->getC();
+
+            if (distanceFromVertexToClosestPointOnWall < depthEpsilon)
             {
                // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
                // Because the wall is not moving, the relative velocity is the velocity of the vertex
@@ -292,25 +434,28 @@ World::CollisionState World::checkForBodyWallCollision()
                // If the relative normal velocity is negative, we have a collision
                if (relativeNormalVelocity < 0.0f)
                {
-                  mBodyWallCollision.collisionNormal      = wallIter->getNormal();
-                  mBodyWallCollision.collidingBodyIndex   = static_cast<int>(bodyIter - mRigidBodies.begin());
-                  mBodyWallCollision.collidingVertexIndex = vertexIndex;
-                  return CollisionState::colliding;
+                  int collidingBodyIndex = static_cast<int>(bodyIter - mRigidBodies.begin());
+                  mBodyWallCollisions[collidingBodyIndex].emplace_back(wallIter->getNormal(),                        // Collision normal
+                                                                       collidingBodyIndex,                           // Colliding body index
+                                                                       vertexIndex,                                  // Colliding vertex index
+                                                                       static_cast<int>(wallIter - mWalls.begin())); // Colliding wall index
+
+                  collisionState = CollisionState::colliding;
                }
             }
          }
       }
    }
 
-   return CollisionState::clear;
+   return collisionState;
 }
 
-void World::resolveBodyWallCollision()
+std::tuple<glm::vec2, float> World::resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision)
 {
-   RigidBody2D& body = mRigidBodies[mBodyWallCollision.collidingBodyIndex];
+   RigidBody2D& body = mRigidBodies[bodyWallCollision.collidingBodyIndex];
    RigidBody2D::KinematicAndDynamicState& futureState = body.mStates[1];
 
-   glm::vec2 vertexPos = futureState.vertices[mBodyWallCollision.collidingVertexIndex];
+   glm::vec2 vertexPos = futureState.vertices[bodyWallCollision.collidingVertexIndex];
    glm::vec2 CMToVertex = vertexPos - futureState.positionOfCenterOfMass;
    glm::vec2 CMToVertexPerpendicular = glm::vec2(-CMToVertex.y, CMToVertex.x);
 
@@ -323,16 +468,108 @@ void World::resolveBodyWallCollision()
 
    // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
    // Because the wall is not moving, the relative velocity is the velocity of the vertex
-   float relativeNormalVelocity = glm::dot(vertexVelocity, mBodyWallCollision.collisionNormal);
+   float relativeNormalVelocity = glm::dot(vertexVelocity, bodyWallCollision.collisionNormal);
    float impulseNumerator       = -(1.0f + body.mCoefficientOfRestitution) * relativeNormalVelocity;
 
-   float CMToVertPerpDotColliNormal = glm::dot(CMToVertexPerpendicular, mBodyWallCollision.collisionNormal);
+   float CMToVertPerpDotColliNormal = glm::dot(CMToVertexPerpendicular, bodyWallCollision.collisionNormal);
    float impulseDenominator         = body.mOneOverMass + (body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal);
 
    float impulse = impulseNumerator / impulseDenominator;
 
-   futureState.velocityOfCenterOfMass += ((impulse * body.mOneOverMass) * mBodyWallCollision.collisionNormal);
-   futureState.angularVelocity        += ((impulse * body.mOneOverMomentOfInertia) * CMToVertPerpDotColliNormal);
+   //futureState.velocityOfCenterOfMass += ((impulse * body.mOneOverMass) * bodyWallCollision.collisionNormal);
+   //futureState.angularVelocity        += ((impulse * body.mOneOverMomentOfInertia) * CMToVertPerpDotColliNormal);
+
+   glm::vec2 linearVelocityAfterCollision  = (futureState.velocityOfCenterOfMass + ((impulse * body.mOneOverMass) * bodyWallCollision.collisionNormal));
+   float     angularVelocityAfterCollision = (futureState.angularVelocity        + ((impulse * body.mOneOverMomentOfInertia) * CMToVertPerpDotColliNormal));
+
+   return std::make_tuple(linearVelocityAfterCollision,
+                          angularVelocityAfterCollision);
+}
+
+std::tuple<glm::vec2, float> World::resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision,
+                                                             const glm::vec2&         linearVelocity,
+                                                             float                    angularVelocity)
+{
+   RigidBody2D& body = mRigidBodies[bodyWallCollision.collidingBodyIndex];
+   RigidBody2D::KinematicAndDynamicState& futureState = body.mStates[1];
+
+   glm::vec2 vertexPos = futureState.vertices[bodyWallCollision.collidingVertexIndex];
+   glm::vec2 CMToVertex = vertexPos - futureState.positionOfCenterOfMass;
+   glm::vec2 CMToVertexPerpendicular = glm::vec2(-CMToVertex.y, CMToVertex.x);
+
+   // Chasles' Theorem
+   // We consider any of movement of a rigid body as a simple translation of a single point in the body (the center of mass)
+   // and a simple rotation of the rest of the body around that point
+   glm::vec2 vertexVelocity = linearVelocity + (angularVelocity * CMToVertexPerpendicular);
+
+   // The wall doesn't move and has an infinite mass, which simplifies the collision response equations
+
+   // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
+   // Because the wall is not moving, the relative velocity is the velocity of the vertex
+   float relativeNormalVelocity = glm::dot(vertexVelocity, bodyWallCollision.collisionNormal);
+   float impulseNumerator       = -(1.0f + body.mCoefficientOfRestitution) * relativeNormalVelocity;
+
+   float CMToVertPerpDotColliNormal = glm::dot(CMToVertexPerpendicular, bodyWallCollision.collisionNormal);
+   float impulseDenominator         = body.mOneOverMass + (body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal);
+
+   float impulse = impulseNumerator / impulseDenominator;
+
+   //futureState.velocityOfCenterOfMass += ((impulse * body.mOneOverMass) * bodyWallCollision.collisionNormal);
+   //futureState.angularVelocity        += ((impulse * body.mOneOverMomentOfInertia) * CMToVertPerpDotColliNormal);
+
+   glm::vec2 linearVelocityAfterCollision  = (linearVelocity  + ((impulse * body.mOneOverMass) * bodyWallCollision.collisionNormal));
+   float     angularVelocityAfterCollision = (angularVelocity + ((impulse * body.mOneOverMomentOfInertia) * CMToVertPerpDotColliNormal));
+
+   return std::make_tuple(linearVelocityAfterCollision,
+                          angularVelocityAfterCollision);
+}
+
+bool World::isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollision,
+                                        const glm::vec2&         linearVelocity,
+                                        float                    angVelocity)
+{
+   float depthEpsilon = 1.0f;
+
+   RigidBody2D::KinematicAndDynamicState& futureState = mRigidBodies[bodyWallCollision.collidingBodyIndex].mStates[1];
+   glm::vec2 velocityOfCenterOfMass = linearVelocity;
+   float     angularVelocity        = angVelocity;
+
+   glm::vec2 vertexPos = futureState.vertices[bodyWallCollision.collidingVertexIndex];
+   glm::vec2 CMToVertex = vertexPos - futureState.positionOfCenterOfMass;
+   glm::vec2 CMToVertexPerpendicular = glm::vec2(-CMToVertex.y, CMToVertex.x);
+
+   // Chasles' Theorem
+   // We consider any of movement of a rigid body as a simple translation of a single point in the body (the center of mass)
+   // and a simple rotation of the rest of the body around that point
+   glm::vec2 vertexVelocity = velocityOfCenterOfMass + (angularVelocity * CMToVertexPerpendicular);
+
+   // Position of vertex = Pv
+   // Any point on wall  = Po
+   // Normal of wall     = N
+
+   // We can use the projection of (Pv - Po) onto N to determine if we are penetrating the wall
+   // That quantity is the distance between the vertex and its closest point on the wall
+
+   // If it's negative, we are penetrating
+   // If it's positive, we are not penetrating
+
+   // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
+   float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, bodyWallCollision.collisionNormal) + mWalls[bodyWallCollision.collidingWallIndex].getC();
+
+   if (distanceFromVertexToClosestPointOnWall < depthEpsilon)
+   {
+      // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
+      // Because the wall is not moving, the relative velocity is the velocity of the vertex
+      float relativeNormalVelocity = glm::dot(vertexVelocity, bodyWallCollision.collisionNormal);
+
+      // If the relative normal velocity is negative, we have a collision
+      if (relativeNormalVelocity < 0.0f)
+      {
+         return false;
+      }
+   }
+
+   return true;
 }
 
 bool doesPointProjectOntoSegment(const glm::vec2& pointToTest, const glm::vec2& segmentStartPoint, const glm::vec2& segmentEndPoint)
@@ -374,7 +611,7 @@ glm::vec2 calculateClosestPointOnSegmentToPoint(const glm::vec2& pointToTest, co
    return closestPointOnSegmentToPoint;
 }
 
-World::CollisionState World::checkForBodyBodyCollision()
+World::CollisionState World::checkForBodyBodyPenetration()
 {
    // Check for penetration
    for (std::vector<RigidBody2D>::iterator bodyIterA = mRigidBodies.begin(); bodyIterA != mRigidBodies.end(); ++bodyIterA)
@@ -423,6 +660,11 @@ World::CollisionState World::checkForBodyBodyCollision()
       }
    }
 
+   return CollisionState::clear;
+}
+
+World::CollisionState World::checkForBodyBodyCollision()
+{
    // Check for vertex-vertex collision
    for (std::vector<RigidBody2D>::iterator bodyIterA = mRigidBodies.begin(); bodyIterA != mRigidBodies.end(); ++bodyIterA)
    {
@@ -652,6 +894,19 @@ World::BodyWallCollision::BodyWallCollision()
    : collisionNormal(glm::vec2(0.0f))
    , collidingBodyIndex(0)
    , collidingVertexIndex(0)
+   , collidingWallIndex(0)
+{
+
+}
+
+World::BodyWallCollision::BodyWallCollision(glm::vec2 collisionNormal,
+                                            int       collidingBodyIndex,
+                                            int       collidingVertexIndex,
+                                            int       collidingWallIndex)
+   : collisionNormal(collisionNormal)
+   , collidingBodyIndex(collidingBodyIndex)
+   , collidingVertexIndex(collidingVertexIndex)
+   , collidingWallIndex(collidingWallIndex)
 {
 
 }

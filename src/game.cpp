@@ -90,8 +90,48 @@ bool Game::initialize(const std::string& title)
 
    // Create the rigid bodies
    std::vector<RigidBody2D> rigidBodies;
-   rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(0.0f, 0.0f), 3.14159265358979323846f / 8, glm::vec2(80.0f, 80.0f), 0.0f));
-   rigidBodies.push_back(RigidBody2D(100.0f, 60.0f, 30.0f, 1.0f, glm::vec2(-50.0f, -50.0f), -3.14159265358979323846f / 6, glm::vec2(-80.0f, -80.0f), 0.0f));
+
+   // Fast bodies
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(0.0f, 0.0f), 3.14159265358979323846f / 8, glm::vec2(80.0f, 80.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(100.0f, 60.0f, 30.0f, 1.0f, glm::vec2(-50.0f, -50.0f), -3.14159265358979323846f / 6, glm::vec2(-80.0f, -80.0f), 0.0f));
+
+   // Plus bodies
+   //rigidBodies.push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(100.0f, 0.0f), 0.0f, glm::vec2(-10.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-100.0f, 0.0f), 0.0f, glm::vec2(10.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, 100.0f), 0.0f, glm::vec2(0.0f, -10.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, -100.0f), 0.0f, glm::vec2(0.0f, 10.0f), 0.0f));
+   // X Bodies
+   //rigidBodies.push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(-100.0f, -100.0f), -3.14159265358979323846f / 4, glm::vec2(10.0f, 10.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(100.0f, -100.0f), 3.14159265358979323846f / 4, glm::vec2(-10.0f, 10.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(100.0f, 100.0f), -3.14159265358979323846f / 4, glm::vec2(-10.0f, -10.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(-100.0f, 100.0f), 3.14159265358979323846f / 4, glm::vec2(10.0f, -10.0f), 0.0f));
+
+   // Stack
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.1f, glm::vec2(0.0f, -180.0f), 0.0f, glm::vec2(0.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.1f, glm::vec2(0.0f, -150.0f), 0.0f, glm::vec2(0.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.1f, glm::vec2(0.0f, -120.0f), 0.0f, glm::vec2(0.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.1f, glm::vec2(0.0f, -90.0f), 0.0f, glm::vec2(0.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.1f, glm::vec2(0.0f, -60.0f), 0.0f, glm::vec2(0.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.1f, glm::vec2(0.0f, -30.0f), 0.0f, glm::vec2(0.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.1f, glm::vec2(0.0f, 0.0f), 0.0f, glm::vec2(0.0f, 0.0f), 0.0f));
+
+   // Flat
+   // Freaky infinite velocity
+   //rigidBodies.push_back(RigidBody2D(100.0f, 10.0f, 10.0f, 1.0f, glm::vec2(00.0f, 0.0f), glm::radians(0.0f), glm::vec2(10.0f, 10.0f), 0.0f));
+   // Freaky infinite velocity
+   rigidBodies.push_back(RigidBody2D(100.0f, 40.0f, 20.0f, 1.0f, glm::vec2(30.0f, 0.0f), glm::radians(0.0f), glm::vec2(10.0f, 0.0f), 0.0f));
+   // Freaky infinite velocity
+   //rigidBodies.push_back(RigidBody2D(100.0f, 40.0f, 20.0f, 1.0f, glm::vec2(30.0f, 0.0f), 0.0f, glm::vec2(10.0f, 0.0f), 0.0f));
+   // Freaky stick
+   //rigidBodies.push_back(RigidBody2D(100.0f, 40.0f, 20.0f, 0.5f, glm::vec2(30.0f, 0.0f), 0.0f, glm::vec2(10.0f, -10.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.5f, glm::vec2(-30.0f, 0.0f), 0.0f, glm::vec2(-10.0f, 10.0f), 0.0f));
+
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(30.0f, 0.0f), 3.14159265358979323846f / 4, glm::vec2(10.0f, -10.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-30.0f, 0.0f), -3.14159265358979323846f / 4, glm::vec2(-10.0f, 10.0f), 0.0f));
+
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.5f, glm::vec2(30.0f, 0.0f), 3.14159265358979323846f / 4, glm::vec2(20.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.5f, glm::vec2(-30.0f, 0.0f), -3.14159265358979323846f / 8, glm::vec2(-20.0f, 0.0f), 0.0f));
+   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.5f, glm::vec2(0.0f, 30.0f), -3.14159265358979323846f / 8, glm::vec2(-10.0f, 20.0f), 0.0f));
 
    // Create the world
    mWorld = std::make_shared<World>(std::move(walls), rigidBodies);
