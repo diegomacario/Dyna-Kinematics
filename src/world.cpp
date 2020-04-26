@@ -52,6 +52,12 @@ void World::simulate(float deltaTime)
          {
             std::vector<glm::vec2> linearVelocities;
             std::vector<float>     angularVelocities;
+            std::vector<glm::vec2> collisionNormals;
+
+            if (bodyIter->size() == 0)
+            {
+               continue;
+            }
 
             for (bodyWallCollisionIter = bodyIter->begin(); bodyWallCollisionIter != bodyIter->end(); ++bodyWallCollisionIter)
             {
@@ -76,6 +82,7 @@ void World::simulate(float deltaTime)
 
                linearVelocities.push_back(linearVelocityOfCurrentCollision);
                angularVelocities.push_back(angularVelocityOfCurrentCollision);
+               collisionNormals.push_back((*bodyWallCollisionIter).collisionNormal);
             }
 
             // --------------------------------------------------------------------------------------------------------------------------------
@@ -115,14 +122,42 @@ void World::simulate(float deltaTime)
             linearVelocityDirection = glm::normalize(linearVelocityDirection);
             avgLinearKineticEnergy /= linearVelocities.size();
 
-            float avgAngularKineticEnergy = 0.0f;
+            // If more than one point of collision, reflect around average normal
+            if (linearVelocities.size() > 1)
+            {
+               glm::vec2 avgCollisionNormal      = glm::vec2(0.0f);
+               for (std::vector<glm::vec2>::iterator collisionNormalIter = collisionNormals.begin(); collisionNormalIter != collisionNormals.end(); ++collisionNormalIter)
+               {
+                  avgCollisionNormal += *collisionNormalIter;
+               }
+               avgCollisionNormal /= collisionNormals.size();
+               avgCollisionNormal = glm::normalize(avgCollisionNormal);
+
+               //int collidingBodyIndex   = static_cast<int>(bodyIter - mBodyWallCollisions.begin());
+               linearVelocityDirection = glm::normalize(glm::reflect(glm::normalize(mRigidBodies[collidingBodyIndex].mStates[1].velocityOfCenterOfMass),
+                                                                     avgCollisionNormal));
+            }
+
+            float absoluteTotalAngularVelocity = 0.0f;
             float totalAngularVelocity = 0.0f;
             bool  ccwiseRotation = false;
+            float absoluteAvgAngularKineticEnergy = 0.0f;
+            float avgAngularKineticEnergy = 0.0f;
             for (std::vector<float>::iterator angularVelocityIter = angularVelocities.begin(); angularVelocityIter != angularVelocities.end(); ++angularVelocityIter)
             {
+               absoluteTotalAngularVelocity += abs(*angularVelocityIter);
                totalAngularVelocity += *angularVelocityIter;
 
-               avgAngularKineticEnergy += ((1 / 2.0f) * (1 / currentBody.mOneOverMomentOfInertia) * ((*angularVelocityIter) * (*angularVelocityIter)));
+               if (*angularVelocityIter >= 0.0f)
+               {
+                  avgAngularKineticEnergy += ((1 / 2.0f) * (1 / currentBody.mOneOverMomentOfInertia) * ((*angularVelocityIter) * (*angularVelocityIter)));
+               }
+               else
+               {
+                  avgAngularKineticEnergy -= ((1 / 2.0f) * (1 / currentBody.mOneOverMomentOfInertia) * ((*angularVelocityIter) * (*angularVelocityIter)));
+               }
+
+               absoluteAvgAngularKineticEnergy += ((1 / 2.0f) * (1 / currentBody.mOneOverMomentOfInertia) * ((*angularVelocityIter) * (*angularVelocityIter)));
             }
 
             if (totalAngularVelocity >= 0.0f)
@@ -131,9 +166,21 @@ void World::simulate(float deltaTime)
             }
 
             avgAngularKineticEnergy /= angularVelocities.size();
+            absoluteAvgAngularKineticEnergy /= angularVelocities.size();
 
-            currentBody.mStates[1].velocityOfCenterOfMass = sqrt(2 * avgLinearKineticEnergy * currentBody.mOneOverMass) * linearVelocityDirection;
-            currentBody.mStates[1].angularVelocity        = sqrt(2 * avgAngularKineticEnergy * currentBody.mOneOverMomentOfInertia) * (ccwiseRotation ? 1.0f : -1.0f);
+            if (abs(avgAngularKineticEnergy) < 0.01f)
+            {
+               avgAngularKineticEnergy = 0.0f;
+            }
+
+            float energyLostThroughCancellations = 0.0f;
+            if (angularVelocities.size() > 1)
+            {
+               energyLostThroughCancellations = absoluteAvgAngularKineticEnergy - abs(avgAngularKineticEnergy); // TODO: Is abs necessary here?
+            }
+
+            currentBody.mStates[1].velocityOfCenterOfMass = sqrt(2 * (avgLinearKineticEnergy + energyLostThroughCancellations) * currentBody.mOneOverMass) * linearVelocityDirection;
+            currentBody.mStates[1].angularVelocity        = sqrt(2 * abs(avgAngularKineticEnergy) * currentBody.mOneOverMomentOfInertia) * (ccwiseRotation ? 1.0f : -1.0f);
 
             //currentBody.mStates[1].velocityOfCenterOfMass += (totalLinearImpulseOfBody * currentBody.mOneOverMass);
             //currentBody.mStates[1].angularVelocity        += (totalAngularImpulseOfBody * currentBody.mOneOverMomentOfInertia);
@@ -217,7 +264,7 @@ void World::computeForces()
       currentState.torque = 0.0f;
       //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -100.0f);
       //currentState.torque = 5.0f;
-      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f) / iter->mOneOverMass;
+      currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f) / iter->mOneOverMass;
       //currentState.torque = 0.1f;
    }
 }
