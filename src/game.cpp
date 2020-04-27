@@ -132,8 +132,8 @@ bool Game::initialize(const std::string& title)
    //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(30.0f, 0.0f), 3.14159265358979323846f / 4, glm::vec2(10.0f, -10.0f), 0.0f));
    //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-30.0f, 0.0f), -3.14159265358979323846f / 4, glm::vec2(-10.0f, 10.0f), 0.0f));
 
-   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(30.0f, 0.0f), 0.1f, glm::vec2(10.0f, -10.0f), 0.0f));
-   //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-30.0f, 0.0f), 0.1f, glm::vec2(-10.0f, 10.0f), 0.0f));
+   rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(30.0f, 0.0f), 0.1f, glm::vec2(10.0f, -10.0f), 0.0f));
+   rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-30.0f, 0.0f), 0.1f, glm::vec2(-10.0f, 10.0f), 0.0f));
 
    //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.5f, glm::vec2(30.0f, 0.0f), 3.14159265358979323846f / 4, glm::vec2(20.0f, 0.0f), 0.0f));
    //rigidBodies.push_back(RigidBody2D(1.0f, 40.0f, 20.0f, 0.5f, glm::vec2(-30.0f, 0.0f), -3.14159265358979323846f / 8, glm::vec2(-20.0f, 0.0f), 0.0f));
