@@ -71,6 +71,7 @@ private:
 
    CollisionState               checkForBodyWallPenetration();
    CollisionState               checkForBodyWallCollision();
+   void                         resolveAllBodyWallCollisions();
    std::tuple<glm::vec2, float> resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision);
    std::tuple<glm::vec2, float> resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision,
                                                          const glm::vec2&         linearVelocity,
@@ -81,7 +82,11 @@ private:
 
    CollisionState               checkForBodyBodyPenetration();
    CollisionState               checkForBodyBodyCollision();
+   CollisionState               checkForVertexVertexCollision();
+   CollisionState               checkForVertexEdgeCollision();
    void                         resolveBodyBodyCollision(CollisionState collisionState);
+   void                         resolveVertexVertexCollision();
+   void                         resolveVertexEdgeCollision();
 
    std::vector<Wall>                           mWalls;
    std::vector<RigidBody2D>                    mRigidBodies;
