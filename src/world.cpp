@@ -88,7 +88,7 @@ void World::computeForces()
       currentState.torque = 0.0f;
       //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -100.0f);
       //currentState.torque = 5.0f;
-      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f) / iter->mOneOverMass;
+      currentState.forceOfCenterOfMass = glm::vec2(0.0f, -1.0f) / iter->mOneOverMass;
       //currentState.torque = 0.1f;
    }
 }
@@ -822,17 +822,13 @@ void World::resolveAllBodyBodyCollisions()
    std::vector<VertexVertexCollision>::iterator vertexVertexCollisionIter;
    std::vector<VertexEdgeCollision>::iterator   vertexEdgeCollisionIter;
 
-   std::vector<std::vector<glm::vec2>> additionalLinearVelocities(mRigidBodies.size());
-   std::vector<std::vector<float>>     additionalAngularVelocities(mRigidBodies.size());
-   std::vector<std::vector<glm::vec2>> additionalCollisionNormals(mRigidBodies.size());
+   std::vector<std::vector<glm::vec2>> linearVelocities(mRigidBodies.size());
+   std::vector<std::vector<float>>     angularVelocities(mRigidBodies.size());
+   std::vector<std::vector<glm::vec2>> collisionNormals(mRigidBodies.size());
 
    // Loop over all the bodies
    for (int bodyIndex = 0; bodyIndex < mRigidBodies.size(); ++bodyIndex)
    {
-      std::vector<glm::vec2> linearVelocities;
-      std::vector<float>     angularVelocities;
-      std::vector<glm::vec2> collisionNormals;
-
       // Loop over all the vertex-vertex collisions of the current body
       for (vertexVertexCollisionIter = mVertexVertexCollisions[bodyIndex].begin(); vertexVertexCollisionIter != mVertexVertexCollisions[bodyIndex].end(); ++vertexVertexCollisionIter)
       {
@@ -870,9 +866,9 @@ void World::resolveAllBodyBodyCollisions()
 
          // Store the linear and angular velocities of body A after the collision has been resolved
          // Also store the collision normal
-         linearVelocities.push_back(bodyALinearVelocityOfCurrentCollision);
-         angularVelocities.push_back(bodyAAngularVelocityOfCurrentCollision);
-         collisionNormals.push_back((*vertexVertexCollisionIter).collisionNormal);
+         linearVelocities[bodyIndex].push_back(bodyALinearVelocityOfCurrentCollision);
+         angularVelocities[bodyIndex].push_back(bodyAAngularVelocityOfCurrentCollision);
+         collisionNormals[bodyIndex].push_back((*vertexVertexCollisionIter).collisionNormal);
       }
 
       // Loop over all the vertex-edge collisions of the current body
@@ -912,48 +908,36 @@ void World::resolveAllBodyBodyCollisions()
 
          // Store the linear and angular velocities of body A after the collision has been resolved
          // Also store the collision normal
-         linearVelocities.push_back(bodyALinearVelocityOfCurrentCollision);
-         angularVelocities.push_back(bodyAAngularVelocityOfCurrentCollision);
-         collisionNormals.push_back((*vertexEdgeCollisionIter).collisionNormal);
+         linearVelocities[bodyIndex].push_back(bodyALinearVelocityOfCurrentCollision);
+         angularVelocities[bodyIndex].push_back(bodyAAngularVelocityOfCurrentCollision);
+         collisionNormals[bodyIndex].push_back((*vertexEdgeCollisionIter).collisionNormal);
 
          // Store the linear and angular velocities of body B after the collision has been resolved
          // Also store the collision normal
-         additionalLinearVelocities[vertexEdgeCollisionIter->collidingBodyBIndex].push_back(bodyBLinearVelocityOfCurrentCollision);
-         additionalAngularVelocities[vertexEdgeCollisionIter->collidingBodyBIndex].push_back(bodyBAngularVelocityOfCurrentCollision);
-         additionalCollisionNormals[vertexEdgeCollisionIter->collidingBodyBIndex].push_back((*vertexEdgeCollisionIter).collisionNormal);
+         linearVelocities[vertexEdgeCollisionIter->collidingBodyBIndex].push_back(bodyBLinearVelocityOfCurrentCollision);
+         angularVelocities[vertexEdgeCollisionIter->collidingBodyBIndex].push_back(bodyBAngularVelocityOfCurrentCollision);
+         collisionNormals[vertexEdgeCollisionIter->collidingBodyBIndex].push_back((*vertexEdgeCollisionIter).collisionNormal);
       }
 
-      for (int i = 0; i < additionalLinearVelocities[bodyIndex].size(); ++i)
-      {
-         linearVelocities.push_back(additionalLinearVelocities[bodyIndex][i]);
-      }
+      // Since all the body-body collisions of the current body have been resolved we can delete them
+      mVertexVertexCollisions[bodyIndex].clear();
+      mVertexEdgeCollisions[bodyIndex].clear();
+   }
 
-      for (int i = 0; i < additionalAngularVelocities[bodyIndex].size(); ++i)
-      {
-         angularVelocities.push_back(additionalAngularVelocities[bodyIndex][i]);
-      }
-
-      for (int i = 0; i < additionalCollisionNormals[bodyIndex].size(); ++i)
-      {
-         collisionNormals.push_back(additionalCollisionNormals[bodyIndex][i]);
-      }
-
-      additionalLinearVelocities[bodyIndex].clear();
-      additionalAngularVelocities[bodyIndex].clear();
-      additionalCollisionNormals[bodyIndex].clear();
-
-      if (linearVelocities.size() == 0 && angularVelocities.size() == 0)
+   // Loop over all the bodies
+   for (int bodyIndex = 0; bodyIndex < mRigidBodies.size(); ++bodyIndex)
+   {
+      if (linearVelocities[bodyIndex].size() == 0 && angularVelocities[bodyIndex].size() == 0)
       {
          continue; // TODO: Remove this if not necessary
       }
 
-      // Update all the code below
       RigidBody2D& currentBody = mRigidBodies[bodyIndex];
 
       // Compute the new direction of the body and the linear kinetic energy
       glm::vec2 linearVelocityDirection = glm::vec2(0.0f);
       float     avgLinearKineticEnergy  = 0.0f;
-      for (std::vector<glm::vec2>::iterator linearVelocityIter = linearVelocities.begin(); linearVelocityIter != linearVelocities.end(); ++linearVelocityIter)
+      for (std::vector<glm::vec2>::iterator linearVelocityIter = linearVelocities[bodyIndex].begin(); linearVelocityIter != linearVelocities[bodyIndex].end(); ++linearVelocityIter)
       {
          linearVelocityDirection += glm::normalize(*linearVelocityIter); // TODO: Should I normalize here?
          avgLinearKineticEnergy  += ((1 / 2.0f) * (1 / currentBody.mOneOverMass) * (glm::length(*linearVelocityIter) * glm::length(*linearVelocityIter)));
@@ -962,10 +946,10 @@ void World::resolveAllBodyBodyCollisions()
       avgLinearKineticEnergy /= linearVelocities.size();
 
       // If more than one point of collision, disregard the linearVelocityDirection calculated above and instead reflect the body about the average collision normal
-      if (collisionNormals.size() > 1)
+      if (collisionNormals[bodyIndex].size() > 1)
       {
          glm::vec2 avgCollisionNormal = glm::vec2(0.0f);
-         for (std::vector<glm::vec2>::iterator collisionNormalIter = collisionNormals.begin(); collisionNormalIter != collisionNormals.end(); ++collisionNormalIter)
+         for (std::vector<glm::vec2>::iterator collisionNormalIter = collisionNormals[bodyIndex].begin(); collisionNormalIter != collisionNormals[bodyIndex].end(); ++collisionNormalIter)
          {
             avgCollisionNormal += *collisionNormalIter; // TODO: Should I normalize here?
          }
@@ -979,7 +963,7 @@ void World::resolveAllBodyBodyCollisions()
       float absTotalAngularVelocity    = 0.0f;
       float avgAngularKineticEnergy    = 0.0f;
       float absAvgAngularKineticEnergy = 0.0f;
-      for (std::vector<float>::iterator angularVelocityIter = angularVelocities.begin(); angularVelocityIter != angularVelocities.end(); ++angularVelocityIter)
+      for (std::vector<float>::iterator angularVelocityIter = angularVelocities[bodyIndex].begin(); angularVelocityIter != angularVelocities[bodyIndex].end(); ++angularVelocityIter)
       {
          totalAngularVelocity    += *angularVelocityIter;
          absTotalAngularVelocity += abs(*angularVelocityIter);
@@ -1021,10 +1005,6 @@ void World::resolveAllBodyBodyCollisions()
       // Update the linear and angular velocities of the body
       currentBody.mStates[1].velocityOfCenterOfMass = sqrt(2 * (avgLinearKineticEnergy + energyLostThroughCancellations) * currentBody.mOneOverMass) * linearVelocityDirection;
       currentBody.mStates[1].angularVelocity        = sqrt(2 * abs(avgAngularKineticEnergy) * currentBody.mOneOverMomentOfInertia) * (ccwiseRotation ? 1.0f : -1.0f);
-
-      // Since all the body-body collisions of the current body have been resolved we can delete them
-      mVertexVertexCollisions[bodyIndex].clear();
-      mVertexEdgeCollisions[bodyIndex].clear();
    }
 }
 
