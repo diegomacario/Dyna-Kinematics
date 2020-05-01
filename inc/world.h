@@ -21,79 +21,108 @@ private:
 
    enum class CollisionState : unsigned int
    {
-      penetrating           = 0,
-      colliding             = 1,
-      collidingVertexVertex = 2,
-      collidingVertexEdge   = 3,
-      clear                 = 4,
+      penetrating = 0,
+      colliding   = 1,
+      clear       = 2,
    };
 
    struct BodyWallCollision
    {
       BodyWallCollision();
 
-      BodyWallCollision(glm::vec2 collisionNormal,
-                        int       collidingBodyIndex,
-                        int       collidingVertexIndex,
-                        int       collidingWallIndex);
+      BodyWallCollision(const glm::vec2& collisionNormal,
+                        int              collidingBodyIndex,
+                        int              collidingVertexIndex,
+                        int              collidingWallIndex);
 
-      glm::vec2                   collisionNormal;
-      int                         collidingBodyIndex;
-      int                         collidingVertexIndex;
-      int                         collidingWallIndex;
+      glm::vec2 collisionNormal;
+      int       collidingBodyIndex;
+      int       collidingVertexIndex;
+      int       collidingWallIndex;
    };
 
    struct VertexVertexCollision
    {
       VertexVertexCollision();
 
-      glm::vec2                   collisionNormal;
-      int                         collidingBodyAIndex;
-      int                         collidingBodyBIndex;
-      int                         collidingVertexAIndex;
-      int                         collidingVertexBIndex;
+      VertexVertexCollision(const glm::vec2& collisionNormal,
+                            int              collidingBodyAIndex,
+                            int              collidingBodyBIndex,
+                            int              collidingVertexAIndex,
+                            int              collidingVertexBIndex);
+
+      glm::vec2 collisionNormal;
+      int       collidingBodyAIndex;
+      int       collidingBodyBIndex;
+      int       collidingVertexAIndex;
+      int       collidingVertexBIndex;
    };
 
    struct VertexEdgeCollision
    {
       VertexEdgeCollision();
 
-      glm::vec2                   collisionNormal;
-      int                         collidingBodyAIndex;
-      int                         collidingBodyBIndex;
-      int                         collidingVertexAIndex;
-      glm::vec2                   collidingBodyBPoint;
+      VertexEdgeCollision(const glm::vec2& collisionNormal,
+                          int              collidingBodyAIndex,
+                          int              collidingBodyBIndex,
+                          int              collidingVertexAIndex,
+                          const glm::vec2& collidingBodyBPoint);
+
+      glm::vec2 collisionNormal;
+      int       collidingBodyAIndex;
+      int       collidingBodyBIndex;
+      int       collidingVertexAIndex;
+      glm::vec2 collidingBodyBPoint;
    };
 
-   void                         computeForces();
+   void                                           computeForces();
 
-   void                         integrate(float deltaTime);
+   void                                           integrate(float deltaTime);
 
-   CollisionState               checkForBodyWallPenetration();
-   CollisionState               checkForBodyWallCollision();
-   void                         resolveAllBodyWallCollisions();
-   std::tuple<glm::vec2, float> resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision);
-   std::tuple<glm::vec2, float> resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision,
-                                                         const glm::vec2&         linearVelocity,
-                                                         float                    angularVelocity);
-   bool                         isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollision,
-                                                            const glm::vec2&         linearVelocity,
-                                                            float                    angularVelocity);
+   CollisionState                                 checkForBodyWallPenetration();
+   CollisionState                                 checkForBodyWallCollision();
+   void                                           resolveAllBodyWallCollisions();
+   std::tuple<glm::vec2, float>                   resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision);
+   std::tuple<glm::vec2, float>                   resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision,
+                                                                           const glm::vec2&         linearVelocity,
+                                                                           float                    angularVelocity);
+   bool                                           isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollision,
+                                                                              const glm::vec2&         linearVelocity,
+                                                                              float                    angularVelocity);
 
-   CollisionState               checkForBodyBodyPenetration();
-   CollisionState               checkForBodyBodyCollision();
-   CollisionState               checkForVertexVertexCollision();
-   CollisionState               checkForVertexEdgeCollision();
-   void                         resolveBodyBodyCollision(CollisionState collisionState);
-   void                         resolveVertexVertexCollision();
-   void                         resolveVertexEdgeCollision();
+   CollisionState                                 checkForBodyBodyPenetration();
+   CollisionState                                 checkForVertexVertexCollision();
+   CollisionState                                 checkForVertexEdgeCollision();
+   void                                           resolveAllBodyBodyCollisions();
+   std::tuple<glm::vec2, float, glm::vec2, float> resolveVertexVertexCollision(const VertexVertexCollision& vertexVertexCollision);
+   std::tuple<glm::vec2, float, glm::vec2, float> resolveVertexVertexCollision(const VertexVertexCollision& vertexVertexCollision,
+                                                                               const glm::vec2&             bodyALinearVelocity,
+                                                                               float                        bodyAAngularVelocity,
+                                                                               const glm::vec2&             bodyBLinearVelocity,
+                                                                               float                        bodyBAngularVelocity);
+   bool                                           isVertexVertexCollisionResolved(const VertexVertexCollision& vertexVertexCollision,
+                                                                                  const glm::vec2&             bodyALinearVelocity,
+                                                                                  float                        bodyAAngularVelocity,
+                                                                                  const glm::vec2&             bodyBLinearVelocity,
+                                                                                  float                        bodyBAngularVelocity);
+   std::tuple<glm::vec2, float, glm::vec2, float> resolveVertexEdgeCollision(const VertexEdgeCollision& vertexEdgeCollision);
+   std::tuple<glm::vec2, float, glm::vec2, float> resolveVertexEdgeCollision(const VertexEdgeCollision& vertexEdgeCollision,
+                                                                             const glm::vec2&           bodyALinearVelocity,
+                                                                             float                      bodyAAngularVelocity,
+                                                                             const glm::vec2&           bodyBLinearVelocity,
+                                                                             float                      bodyBAngularVelocity);
+   bool                                           isVertexEdgeCollisionResolved(const VertexEdgeCollision& vertexEdgeCollision,
+                                                                                const glm::vec2&           bodyALinearVelocity,
+                                                                                float                      bodyAAngularVelocity,
+                                                                                const glm::vec2&           bodyBLinearVelocity,
+                                                                                float                      bodyBAngularVelocity);
 
-   std::vector<Wall>                           mWalls;
-   std::vector<RigidBody2D>                    mRigidBodies;
+   std::vector<Wall>                               mWalls;
+   std::vector<RigidBody2D>                        mRigidBodies;
 
-   std::vector<std::vector<BodyWallCollision>> mBodyWallCollisions;
-   VertexVertexCollision                       mVertexVertexCollision;
-   VertexEdgeCollision                         mVertexEdgeCollision;
+   std::vector<std::vector<BodyWallCollision>>     mBodyWallCollisions;
+   std::vector<std::vector<VertexVertexCollision>> mVertexVertexCollisions;
+   std::vector<std::vector<VertexEdgeCollision>>   mVertexEdgeCollisions;
 };
 
 #endif
