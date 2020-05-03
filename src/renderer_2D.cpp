@@ -75,6 +75,7 @@ void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D) const
 {
    mColorShader->use();
    mColorShader->setMat4("model", rigidBody2D.getModelMatrix(current));
+   mColorShader->setVec3("color", rigidBody2D.mColor);
 
    // Render quad
    glBindVertexArray(mColoredQuadVAO);

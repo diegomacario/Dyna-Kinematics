@@ -9,13 +9,15 @@ RigidBody2D::RigidBody2D(float     mass,
                          glm::vec2 positionOfCenterOfMass,
                          float     orientation,
                          glm::vec2 velocityOfCenterOfMass,
-                         float     angularVelocity)
+                         float     angularVelocity,
+                         glm::vec3 color)
    : mOneOverMass(1.0f / mass)
    , mWidth(width)
    , mHeight(height)
    , mOneOverMomentOfInertia(1.0f / ((mass / 12.0f) * ((width * width) + (height * height))))
    , mCoefficientOfRestitution(coefficientOfRestitution)
    , mStates({KinematicAndDynamicState(positionOfCenterOfMass, orientation, velocityOfCenterOfMass, angularVelocity), KinematicAndDynamicState()})
+   , mColor(color)
 {
    calculateVertices(current);
 }

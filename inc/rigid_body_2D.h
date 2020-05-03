@@ -26,7 +26,8 @@ public:
                glm::vec2 positionOfCenterOfMass,
                float     orientation,
                glm::vec2 velocityOfCenterOfMass,
-               float     angularVelocity);
+               float     angularVelocity,
+               glm::vec3 color);
 
    void      calculateVertices(RigidBodyState state);
    glm::mat4 getModelMatrix(RigidBodyState state) const;
@@ -60,6 +61,8 @@ public:
    };
 
    std::array<KinematicAndDynamicState, 2> mStates;
+
+   glm::vec3                               mColor;
 };
 
 #endif
