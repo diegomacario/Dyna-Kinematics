@@ -22,11 +22,12 @@ public:
    void                   initialize(std::unordered_map<std::string, std::shared_ptr<State>>&& states,
                                      const std::string&                                        initialStateID);
    void                   processInputInCurrentState(float deltaTime) const;
-   void                   updateCurrentState(float deltaTime) const;
+   int                    updateCurrentState(float deltaTime) const;
    void                   renderCurrentState() const;
    void                   changeState(const std::string& newStateID);
 
    std::shared_ptr<State> getPreviousState();
+   std::shared_ptr<State> getCurrentState();
 
    std::string            getPreviousStateID() const;
    std::string            getCurrentStateID() const;

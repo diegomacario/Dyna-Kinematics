@@ -27,9 +27,9 @@ void FiniteStateMachine::processInputInCurrentState(float deltaTime) const
    mCurrentState->processInput(deltaTime);
 }
 
-void FiniteStateMachine::updateCurrentState(float deltaTime) const
+int FiniteStateMachine::updateCurrentState(float deltaTime) const
 {
-   mCurrentState->update(deltaTime);
+   return mCurrentState->update(deltaTime);
 }
 
 void FiniteStateMachine::renderCurrentState() const
@@ -58,6 +58,11 @@ void FiniteStateMachine::changeState(const std::string& newStateID)
 std::shared_ptr<State> FiniteStateMachine::getPreviousState()
 {
    return mStates[mPreviousStateID];
+}
+
+std::shared_ptr<State> FiniteStateMachine::getCurrentState()
+{
+   return mStates[mCurrentStateID];
 }
 
 std::string FiniteStateMachine::getPreviousStateID() const

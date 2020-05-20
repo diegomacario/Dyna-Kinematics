@@ -34,6 +34,8 @@ public:
    unsigned int getHeightOfFramebufferInPix() const;
    bool         isFullScreen() const;
    void         setFullScreen(bool fullScreen);
+   void         setSizeLimits(int width, int height);
+   void         setSceneLimits(int width, int height);
 
    // Keyboard
    bool         keyIsPressed(int key) const;
@@ -57,9 +59,22 @@ public:
    bool         configureAntiAliasingSupport();
    bool         createMultisampleFramebuffer();
    void         clearAndBindMultisampleFramebuffer();
+   void         clearMultisampleFramebuffer();
+   void         bindMultisampleFramebuffer();
    void         generateAntiAliasedImage();
    void         resizeFramebuffers();
    void         setNumberOfSamples(unsigned int numOfSamples);
+
+   // Memory support
+   bool         configureMemorySupport();
+   bool         createMemoryFramebuffer();
+   void         clearAndBindMemoryFramebuffer();
+   void         clearMemoryFramebuffer();
+   void         bindMemoryFramebuffer();
+   void         copyMemoryFramebufferIntoMultisampleFramebuffer();
+
+   // Resize support
+   void         updateBufferAndViewportSizes();
 
 private:
 
@@ -99,7 +114,18 @@ private:
    unsigned int                   mMultisampleTexture;
    unsigned int                   mMultisampleRBO;
 
+   // Memory support
+   unsigned int                   mMemoryFBO;
+   unsigned int                   mMemoryTexture;
+   unsigned int                   mMemoryRBO;
+
    unsigned int                   mNumOfSamples;
+
+   // Resize support
+   int                            mLowerLeftCornerOfViewportX;
+   int                            mLowerLeftCornerOfViewportY;
+   int                            mWidthOfScene;
+   int                            mHeightOfScene;
 };
 
 #endif

@@ -11,11 +11,16 @@ class World
 {
 public:
 
-   World(std::vector<Wall>&&             walls,
-         const std::vector<RigidBody2D>& rigidBodies);
+   World(std::vector<std::vector<Wall>>&&             wallScenes,
+         const std::vector<std::vector<RigidBody2D>>& rigidBodyScenes);
 
-   void           simulate(float deltaTime);
-   void           render(const Renderer2D& renderer2D);
+   int  simulate(float deltaTime);
+   void render(const Renderer2D& renderer2D, bool wireframe);
+
+   void changeScene(int index);
+   void resetScene();
+   void setGravityState(int state);
+   void setCoefficientOfRestitution(float coefficientOfRestitution);
 
 private:
 
@@ -81,7 +86,7 @@ private:
 
    CollisionState                                 checkForBodyWallPenetration();
    CollisionState                                 checkForBodyWallCollision();
-   void                                           resolveAllBodyWallCollisions();
+   int                                            resolveAllBodyWallCollisions();
    std::tuple<glm::vec2, float>                   resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision);
    std::tuple<glm::vec2, float>                   resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision,
                                                                            const glm::vec2&         linearVelocity,
@@ -93,7 +98,7 @@ private:
    CollisionState                                 checkForBodyBodyPenetration();
    CollisionState                                 checkForVertexVertexCollision();
    CollisionState                                 checkForVertexEdgeCollision();
-   void                                           resolveAllBodyBodyCollisions();
+   int                                            resolveAllBodyBodyCollisions();
    std::tuple<glm::vec2, float, glm::vec2, float> resolveVertexVertexCollision(const VertexVertexCollision& vertexVertexCollision);
    std::tuple<glm::vec2, float, glm::vec2, float> resolveVertexVertexCollision(const VertexVertexCollision& vertexVertexCollision,
                                                                                const glm::vec2&             bodyALinearVelocity,
@@ -117,12 +122,21 @@ private:
                                                                                 const glm::vec2&           bodyBLinearVelocity,
                                                                                 float                      bodyBAngularVelocity);
 
-   std::vector<Wall>                               mWalls;
+   std::vector<std::vector<Wall>>                  mWallScenes;
+   std::vector<Wall>*                              mWalls;
+
+   std::vector<std::vector<RigidBody2D>>           mRigidBodyScenes;
    std::vector<RigidBody2D>                        mRigidBodies;
 
    std::vector<std::vector<BodyWallCollision>>     mBodyWallCollisions;
    std::vector<std::vector<VertexVertexCollision>> mVertexVertexCollisions;
    std::vector<std::vector<VertexEdgeCollision>>   mVertexEdgeCollisions;
+
+   bool                                            mChangeScene;
+   int                                             mSceneIndex;
+   int                                             mGravityState;
+
+   float                                           mCoefficientOfRestitution;
 };
 
 #endif

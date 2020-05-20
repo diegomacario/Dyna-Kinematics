@@ -21,14 +21,18 @@ public:
    Renderer2D(Renderer2D&& rhs) noexcept;
    Renderer2D& operator=(Renderer2D&& rhs) noexcept;
 
-   void renderTexturedQuad(const GameObject2D& gameObj2D) const;
-   void renderColoredQuad(const GameObject2D& gameObj2D) const;
-   void renderRigidBody(const RigidBody2D& rigidBody2D) const;
+   void renderTexturedQuad(const GameObject2D& gameObj2D, bool wireframe) const;
+   void renderColoredQuad(const GameObject2D& gameObj2D, bool wireframe) const;
+   void renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe) const;
    void renderLine(const Wall& wall) const;
+
+   void updateOrthographicProjection(float width, float height) const;
 
 private:
 
    void configureVAOs();
+
+   void configureRealVAOs();
 
    std::shared_ptr<Shader> mTexShader;
    std::shared_ptr<Shader> mColorShader;
@@ -37,8 +41,14 @@ private:
    unsigned int            mTexturedQuadVAO;
    unsigned int            mColoredQuadVAO;
 
+   unsigned int            mRealTexturedQuadVAO;
+   unsigned int            mRealColoredQuadVAO;
+
    unsigned int            mQuadVBO;
    unsigned int            mQuadEBO;
+
+   unsigned int            mRealQuadVBO;
+   unsigned int            mRealQuadEBO;
 };
 
 #endif

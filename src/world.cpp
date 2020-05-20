@@ -1,25 +1,37 @@
+#include "game.h"
 #include "world.h"
 
 #include <iostream>
 
-World::World(std::vector<Wall>&&             walls,
-             const std::vector<RigidBody2D>& rigidBodies)
-   : mWalls(std::move(walls))
-   , mRigidBodies(rigidBodies)
+World::World(std::vector<std::vector<Wall>>&&             wallScenes,
+             const std::vector<std::vector<RigidBody2D>>& rigidBodyScenes)
+   : mWallScenes(std::move(wallScenes))
+   , mWalls(&mWallScenes[0])
+   , mRigidBodyScenes(rigidBodyScenes)
+   , mRigidBodies(rigidBodyScenes[0])
    , mBodyWallCollisions(mRigidBodies.size())
    , mVertexVertexCollisions(mRigidBodies.size())
    , mVertexEdgeCollisions(mRigidBodies.size())
+   , mChangeScene(false)
+   , mSceneIndex(0)
+   , mGravityState(0)
+   , mCoefficientOfRestitution(1.0f)
 {
 
 }
 
-void World::simulate(float deltaTime)
+int World::simulate(float deltaTime)
 {
    float currentTime = 0.0f;
    float targetTime  = deltaTime;
 
    while (currentTime < deltaTime)
    {
+      if ((targetTime - currentTime) < 1e-6) // TODO: Make threshold a constant
+      {
+         return 1; // Unresolvable penetration error
+      }
+
       computeForces();
 
       integrate(targetTime - currentTime);
@@ -41,7 +53,11 @@ void World::simulate(float deltaTime)
       CollisionState bodyWallCollisionState = checkForBodyWallCollision();
       if (bodyWallCollisionState == CollisionState::colliding)
       {
-         resolveAllBodyWallCollisions();
+         int errorCode = resolveAllBodyWallCollisions();
+         if (errorCode != 0)
+         {
+            return errorCode;
+         }
       }
 
       CollisionState vertexVertexCollisionState = checkForVertexVertexCollision();
@@ -49,7 +65,11 @@ void World::simulate(float deltaTime)
       if ((vertexVertexCollisionState == CollisionState::colliding) ||
           (vertexEdgeCollisionState   == CollisionState::colliding))
       {
-         resolveAllBodyBodyCollisions();
+         int errorCode = resolveAllBodyBodyCollisions();
+         if (errorCode != 0)
+         {
+            return errorCode;
+         }
       }
 
       // We made a successful step, so swap configurations to save the data for the next step
@@ -63,19 +83,52 @@ void World::simulate(float deltaTime)
          iter->mStates[1] = tempState;
       }
    }
+
+   return 0; // No error
 }
 
-void World::render(const Renderer2D& renderer2D)
+void World::render(const Renderer2D& renderer2D, bool wireframe)
 {
-   for (std::vector<Wall>::iterator iter = mWalls.begin(); iter != mWalls.end(); ++iter)
+   if (mChangeScene)
+   {
+      mWalls = &mWallScenes[mSceneIndex];
+      mRigidBodies = mRigidBodyScenes[mSceneIndex];
+      mBodyWallCollisions.resize(mRigidBodies.size());
+      mVertexVertexCollisions.resize(mRigidBodies.size());
+      mVertexEdgeCollisions.resize(mRigidBodies.size());
+      mChangeScene = false;
+   }
+
+   for (std::vector<Wall>::iterator iter = mWalls->begin(); iter != mWalls->end(); ++iter)
    {
       renderer2D.renderLine(*iter);
    }
 
    for (std::vector<RigidBody2D>::iterator iter = mRigidBodies.begin(); iter != mRigidBodies.end(); ++iter)
    {
-      renderer2D.renderRigidBody(*iter);
+      renderer2D.renderRigidBody(*iter, wireframe);
    }
+}
+
+void World::changeScene(int index)
+{
+   mSceneIndex  = index;
+   mChangeScene = true;
+}
+
+void World::resetScene()
+{
+   mChangeScene = true;
+}
+
+void World::setGravityState(int state)
+{
+   mGravityState = state;
+}
+
+void World::setCoefficientOfRestitution(float coefficientOfRestitution)
+{
+   mCoefficientOfRestitution = coefficientOfRestitution;
 }
 
 void World::computeForces()
@@ -84,12 +137,21 @@ void World::computeForces()
    for (std::vector<RigidBody2D>::iterator iter = mRigidBodies.begin(); iter != mRigidBodies.end(); ++iter)
    {
       RigidBody2D::KinematicAndDynamicState& currentState = iter->mStates[0];
-      currentState.forceOfCenterOfMass = glm::vec2(0.0f, 0.0f);
+
       currentState.torque = 0.0f;
-      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -100.0f);
-      //currentState.torque = 5.0f;
-      //currentState.forceOfCenterOfMass = glm::vec2(0.0f, -10.0f) / iter->mOneOverMass;
-      //currentState.torque = 0.1f;
+
+      if (mGravityState == 0)
+      {
+         currentState.forceOfCenterOfMass = glm::vec2(0.0f, 0.0f);
+      }
+      else if (mGravityState == 1)
+      {
+         currentState.forceOfCenterOfMass = glm::vec2(0.0f, -10.0f) / iter->mOneOverMass;
+      }
+      else if (mGravityState == 2)
+      {
+         currentState.forceOfCenterOfMass = glm::vec2(0.0f, 10.0f) / iter->mOneOverMass;
+      }
    }
 }
 
@@ -234,7 +296,7 @@ World::CollisionState World::checkForBodyWallPenetration()
          // and a simple rotation of the rest of the body around that point
          glm::vec2 vertexVelocity = futureState.velocityOfCenterOfMass + (futureState.angularVelocity * CMToVertexPerpendicular);
 
-         for (std::vector<Wall>::iterator wallIter = mWalls.begin(); wallIter != mWalls.end(); ++wallIter)
+         for (std::vector<Wall>::iterator wallIter = mWalls->begin(); wallIter != mWalls->end(); ++wallIter)
          {
             // Position of vertex = Pv
             // Any point on wall  = Po
@@ -281,7 +343,7 @@ World::CollisionState World::checkForBodyWallCollision()
          // and a simple rotation of the rest of the body around that point
          glm::vec2 vertexVelocity = futureState.velocityOfCenterOfMass + (futureState.angularVelocity * CMToVertexPerpendicular);
 
-         for (std::vector<Wall>::iterator wallIter = mWalls.begin(); wallIter != mWalls.end(); ++wallIter)
+         for (std::vector<Wall>::iterator wallIter = mWalls->begin(); wallIter != mWalls->end(); ++wallIter)
          {
             // Position of vertex = Pv
             // Any point on wall  = Po
@@ -309,7 +371,7 @@ World::CollisionState World::checkForBodyWallCollision()
                   mBodyWallCollisions[collidingBodyIndex].emplace_back(wallIter->getNormal(),                        // Collision normal
                                                                        collidingBodyIndex,                           // Colliding body index
                                                                        vertexIndex,                                  // Colliding vertex index
-                                                                       static_cast<int>(wallIter - mWalls.begin())); // Colliding wall index
+                                                                       static_cast<int>(wallIter - mWalls->begin())); // Colliding wall index
 
                   collisionState = CollisionState::colliding;
                }
@@ -321,7 +383,7 @@ World::CollisionState World::checkForBodyWallCollision()
    return collisionState;
 }
 
-void World::resolveAllBodyWallCollisions()
+int World::resolveAllBodyWallCollisions()
 {
    std::vector<std::vector<BodyWallCollision>>::iterator bodyIter;
    std::vector<BodyWallCollision>::iterator              bodyWallCollisionIter;
@@ -355,7 +417,10 @@ void World::resolveAllBodyWallCollisions()
             numTimesCollisionHasBeenResolved++;
          }
 
-         assert(numTimesCollisionHasBeenResolved < 100);
+         if (numTimesCollisionHasBeenResolved >= 100)
+         {
+            return 2; // Unresolvable body-wall collision error
+         }
 
          // Store the linear and angular velocities of the body after the collision has been resolved
          // Also store the collision normal
@@ -442,6 +507,8 @@ void World::resolveAllBodyWallCollisions()
       // Since all the body-wall collisions of the current body have been resolved we can delete them
       mBodyWallCollisions[collidingBodyIndex].clear();
    }
+
+   return 0; // No error
 }
 
 std::tuple<glm::vec2, float> World::resolveBodyWallCollision(const BodyWallCollision& bodyWallCollision)
@@ -463,7 +530,7 @@ std::tuple<glm::vec2, float> World::resolveBodyWallCollision(const BodyWallColli
    // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
    // Because the wall is not moving, the relative velocity is the velocity of the vertex
    float relativeNormalVelocity = glm::dot(vertexVelocity, bodyWallCollision.collisionNormal);
-   float impulseNumerator       = -(1.0f + body.mCoefficientOfRestitution) * relativeNormalVelocity;
+   float impulseNumerator       = -(1.0f + mCoefficientOfRestitution) * relativeNormalVelocity;
 
    float CMToVertPerpDotColliNormal = glm::dot(CMToVertexPerpendicular, bodyWallCollision.collisionNormal);
    float impulseDenominator         = body.mOneOverMass + (body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal);
@@ -498,7 +565,7 @@ std::tuple<glm::vec2, float> World::resolveBodyWallCollision(const BodyWallColli
    // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
    // Because the wall is not moving, the relative velocity is the velocity of the vertex
    float relativeNormalVelocity = glm::dot(vertexVelocity, bodyWallCollision.collisionNormal);
-   float impulseNumerator       = -(1.0f + body.mCoefficientOfRestitution) * relativeNormalVelocity;
+   float impulseNumerator       = -(1.0f + mCoefficientOfRestitution) * relativeNormalVelocity;
 
    float CMToVertPerpDotColliNormal = glm::dot(CMToVertexPerpendicular, bodyWallCollision.collisionNormal);
    float impulseDenominator         = body.mOneOverMass + (body.mOneOverMomentOfInertia * CMToVertPerpDotColliNormal * CMToVertPerpDotColliNormal);
@@ -542,7 +609,7 @@ bool World::isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollisi
    // If it's positive, we are not penetrating
 
    // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
-   float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, bodyWallCollision.collisionNormal) + mWalls[bodyWallCollision.collidingWallIndex].getC();
+   float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, bodyWallCollision.collisionNormal) + mWalls->at(bodyWallCollision.collidingWallIndex).getC();
 
    if (distanceFromVertexToClosestPointOnWall < depthEpsilon)
    {
@@ -835,7 +902,7 @@ World::CollisionState World::checkForVertexEdgeCollision()
    return collisionState;
 }
 
-void World::resolveAllBodyBodyCollisions()
+int World::resolveAllBodyBodyCollisions()
 {
    std::vector<RigidBody2D>::iterator           bodyIter;
    std::vector<VertexVertexCollision>::iterator vertexVertexCollisionIter;
@@ -881,7 +948,10 @@ void World::resolveAllBodyBodyCollisions()
             numTimesCollisionHasBeenResolved++;
          }
 
-         assert(numTimesCollisionHasBeenResolved < 100);
+         if (numTimesCollisionHasBeenResolved >= 100)
+         {
+            return 3; // Unresolvable vertex-vertex collision error
+         }
 
          // Store the linear and angular velocities of body A after the collision has been resolved
          // Also store the collision normal
@@ -923,7 +993,10 @@ void World::resolveAllBodyBodyCollisions()
             numTimesCollisionHasBeenResolved++;
          }
 
-         assert(numTimesCollisionHasBeenResolved < 100);
+         if (numTimesCollisionHasBeenResolved >= 100)
+         {
+            return 4; // Unresolvable vertex-edge collision error
+         }
 
          // Store the linear and angular velocities of body A after the collision has been resolved
          // Also store the collision normal
@@ -1032,6 +1105,8 @@ void World::resolveAllBodyBodyCollisions()
       currentBody.mStates[1].velocityOfCenterOfMass = sqrt(2 * (avgLinearKineticEnergy + energyLostThroughCancellations) * currentBody.mOneOverMass) * linearVelocityDirection;
       currentBody.mStates[1].angularVelocity        = sqrt(2 * abs(avgAngularKineticEnergy) * currentBody.mOneOverMomentOfInertia) * (ccwiseRotation ? 1.0f : -1.0f);
    }
+
+   return 0; // No error
 }
 
 std::tuple<glm::vec2, float, glm::vec2, float> World::resolveVertexVertexCollision(const VertexVertexCollision& vertexVertexCollision)
@@ -1057,7 +1132,7 @@ std::tuple<glm::vec2, float, glm::vec2, float> World::resolveVertexVertexCollisi
    float relativeNormalVelocity = glm::dot(relativeVelocity, vertexVertexCollision.collisionNormal);
 
    // Calculate the impulse's numerator
-   float impulseNumerator = -(1.0f + bodyA.mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
+   float impulseNumerator = -(1.0f + mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
 
    float bodyACMToVertPerpDotColliNormal = glm::dot(bodyACMToVertexPerpendicular, vertexVertexCollision.collisionNormal);
    float bodyBCMToVertPerpDotColliNormal = glm::dot(bodyBCMToVertexPerpendicular, vertexVertexCollision.collisionNormal);
@@ -1114,7 +1189,7 @@ std::tuple<glm::vec2, float, glm::vec2, float> World::resolveVertexVertexCollisi
    float relativeNormalVelocity = glm::dot(relativeVelocity, vertexVertexCollision.collisionNormal);
 
    // Calculate the impulse's numerator
-   float impulseNumerator = -(1.0f + bodyA.mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
+   float impulseNumerator = -(1.0f + mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
 
    float bodyACMToVertPerpDotColliNormal = glm::dot(bodyACMToVertexPerpendicular, vertexVertexCollision.collisionNormal);
    float bodyBCMToVertPerpDotColliNormal = glm::dot(bodyBCMToVertexPerpendicular, vertexVertexCollision.collisionNormal);
@@ -1208,7 +1283,7 @@ std::tuple<glm::vec2, float, glm::vec2, float> World::resolveVertexEdgeCollision
    float relativeNormalVelocity = glm::dot(relativeVelocity, vertexEdgeCollision.collisionNormal);
 
    // Calculate the impulse's numerator
-   float impulseNumerator = -(1.0f + bodyA.mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
+   float impulseNumerator = -(1.0f + mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
 
    float bodyACMToVertPerpDotColliNormal  = glm::dot(bodyACMToVertexPerpendicular, vertexEdgeCollision.collisionNormal);
    float bodyBCMToPointPerpDotColliNormal = glm::dot(bodyBCMToPointPerpendicular, vertexEdgeCollision.collisionNormal);
@@ -1265,7 +1340,7 @@ std::tuple<glm::vec2, float, glm::vec2, float> World::resolveVertexEdgeCollision
    float relativeNormalVelocity = glm::dot(relativeVelocity, vertexEdgeCollision.collisionNormal);
 
    // Calculate the impulse's numerator
-   float impulseNumerator = -(1.0f + bodyA.mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
+   float impulseNumerator = -(1.0f + mCoefficientOfRestitution) * relativeNormalVelocity; // TODO: Currently using coefficient of restitution of body A. That value should not be stored in the body.
 
    float bodyACMToVertPerpDotColliNormal  = glm::dot(bodyACMToVertexPerpendicular, vertexEdgeCollision.collisionNormal);
    float bodyBCMToPointPerpDotColliNormal = glm::dot(bodyBCMToPointPerpendicular, vertexEdgeCollision.collisionNormal);

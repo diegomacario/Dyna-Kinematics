@@ -145,9 +145,9 @@ void PlayState::processInput(float deltaTime)
    }
 }
 
-void PlayState::update(float deltaTime)
+int PlayState::update(float deltaTime)
 {
-
+   return 0;
 }
 
 void PlayState::render()

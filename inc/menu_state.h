@@ -22,11 +22,37 @@ public:
 
    void enter() override;
    void processInput(float deltaTime) override;
-   void update(float deltaTime) override;
+   int  update(float deltaTime) override;
    void render() override;
    void exit() override;
 
+   void changeScene(const glm::vec2& sceneDimensions) override;
+
+   void resetMemoryFramebuffer() override;
+   void pauseRememberFrames(bool pause) override;
+
+   void enableWireframeMode(bool enable) override;
+   void enableRememberFrames(bool enable) override;
+   void changeRememberFramesFrequency(int frequency) override;
+   void enableAntiAliasing(bool enable) override;
+   void changeAntiAliasingMode(int index) override;
+
 private:
+
+   bool                                mChangeScene;
+   glm::vec2                           mCurrentSceneDimensions;
+
+   bool                                mResetMemoryFramebuffer;
+   bool                                mPauseRememberFrames;
+
+   bool                                mWireframeModeIsEnabled;
+   bool                                mRememberFramesIsEnabled;
+   int                                 mRememberFramesFrequency;
+   bool                                mRememberFramesStatusChanged;
+   int                                 mFrameCounter;
+   bool                                mAntiAliasingIsEnabled;
+   int                                 mAntiAliasingMode;
+   bool                                mAntiAliasingStatusChanged;
 
    std::shared_ptr<FiniteStateMachine> mFSM;
 

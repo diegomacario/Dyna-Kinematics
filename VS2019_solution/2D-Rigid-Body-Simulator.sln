@@ -3,29 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2D-Rigid-Body-Simulator", "2D-Rigid-Body-Simulator.vcxproj", "{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2D-Rigid-Body-Simulator", "2D-Rigid-Body-Simulator.vcxproj", "{E08137B1-44E2-439C-9FA7-CEE3ACC4B8D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x64.ActiveCfg = Debug|x64
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x64.Build.0 = Debug|x64
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x86.ActiveCfg = Debug|Win32
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Debug|x86.Build.0 = Debug|Win32
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x64.ActiveCfg = Release|x64
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x64.Build.0 = Release|x64
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x86.ActiveCfg = Release|Win32
-		{55F517F7-E3CE-4FA3-BB13-082718BC9EDD}.Release|x86.Build.0 = Release|Win32
+		{E08137B1-44E2-439C-9FA7-CEE3ACC4B8D7}.Debug|x64.ActiveCfg = Debug|x64
+		{E08137B1-44E2-439C-9FA7-CEE3ACC4B8D7}.Debug|x64.Build.0 = Debug|x64
+		{E08137B1-44E2-439C-9FA7-CEE3ACC4B8D7}.Release|x64.ActiveCfg = Release|x64
+		{E08137B1-44E2-439C-9FA7-CEE3ACC4B8D7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {AD979B8E-924E-4752-94BD-78D383855C9D}
+		SolutionGuid = {6DA6215E-99D2-4DED-8554-71CEF1015849}
 	EndGlobalSection
 EndGlobal

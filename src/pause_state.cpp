@@ -140,9 +140,9 @@ void PauseState::processInput(float deltaTime)
    }
 }
 
-void PauseState::update(float /*deltaTime*/)
+int PauseState::update(float /*deltaTime*/)
 {
-
+   return 0;
 }
 
 void PauseState::render()

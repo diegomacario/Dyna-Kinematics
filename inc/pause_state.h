@@ -23,7 +23,7 @@ public:
 
    void enter() override;
    void processInput(float deltaTime) override;
-   void update(float deltaTime) override;
+   int  update(float deltaTime) override;
    void render() override;
    void exit() override;
 

@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="RigidBodySimulator">
+        <file>icons/play.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/reset.png</file>
+    </qresource>
+</RCC>
