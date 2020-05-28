@@ -12,7 +12,7 @@ public:
              const std::shared_ptr<Camera>&             camera,
              const std::shared_ptr<Renderer2D>&         renderer2D,
              const std::shared_ptr<World>&              world);
-   ~MenuState() = default;
+   ~MenuState();
 
    MenuState(const MenuState&) = delete;
    MenuState& operator=(const MenuState&) = delete;
@@ -37,6 +37,8 @@ public:
    void enableAntiAliasing(bool enable) override;
    void changeAntiAliasingMode(int index) override;
 
+   void enableRecording(bool record) override;
+
 private:
 
    bool                                mChangeScene;
@@ -53,6 +55,11 @@ private:
    bool                                mAntiAliasingIsEnabled;
    int                                 mAntiAliasingMode;
    bool                                mAntiAliasingStatusChanged;
+
+   bool                                mRecord;
+   int                                 mRecordingDirectory;
+   int                                 mRecordedFrameCounter;
+   GLubyte*                            mRecordedFrameData;
 
    std::shared_ptr<FiniteStateMachine> mFSM;
 

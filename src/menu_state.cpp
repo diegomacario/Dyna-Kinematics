@@ -1,3 +1,9 @@
+#include <windows.h>
+#include <locale>
+#include <codecvt>
+
+#include <stb_image_write.h>
+
 #include "menu_state.h"
 
 MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
@@ -6,7 +12,7 @@ MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachi
                      const std::shared_ptr<Renderer2D>&         renderer2D,
                      const std::shared_ptr<World>&              world)
    : mChangeScene(false)
-   , mCurrentSceneDimensions()
+   , mCurrentSceneDimensions(glm::vec2(450.0f, 450.0f))
    , mResetMemoryFramebuffer(false)
    , mPauseRememberFrames(false)
    , mWireframeModeIsEnabled(true)
@@ -17,6 +23,10 @@ MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachi
    , mAntiAliasingIsEnabled(false)
    , mAntiAliasingMode(0)
    , mAntiAliasingStatusChanged(false)
+   , mRecord(false)
+   , mRecordingDirectory(0)
+   , mRecordedFrameCounter(0)
+   , mRecordedFrameData(nullptr)
    , mFSM(finiteStateMachine)
    , mWindow(window)
    , mCamera(camera)
@@ -24,6 +34,11 @@ MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachi
    , mWorld(world)
 {
 
+}
+
+MenuState::~MenuState()
+{
+   delete [] mRecordedFrameData;
 }
 
 void MenuState::enter()
@@ -133,6 +148,9 @@ int MenuState::update(float deltaTime)
    return mWorld->simulate(deltaTime);
 }
 
+//static std::wstring frameName = L"C:\\repos\\2D-Rigid-Body-Simulator\\VS2019_solution\\x64\\Release\\frames\\";
+static std::wstring frameName = L"GIFs\\";
+
 void MenuState::render()
 {
    if (mRememberFramesIsEnabled)
@@ -186,6 +204,28 @@ void MenuState::render()
       // Render objects
 
       mWorld->render(*mRenderer2D, mWireframeModeIsEnabled);
+   }
+
+   mWindow->copyMultisampleFramebufferIntoGifFramebuffer();
+
+   if (mRecord && mRecordedFrameData)
+   {
+      stbi_flip_vertically_on_write(true);
+
+      memset(mRecordedFrameData, 0, 3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y);
+
+      mWindow->bindGifFramebuffer();
+
+      glPixelStorei(GL_PACK_ALIGNMENT, 1);
+      glReadPixels(0, 0, mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
+
+      std::wstring imgName = frameName + L"GIF_" + std::to_wstring(mRecordingDirectory) + L'\\' + std::to_wstring(mRecordedFrameCounter) + L".png";
+
+      static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+      std::string imgNameForWrite = converter.to_bytes(imgName);
+
+      stbi_write_png(imgNameForWrite.c_str(), mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, 3, mRecordedFrameData, mCurrentSceneDimensions.x * 3);
+      mRecordedFrameCounter++;
    }
 
    mWindow->generateAntiAliasedImage();
@@ -251,5 +291,34 @@ void MenuState::changeAntiAliasingMode(int index)
          mAntiAliasingStatusChanged = true;
          mFrameCounter = 1;
       }
+   }
+}
+
+void MenuState::enableRecording(bool enable)
+{
+   mRecord = enable;
+
+   if (enable)
+   {
+      mRecordedFrameCounter = 0;
+      mRecordingDirectory++;
+
+      delete [] mRecordedFrameData;
+      mRecordedFrameData = nullptr;
+      mRecordedFrameData = new GLubyte[3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y];
+
+      std::wstring filePath = frameName + L"GIF_" + std::to_wstring(mRecordingDirectory);
+      CreateDirectory(filePath.c_str(), nullptr);
+   }
+   else
+   {
+      std::wstring changeDirectoryCmd = L"cd " + frameName + L"GIF_" + std::to_wstring(mRecordingDirectory) + L" & ";
+      std::wstring generateGifCmd     = L"ffmpeg -y -framerate 50 -i %01d.png output.gif & \
+                                          ffmpeg -y -i output.gif -filter:v \"setpts=0.25*PTS\" output2.gif";
+      std::wstring fullCmd            = changeDirectoryCmd + generateGifCmd;
+
+      static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+      std::string fullCmdForSystemCall = converter.to_bytes(fullCmd);
+      system(fullCmdForSystemCall.c_str());
    }
 }

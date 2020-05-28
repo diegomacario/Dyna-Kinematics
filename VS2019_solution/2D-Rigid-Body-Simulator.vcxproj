@@ -111,6 +111,7 @@
     <ClInclude Include="..\inc\shader_loader.h" />
     <ClInclude Include="..\inc\state.h" />
     <ClInclude Include="..\inc\stb_image.h" />
+    <ClInclude Include="..\inc\stb_image_write.h" />
     <ClInclude Include="..\inc\texture.h" />
     <ClInclude Include="..\inc\texture_loader.h" />
     <ClInclude Include="..\inc\wall.h" />
@@ -138,6 +139,7 @@
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\shader_loader.cpp" />
     <ClCompile Include="..\src\stb_image.cpp" />
+    <ClCompile Include="..\src\stb_image_write.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
     <ClCompile Include="..\src\texture_loader.cpp" />
     <ClCompile Include="..\src\wall.cpp" />

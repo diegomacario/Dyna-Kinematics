@@ -26,6 +26,8 @@ Window::Window(const std::string& title)
    , mMemoryFBO(0)
    , mMemoryTexture(0)
    , mMemoryRBO(0)
+   , mGifFBO(0)
+   , mGifTexture(0)
    , mNumOfSamples(1)
    , mLowerLeftCornerOfViewportX(225)
    , mLowerLeftCornerOfViewportY(225)
@@ -44,6 +46,9 @@ Window::~Window()
    glDeleteFramebuffers(1, &mMemoryFBO);
    glDeleteTextures(1, &mMemoryTexture);
    glDeleteRenderbuffers(1, &mMemoryRBO);
+
+   glDeleteFramebuffers(1, &mGifFBO);
+   glDeleteTextures(1, &mGifTexture);
 
    if (mWindow)
    {
@@ -121,6 +126,14 @@ bool Window::initialize()
    if (!configureMemorySupport())
    {
       std::cout << "Error - Window::initialize - Failed to configure memory support" << "\n";
+      glfwTerminate();
+      mWindow = nullptr;
+      return false;
+   }
+
+   if (!configureGifSupport())
+   {
+      std::cout << "Error - Window::initialize - Failed to configure gif support" << "\n";
       glfwTerminate();
       mWindow = nullptr;
       return false;
@@ -320,6 +333,7 @@ void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
    resizeFramebuffers();
    clearMemoryFramebuffer();
    clearMultisampleFramebuffer();
+   clearGifFramebuffer();
 
    mLowerLeftCornerOfViewportX = (mWidthOfWindowInPix - mWidthOfScene) / 2.0f;
    mLowerLeftCornerOfViewportY = (mHeightOfWindowInPix - mHeightOfScene) / 2.0f;
@@ -462,6 +476,10 @@ void Window::resizeFramebuffers()
    glBindRenderbuffer(GL_RENDERBUFFER, mMemoryRBO);
    glRenderbufferStorageMultisample(GL_RENDERBUFFER, mNumOfSamples, GL_DEPTH_COMPONENT, mWidthOfScene, mHeightOfScene);
    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+   glBindTexture(GL_TEXTURE_2D, mGifTexture);
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidthOfScene, mHeightOfScene, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Window::setNumberOfSamples(unsigned int numOfSamples)
@@ -557,12 +575,76 @@ void Window::copyMemoryFramebufferIntoMultisampleFramebuffer()
    glBlitFramebuffer(0, 0, mWidthOfScene, mHeightOfScene, 0, 0, mWidthOfScene, mHeightOfScene, GL_COLOR_BUFFER_BIT, GL_NEAREST); // TODO: Should this be GL_LINEAR?
 }
 
+bool Window::configureGifSupport()
+{
+   if (!createGifFramebuffer())
+   {
+      return false;
+   }
+
+   return true;
+}
+
+bool Window::createGifFramebuffer()
+{
+   // Configure a framebuffer object to store gifs
+
+   glGenFramebuffers(1, &mGifFBO);
+
+   glBindFramebuffer(GL_FRAMEBUFFER, mGifFBO);
+
+   // Create a texture and use it as a color attachment
+   glGenTextures(1, &mGifTexture);
+
+   glBindTexture(GL_TEXTURE_2D, mGifTexture);
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidthOfScene, mHeightOfScene, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+   glBindTexture(GL_TEXTURE_2D, 0);
+
+   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mGifTexture, 0);
+
+   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+   {
+      std::cout << "Error - Window::configureMemorySupport - Gif framebuffer is not complete" << "\n";
+      return false;
+   }
+
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+   return true;
+}
+
+void Window::clearAndBindGifFramebuffer()
+{
+   glBindFramebuffer(GL_FRAMEBUFFER, mGifFBO);
+   glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Window::clearGifFramebuffer()
+{
+   glBindFramebuffer(GL_FRAMEBUFFER, mGifFBO);
+   glClear(GL_COLOR_BUFFER_BIT);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Window::bindGifFramebuffer()
+{
+   glBindFramebuffer(GL_FRAMEBUFFER, mGifFBO);
+}
+
+void Window::copyMultisampleFramebufferIntoGifFramebuffer()
+{
+   glBindFramebuffer(GL_READ_FRAMEBUFFER, mMultisampleFBO);
+   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mGifFBO);
+   glBlitFramebuffer(0, 0, mWidthOfScene, mHeightOfScene, 0, 0, mWidthOfScene, mHeightOfScene, GL_COLOR_BUFFER_BIT, GL_NEAREST); // TODO: Should this be GL_LINEAR?
+}
+
 void Window::updateBufferAndViewportSizes()
 {
    glfwGetWindowSize(mWindow, &mWidthOfWindowInPix, &mHeightOfWindowInPix);
 
    clearMemoryFramebuffer();
    clearMultisampleFramebuffer();
+   clearGifFramebuffer();
 
    resizeFramebuffers();
 

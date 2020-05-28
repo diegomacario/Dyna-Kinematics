@@ -73,6 +73,14 @@ public:
    void         bindMemoryFramebuffer();
    void         copyMemoryFramebufferIntoMultisampleFramebuffer();
 
+   // Gif support
+   bool         configureGifSupport();
+   bool         createGifFramebuffer();
+   void         clearAndBindGifFramebuffer();
+   void         clearGifFramebuffer();
+   void         bindGifFramebuffer();
+   void         copyMultisampleFramebufferIntoGifFramebuffer();
+
    // Resize support
    void         updateBufferAndViewportSizes();
 
@@ -118,6 +126,10 @@ private:
    unsigned int                   mMemoryFBO;
    unsigned int                   mMemoryTexture;
    unsigned int                   mMemoryRBO;
+
+   // Gif support
+   unsigned int                   mGifFBO;
+   unsigned int                   mGifTexture;
 
    unsigned int                   mNumOfSamples;
 

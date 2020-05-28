@@ -32,6 +32,8 @@ public:
    virtual void changeRememberFramesFrequency(int frequency) {}
    virtual void enableAntiAliasing(bool enable) {}
    virtual void changeAntiAliasingMode(int index) {}
+
+   virtual void enableRecording(bool enable) {};
 };
 
 #endif

@@ -528,33 +528,55 @@ void Game::executeGameLoop()
 
 void Game::changeScene(int index)
 {
-   mSimulate = false;
+   if (mSimulate)
+   {
+      mFSM->getCurrentState()->enableRecording(false);
+   }
 
    mFSM->getCurrentState()->resetMemoryFramebuffer();
    mFSM->getCurrentState()->changeScene(mSceneDimensions[index]);
    mFSM->getCurrentState()->pauseRememberFrames(true);
 
    mWorld->changeScene(index);
+
+   mSimulate = false;
 }
 
 void Game::startSimulation()
 {
-   mSimulate = true;
    mFSM->getCurrentState()->pauseRememberFrames(false);
+   mFSM->getCurrentState()->enableRecording(true);
+   mSimulate = true;
 }
 
 void Game::pauseSimulation()
 {
+   bool oldSimulationStatus = mSimulate;
+
    mSimulate = false;
+
    mFSM->getCurrentState()->pauseRememberFrames(true);
+
+   if (oldSimulationStatus)
+   {
+      mFSM->getCurrentState()->enableRecording(false);
+   }
 }
 
 void Game::resetSimulation()
 {
+   bool oldSimulationStatus = mSimulate;
+
    mSimulate = false;
+
    mWorld->resetScene();
    mFSM->getCurrentState()->resetMemoryFramebuffer();
    mFSM->getCurrentState()->pauseRememberFrames(true);
+
+   if (oldSimulationStatus)
+   {
+      mFSM->getCurrentState()->enableRecording(false);
+   }
 }
 
 void Game::changeGravity(int state)
