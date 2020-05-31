@@ -75,6 +75,7 @@ RigidBodySimulator::RigidBodySimulator(QWidget *parent)
    connect(ui.rememberFramesSpinBox,    qOverload<int>(&QSpinBox::valueChanged),         this, &RigidBodySimulator::onRememberFramesSpinBoxValueChanged);
    connect(ui.antiAliasingModeCheckBox, &QAbstractButton::toggled,                       this, &RigidBodySimulator::onAntiAliasingModeCheckBoxToggled);
    connect(ui.antiAliasingModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &RigidBodySimulator::onAntiAliasingModeComboBoxCurrentIndexChanged);
+   connect(ui.recordGIFCheckBox,        &QAbstractButton::toggled,                       this, &RigidBodySimulator::onRecordGIFCheckBoxToggled);
 }
 
 void RigidBodySimulator::onSceneComboBoxCurrentIndexChanged(int index)
@@ -90,6 +91,7 @@ void RigidBodySimulator::onSceneComboBoxCurrentIndexChanged(int index)
    ui.startPausePushButton->setIcon(QIcon(":RigidBodySimulator/icons/play.png"));
    ui.statusLabel->setPalette(mPausedPalette);
    ui.statusLabel->setText("Paused");
+   ui.recordGIFCheckBox->setEnabled(true);
    mSimulationIsRunning = false;
 
    switch (index)
@@ -210,6 +212,7 @@ void RigidBodySimulator::onStartPausePushButtonClicked()
       ui.startPausePushButton->setIcon(QIcon(":RigidBodySimulator/icons/play.png"));
       ui.statusLabel->setPalette(mPausedPalette);
       ui.statusLabel->setText("Paused");
+      ui.recordGIFCheckBox->setEnabled(true);
       mSimulationIsRunning = false;
 
       emit pauseSimulation();
@@ -219,6 +222,7 @@ void RigidBodySimulator::onStartPausePushButtonClicked()
       ui.startPausePushButton->setIcon(QIcon(":RigidBodySimulator/icons/pause.png"));
       ui.statusLabel->setPalette(mRunningPalette);
       ui.statusLabel->setText("Running");
+      ui.recordGIFCheckBox->setEnabled(false);
       mSimulationIsRunning = true;
 
       emit startSimulation();
@@ -230,6 +234,7 @@ void RigidBodySimulator::onResetPushButtonClicked()
    ui.startPausePushButton->setIcon(QIcon(":RigidBodySimulator/icons/play.png"));
    ui.statusLabel->setPalette(mPausedPalette);
    ui.statusLabel->setText("Paused");
+   ui.recordGIFCheckBox->setEnabled(true);
    mSimulationIsRunning = false;
 
    emit resetSimulation();
@@ -292,6 +297,11 @@ void RigidBodySimulator::onAntiAliasingModeCheckBoxToggled(bool checked)
 void RigidBodySimulator::onAntiAliasingModeComboBoxCurrentIndexChanged(int index)
 {
    emit changeAntiAliasingMode(index);
+}
+
+void RigidBodySimulator::onRecordGIFCheckBoxToggled(bool checked)
+{
+   emit enableRecordGIF(checked);
 }
 
 void RigidBodySimulator::processSimulationError(int errorCode)

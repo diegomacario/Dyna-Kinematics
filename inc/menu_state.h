@@ -38,6 +38,7 @@ public:
    void changeAntiAliasingMode(int index) override;
 
    void enableRecording(bool record) override;
+   void generateGIF() override;
 
 private:
 

@@ -148,9 +148,6 @@ int MenuState::update(float deltaTime)
    return mWorld->simulate(deltaTime);
 }
 
-//static std::wstring frameName = L"C:\\repos\\2D-Rigid-Body-Simulator\\VS2019_solution\\x64\\Release\\frames\\";
-static std::wstring frameName = L"GIFs\\";
-
 void MenuState::render()
 {
    if (mRememberFramesIsEnabled)
@@ -206,10 +203,10 @@ void MenuState::render()
       mWorld->render(*mRenderer2D, mWireframeModeIsEnabled);
    }
 
-   mWindow->copyMultisampleFramebufferIntoGifFramebuffer();
-
    if (mRecord && mRecordedFrameData)
    {
+      mWindow->copyMultisampleFramebufferIntoGifFramebuffer();
+
       stbi_flip_vertically_on_write(true);
 
       memset(mRecordedFrameData, 0, 3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y);
@@ -219,7 +216,7 @@ void MenuState::render()
       glPixelStorei(GL_PACK_ALIGNMENT, 1);
       glReadPixels(0, 0, mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
 
-      std::wstring imgName = frameName + L"GIF_" + std::to_wstring(mRecordingDirectory) + L'\\' + std::to_wstring(mRecordedFrameCounter) + L".png";
+      std::wstring imgName = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory) + L"\\Frames\\" + std::to_wstring(mRecordedFrameCounter) + L".png";
 
       static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
       std::string imgNameForWrite = converter.to_bytes(imgName);
@@ -296,8 +293,6 @@ void MenuState::changeAntiAliasingMode(int index)
 
 void MenuState::enableRecording(bool enable)
 {
-   mRecord = enable;
-
    if (enable)
    {
       mRecordedFrameCounter = 0;
@@ -307,18 +302,46 @@ void MenuState::enableRecording(bool enable)
       mRecordedFrameData = nullptr;
       mRecordedFrameData = new GLubyte[3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y];
 
-      std::wstring filePath = frameName + L"GIF_" + std::to_wstring(mRecordingDirectory);
-      CreateDirectory(filePath.c_str(), nullptr);
-   }
-   else
-   {
-      std::wstring changeDirectoryCmd = L"cd " + frameName + L"GIF_" + std::to_wstring(mRecordingDirectory) + L" & ";
-      std::wstring generateGifCmd     = L"ffmpeg -y -framerate 50 -i %01d.png output.gif & \
-                                          ffmpeg -y -i output.gif -filter:v \"setpts=0.25*PTS\" output2.gif";
-      std::wstring fullCmd            = changeDirectoryCmd + generateGifCmd;
+      std::wstring gifFilePath    = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory);
+      std::wstring framesFilePath = gifFilePath + L"\\Frames";
 
-      static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-      std::string fullCmdForSystemCall = converter.to_bytes(fullCmd);
-      system(fullCmdForSystemCall.c_str());
+      // Delete all frames
+      int frameNum = 0;
+      std::wstring frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
+      while (DeleteFile(frameFilename.c_str()) != 0)
+      {
+         frameNum++;
+         frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
+      }
+
+      // Delete the Frames directory
+      RemoveDirectory(framesFilePath.c_str());
+
+      // Delete the slow and fast gifs
+      std::wstring slowGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.png";
+      std::wstring fastGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Fast.png";
+      DeleteFile(slowGifFilename.c_str());
+      DeleteFile(fastGifFilename.c_str());
+
+      // Delete the GIF directory
+      RemoveDirectory(gifFilePath.c_str());
+
+      CreateDirectory(gifFilePath.c_str(), nullptr);
+      CreateDirectory(framesFilePath.c_str(), nullptr);
    }
+
+   mRecord = enable;
+}
+
+void MenuState::generateGIF()
+{
+   std::wstring changeDirectoryCmd = L"cd GIFs\\GIF_" + std::to_wstring(mRecordingDirectory) + L" & ";
+   std::wstring generateGifCmd     = L"ffmpeg -y -framerate 50 -i Frames\\%01d.png GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.gif & \
+                                       ffmpeg -y -i GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.gif -filter:v \"setpts=0.25*PTS\" \
+                                       GIF_" + std::to_wstring(mRecordingDirectory) + L"_Fast.gif";
+   std::wstring fullCmd            = changeDirectoryCmd + generateGifCmd;
+
+   static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+   std::string fullCmdForSystemCall = converter.to_bytes(fullCmd);
+   system(fullCmdForSystemCall.c_str());
 }

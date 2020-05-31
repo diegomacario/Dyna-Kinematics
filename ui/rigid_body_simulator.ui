@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>378</width>
-    <height>368</height>
+    <height>398</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -346,6 +346,13 @@
            </spacer>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="recordGIFCheckBox">
+          <property name="text">
+           <string>Record GIF Between Play and Pause/Reset</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

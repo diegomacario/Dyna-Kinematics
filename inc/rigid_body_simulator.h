@@ -36,6 +36,7 @@ private slots:
    void onRememberFramesSpinBoxValueChanged(int frequency);
    void onAntiAliasingModeCheckBoxToggled(bool checked);
    void onAntiAliasingModeComboBoxCurrentIndexChanged(int index);
+   void onRecordGIFCheckBoxToggled(bool checked);
 
 signals:
 
@@ -55,6 +56,7 @@ signals:
    void changeRememberFramesFrequency(int frequency);
    void enableAntiAliasing(bool enable);
    void changeAntiAliasingMode(int index);
+   void enableRecordGIF(bool enable);
 
 private:
 

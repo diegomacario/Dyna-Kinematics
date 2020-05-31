@@ -15,6 +15,7 @@ Game::Game(QObject* parent)
    , mTerminate(false)
    , mTimeStep(0.02f)
    , mSceneDimensions()
+   , mRecordGIF(false)
    , mFSM()
    , mWindow()
    //, mSoundEngine(irrklang::createIrrKlangDevice(), [=](irrklang::ISoundEngine* soundEngine){soundEngine->drop();})
@@ -41,6 +42,7 @@ Game::Game(QObject* parent)
    QObject::connect(dynamic_cast<RigidBodySimulator*>(parent), &RigidBodySimulator::changeRememberFramesFrequency, this, &Game::changeRememberFramesFrequency);
    QObject::connect(dynamic_cast<RigidBodySimulator*>(parent), &RigidBodySimulator::enableAntiAliasing,            this, &Game::enableAntiAliasing);
    QObject::connect(dynamic_cast<RigidBodySimulator*>(parent), &RigidBodySimulator::changeAntiAliasingMode,        this, &Game::changeAntiAliasingMode);
+   QObject::connect(dynamic_cast<RigidBodySimulator*>(parent), &RigidBodySimulator::enableRecordGIF,               this, &Game::enableRecordGIF);
 
    QObject::connect(this, &Game::simulationError, dynamic_cast<RigidBodySimulator*>(parent), &RigidBodySimulator::processSimulationError);
 
@@ -528,7 +530,11 @@ void Game::executeGameLoop()
 
 void Game::changeScene(int index)
 {
-   if (mSimulate)
+   bool oldSimulationStatus = mSimulate;
+
+   mSimulate = false;
+
+   if (mRecordGIF && oldSimulationStatus)
    {
       mFSM->getCurrentState()->enableRecording(false);
    }
@@ -539,13 +545,21 @@ void Game::changeScene(int index)
 
    mWorld->changeScene(index);
 
-   mSimulate = false;
+   if (mRecordGIF && oldSimulationStatus)
+   {
+      mFSM->getCurrentState()->generateGIF();
+   }
 }
 
 void Game::startSimulation()
 {
    mFSM->getCurrentState()->pauseRememberFrames(false);
-   mFSM->getCurrentState()->enableRecording(true);
+
+   if (mRecordGIF)
+   {
+      mFSM->getCurrentState()->enableRecording(true);
+   }
+
    mSimulate = true;
 }
 
@@ -557,9 +571,10 @@ void Game::pauseSimulation()
 
    mFSM->getCurrentState()->pauseRememberFrames(true);
 
-   if (oldSimulationStatus)
+   if (mRecordGIF && oldSimulationStatus)
    {
       mFSM->getCurrentState()->enableRecording(false);
+      mFSM->getCurrentState()->generateGIF();
    }
 }
 
@@ -573,9 +588,10 @@ void Game::resetSimulation()
    mFSM->getCurrentState()->resetMemoryFramebuffer();
    mFSM->getCurrentState()->pauseRememberFrames(true);
 
-   if (oldSimulationStatus)
+   if (mRecordGIF && oldSimulationStatus)
    {
       mFSM->getCurrentState()->enableRecording(false);
+      mFSM->getCurrentState()->generateGIF();
    }
 }
 
@@ -617,6 +633,11 @@ void Game::enableAntiAliasing(bool enable)
 void Game::changeAntiAliasingMode(int index)
 {
    mFSM->getCurrentState()->changeAntiAliasingMode(index);
+}
+
+void Game::enableRecordGIF(bool enable)
+{
+   mRecordGIF = enable;
 }
 
 void Game::run()

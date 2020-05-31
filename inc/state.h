@@ -34,6 +34,7 @@ public:
    virtual void changeAntiAliasingMode(int index) {}
 
    virtual void enableRecording(bool enable) {};
+   virtual void generateGIF() {};
 };
 
 #endif

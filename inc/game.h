@@ -49,6 +49,7 @@ public slots:
    void changeRememberFramesFrequency(int frequency);
    void enableAntiAliasing(bool enable);
    void changeAntiAliasingMode(int index);
+   void enableRecordGIF(bool enable);
 
 signals:
 
@@ -65,6 +66,8 @@ private:
    bool                                    mTerminate;
    float                                   mTimeStep;
    std::vector<glm::vec2>                  mSceneDimensions;
+
+   bool                                    mRecordGIF;
 
    std::shared_ptr<FiniteStateMachine>     mFSM;
 
