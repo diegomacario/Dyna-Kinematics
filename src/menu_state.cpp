@@ -24,7 +24,7 @@ MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachi
    , mAntiAliasingMode(0)
    , mAntiAliasingStatusChanged(false)
    , mRecord(false)
-   , mRecordingDirectory(0)
+   , mRecordingDirectory(-1)
    , mRecordedFrameCounter(0)
    , mRecordedFrameData(nullptr)
    , mFSM(finiteStateMachine)
@@ -302,32 +302,43 @@ void MenuState::enableRecording(bool enable)
       mRecordedFrameData = nullptr;
       mRecordedFrameData = new GLubyte[3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y];
 
-      std::wstring gifFilePath    = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory);
-      std::wstring framesFilePath = gifFilePath + L"\\Frames";
+      std::wstring gifFilePath = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory);
+      CreateDirectory(gifFilePath.c_str(), nullptr);
 
-      // Delete all frames
-      int frameNum = 0;
-      std::wstring frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
-      while (DeleteFile(frameFilename.c_str()) != 0)
+      while (GetLastError() == ERROR_ALREADY_EXISTS)
       {
-         frameNum++;
-         frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
+         SetLastError(0);
+         mRecordingDirectory++;
+         gifFilePath = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory);
+         CreateDirectory(gifFilePath.c_str(), nullptr);
       }
 
+      std::wstring framesFilePath = gifFilePath + L"\\Frames";
+      CreateDirectory(framesFilePath.c_str(), nullptr);
+
+      // Delete all frames
+      //int frameNum = 0;
+      //std::wstring frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
+      //while (DeleteFile(frameFilename.c_str()) != 0)
+      //{
+      //   frameNum++;
+      //   frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
+      //}
+
       // Delete the Frames directory
-      RemoveDirectory(framesFilePath.c_str());
+      //RemoveDirectory(framesFilePath.c_str());
 
       // Delete the slow and fast gifs
-      std::wstring slowGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.png";
-      std::wstring fastGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Fast.png";
-      DeleteFile(slowGifFilename.c_str());
-      DeleteFile(fastGifFilename.c_str());
+      //std::wstring slowGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.png";
+      //std::wstring fastGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Fast.png";
+      //DeleteFile(slowGifFilename.c_str());
+      //DeleteFile(fastGifFilename.c_str());
 
       // Delete the GIF directory
-      RemoveDirectory(gifFilePath.c_str());
+      //RemoveDirectory(gifFilePath.c_str());
 
-      CreateDirectory(gifFilePath.c_str(), nullptr);
-      CreateDirectory(framesFilePath.c_str(), nullptr);
+      //CreateDirectory(gifFilePath.c_str(), nullptr);
+      //CreateDirectory(framesFilePath.c_str(), nullptr);
    }
 
    mRecord = enable;
