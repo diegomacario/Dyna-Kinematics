@@ -124,3 +124,19 @@ A 2D Rigid Body Simulator.
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Upward_Slope_Rem.gif"/>
 </p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Plus_Sign_2.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Multiplication_Sign_2.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Symmetry_No_Rem.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Symmetry_Rem.gif"/>
+</p>
