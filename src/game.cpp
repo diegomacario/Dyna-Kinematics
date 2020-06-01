@@ -315,26 +315,15 @@ bool Game::initialize(const std::string& title)
 
    // Star
    // Plus bodies
-   //scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(100.0f, 0.0f), 0.0f, glm::vec2(10.0f, 10.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));  // Red
-   //scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-100.0f, 0.0f), 0.0f, glm::vec2(-10.0f, -10.0f), 0.0f, glm::vec3(1.0f, 0.65f, 0.0f))); // Orange
-   //scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, 100.0f), 0.0f, glm::vec2(-10.0f, 10.0f), 0.0f, glm::vec3(1.0f, 1.0f, 0.0f)));  // Yellow
-   //scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, -100.0f), 0.0f, glm::vec2(10.0f, -10.0f), 0.0f, glm::vec3(1.f, 1.0f, 1.0f)));   // White
-
-   scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(100.0f, 0.0f), 0.0f, glm::vec2(-10.0f, -10.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));  // Red
-   scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-100.0f, 0.0f), 0.0f, glm::vec2(10.0f, 10.0f), 0.0f, glm::vec3(1.0f, 0.65f, 0.0f))); // Orange
-   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, 100.0f), 0.0f, glm::vec2(10.0f, -10.0f), 0.0f, glm::vec3(1.0f, 1.0f, 0.0f)));  // Yellow
-   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, -100.0f), 0.0f, glm::vec2(-10.0f, 10.0f), 0.0f, glm::vec3(1.f, 1.0f, 1.0f)));   // White
-
-   //scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(100.0f, 0.0f), 0.0f, glm::vec2(10.0f, -10.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));  // Red
-   //scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-100.0f, 0.0f), 0.0f, glm::vec2(-10.0f, 10.0f), 0.0f, glm::vec3(1.0f, 0.65f, 0.0f))); // Orange
-   //scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, 100.0f), 0.0f, glm::vec2(10.0f, 10.0f), 0.0f, glm::vec3(1.0f, 1.0f, 0.0f)));  // Yellow
-   //scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, -100.0f), 0.0f, glm::vec2(-10.0f, -10.0f), 0.0f, glm::vec3(1.f, 1.0f, 1.0f)));   // White
-
+   scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(100.0f, 0.0f), 0.0f, glm::vec2(-20.0f, 0.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f)));  // Red
+   scenes[6].push_back(RigidBody2D(10.0f, 40.0f, 20.0f, 1.0f, glm::vec2(-100.0f, 0.0f), 0.0f, glm::vec2(20.0f, 0.0f), 0.0f, glm::vec3(1.0f, 0.65f, 0.0f))); // Orange
+   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, 100.0f), 0.0f, glm::vec2(0.0f, -20.0f), 0.0f, glm::vec3(1.0f, 1.0f, 0.0f)));  // Yellow
+   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(0.0f, -100.0f), 0.0f, glm::vec2(0.0f, 20.0f), 0.0f, glm::vec3(1.f, 1.0f, 1.0f)));   // White
    // X bodies
-   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(-100.0f, -100.0f), -3.14159265358979323846f / 4, glm::vec2(-20.0f, -20.0f), 0.0f,  glm::vec3(0.0f, 0.0f, 1.0f))); // Blue
-   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(100.0f, -100.0f),   3.14159265358979323846f / 4, glm::vec2(20.0f, -20.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f))); // Green
-   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(100.0f, 100.0f),   -3.14159265358979323846f / 4, glm::vec2(20.0f, 20.0f), 0.0f,glm::vec3(0.0f, 1.0f, 1.0f))); // Turquoise
-   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(-100.0f, 100.0f),   3.14159265358979323846f / 4, glm::vec2(-20.0f, 20.0f), 0.0f, glm::vec3(1.0f, 0.0f, 1.0f))); // Pink
+   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(-100.0f, -100.0f), -3.14159265358979323846f / 4, glm::vec2(20.0f, 20.0f), 0.0f,  glm::vec3(0.0f, 0.0f, 1.0f))); // Blue
+   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(100.0f, -100.0f),   3.14159265358979323846f / 4, glm::vec2(-20.0f, 20.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f))); // Green
+   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(100.0f, 100.0f),   -3.14159265358979323846f / 4, glm::vec2(-20.0f, -20.0f), 0.0f,glm::vec3(0.0f, 1.0f, 1.0f))); // Turquoise
+   scenes[6].push_back(RigidBody2D(10.0f, 20.0f, 40.0f, 1.0f, glm::vec2(-100.0f, 100.0f),   3.14159265358979323846f / 4, glm::vec2(20.0f, -20.0f), 0.0f, glm::vec3(1.0f, 0.0f, 1.0f))); // Pink
 
    // Stack
 
