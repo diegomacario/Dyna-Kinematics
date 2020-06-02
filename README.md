@@ -2,6 +2,11 @@
 A 2D Rigid Body Simulator.
 
 <p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Mini_Long.gif"/>
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/readme_images/Simulation_Controller_Running_No_Title.PNG"/>
+</p>
+
+<p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Single_No_Rem_Long.gif"/>
 </p>
 
