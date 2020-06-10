@@ -2,6 +2,30 @@
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kinematics_Test.gif"/>
 </p>
 
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kine_No_Rem_No_Wire.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kine_No_Rem_No_Wire_Fly.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kine_No_Rem_Wire.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kine_No_Rem_Wire_Fly.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kine_Rem_No_Wire.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kine_Rem_Wire.gif"/>
+</p>
+
 # 2D-Rigid-Body-Simulator
 
 A 2D Rigid Body Simulator.
@@ -101,4 +125,12 @@ A 2D Rigid Body Simulator.
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Upward_Slope_Rem.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_No_Rem.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_Rem.gif"/>
 </p>

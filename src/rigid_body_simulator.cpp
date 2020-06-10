@@ -45,7 +45,8 @@ RigidBodySimulator::RigidBodySimulator(QWidget *parent)
    ui.sceneComboBox->addItem("Octagon");
    ui.sceneComboBox->addItem("Downward Slope");
    ui.sceneComboBox->addItem("Upward Slope");
-   //ui.sceneComboBox->addItem("Fall");
+   ui.sceneComboBox->addItem("Fall");
+   ui.sceneComboBox->addItem("Text");
 
    ui.antiAliasingModeComboBox->addItem("2x MSAA");
    ui.antiAliasingModeComboBox->addItem("4x MSAA");
@@ -197,6 +198,22 @@ void RigidBodySimulator::onSceneComboBoxCurrentIndexChanged(int index)
          ui.timeStepSpinBox->setValue(0.020f);
          ui.coefficientOfRestitutionSpinBox->setValue(1.000f);
          ui.rememberFramesSpinBox->setValue(10);
+         ui.rememberFramesCheckBox->setChecked(false);
+         ui.wireFrameModeCheckBox->setChecked(true);
+         break;
+      case 13: // Fall
+         ui.gravityRadioButton->setChecked(true);
+         ui.timeStepSpinBox->setValue(0.020f);
+         ui.coefficientOfRestitutionSpinBox->setValue(0.800f);
+         ui.rememberFramesSpinBox->setValue(50);
+         ui.rememberFramesCheckBox->setChecked(false);
+         ui.wireFrameModeCheckBox->setChecked(true);
+         break;
+      case 14: // Text
+         ui.gravityRadioButton->setChecked(true);
+         ui.timeStepSpinBox->setValue(0.020f);
+         ui.coefficientOfRestitutionSpinBox->setValue(0.500f);
+         ui.rememberFramesSpinBox->setValue(25);
          ui.rememberFramesCheckBox->setChecked(false);
          ui.wireFrameModeCheckBox->setChecked(true);
          break;

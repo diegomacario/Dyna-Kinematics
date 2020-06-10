@@ -6,6 +6,8 @@ Wall::Wall(glm::vec2 normal,
            glm::vec2 startPoint,
            glm::vec2 endPoint)
    : mNormal(glm::normalize(normal))
+   , mStartPoint(startPoint)
+   , mEndPoint(endPoint)
    , mC(-glm::dot(mNormal, (startPoint + endPoint) / 2.0f))
    , mVAO(0)
    , mVBO(0)
@@ -21,6 +23,8 @@ Wall::~Wall()
 
 Wall::Wall(Wall&& rhs) noexcept
    : mNormal(std::exchange(rhs.mNormal, glm::vec2(0.0f)))
+   , mStartPoint(std::exchange(rhs.mStartPoint, glm::vec2(0.0f)))
+   , mEndPoint(std::exchange(rhs.mEndPoint, glm::vec2(0.0f)))
    , mC(std::exchange(rhs.mC, 0.0f))
    , mVAO(std::exchange(rhs.mVAO, 0))
    , mVBO(std::exchange(rhs.mVBO, 0))
@@ -31,6 +35,8 @@ Wall::Wall(Wall&& rhs) noexcept
 Wall& Wall::operator=(Wall&& rhs) noexcept
 {
    mNormal     = std::exchange(rhs.mNormal, glm::vec2(0.0f));
+   mStartPoint = std::exchange(rhs.mStartPoint, glm::vec2(0.0f));
+   mEndPoint   = std::exchange(rhs.mEndPoint, glm::vec2(0.0f));
    mC          = std::exchange(rhs.mC, 0.0f);
    mVAO        = std::exchange(rhs.mVAO, 0);
    mVBO        = std::exchange(rhs.mVBO, 0);
@@ -40,6 +46,16 @@ Wall& Wall::operator=(Wall&& rhs) noexcept
 glm::vec2 Wall::getNormal() const
 {
    return mNormal;
+}
+
+glm::vec2 Wall::getStartPoint() const
+{
+   return mStartPoint;
+}
+
+glm::vec2 Wall::getEndPoint() const
+{
+   return mEndPoint;
 }
 
 float Wall::getC() const

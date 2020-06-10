@@ -277,6 +277,45 @@ void World::integrate(float deltaTime)
    }
 }
 
+bool doesPointProjectOntoSegment(const glm::vec2& pointToTest, const glm::vec2& segmentStartPoint, const glm::vec2& segmentEndPoint)
+{
+   glm::vec2 segment = segmentEndPoint - segmentStartPoint;
+
+   // Project pointToTest onto segment, computing the parameterized position d(t) = segmentStartPoint + distFromSegStartPointToProjectedPointToTest * (segmentEndPoint - segmentStartPoint)
+   float distFromSegStartPointToProjectedPointToTest = glm::dot(pointToTest - segmentStartPoint, segment) / glm::dot(segment, segment);
+
+   // If pointToTest projects outside of the segment, distFromSegStartPointToProjectedPointToTest is smaller than 0 or greater than 1
+   if ((distFromSegStartPointToProjectedPointToTest < 0.0f) || (distFromSegStartPointToProjectedPointToTest > 1.0f))
+   {
+      return false;
+   }
+
+   return true;
+}
+
+glm::vec2 calculateClosestPointOnSegmentToPoint(const glm::vec2& pointToTest, const glm::vec2& segmentStartPoint, const glm::vec2& segmentEndPoint)
+{
+   glm::vec2 segment = segmentEndPoint - segmentStartPoint;
+
+   // Project pointToTest onto segment, computing the parameterized position d(t) = segmentStartPoint + distFromSegStartPointToProjectedPointToTest * (segmentEndPoint - segmentStartPoint)
+   float distFromSegStartPointToProjectedPointToTest = glm::dot(pointToTest - segmentStartPoint, segment) / glm::dot(segment, segment);
+
+   // If pointToTest projects outside of the segment, distFromSegStartPointToProjectedPointToTest is smaller than 0 or greater than 1
+   // If this is the case, clamp distFromSegStartPointToProjectedPointToTest to the closest endpoint
+   if (distFromSegStartPointToProjectedPointToTest < 0.0f)
+   {
+      distFromSegStartPointToProjectedPointToTest = 0.0f;
+   }
+   else if (distFromSegStartPointToProjectedPointToTest > 1.0f)
+   {
+      distFromSegStartPointToProjectedPointToTest = 1.0f;
+   }
+
+   glm::vec2 closestPointOnSegmentToPoint = segmentStartPoint + (distFromSegStartPointToProjectedPointToTest * segment);
+
+   return closestPointOnSegmentToPoint;
+}
+
 World::CollisionState World::checkForBodyWallPenetration()
 {
    float depthEpsilon = 1.0f;
@@ -311,7 +350,11 @@ World::CollisionState World::checkForBodyWallPenetration()
             // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
             float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, wallIter->getNormal()) + wallIter->getC();
 
-            if (distanceFromVertexToClosestPointOnWall < -depthEpsilon)
+            glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint());
+
+            if ((distanceFromVertexToClosestPointOnWall < -depthEpsilon) &&
+                (glm::length(vertexPos - closestPointOnWall) < depthEpsilon) &&
+                doesPointProjectOntoSegment(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint()))
             {
                return CollisionState::penetrating;
             }
@@ -358,7 +401,11 @@ World::CollisionState World::checkForBodyWallCollision()
             // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
             float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, wallIter->getNormal()) + wallIter->getC();
 
-            if (distanceFromVertexToClosestPointOnWall < depthEpsilon)
+            glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint());
+
+            if ((distanceFromVertexToClosestPointOnWall < depthEpsilon) &&
+                (glm::length(vertexPos - closestPointOnWall) < depthEpsilon) &&
+                doesPointProjectOntoSegment(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint()))
             {
                // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
                // Because the wall is not moving, the relative velocity is the velocity of the vertex
@@ -611,7 +658,11 @@ bool World::isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollisi
    // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
    float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, bodyWallCollision.collisionNormal) + mWalls->at(bodyWallCollision.collidingWallIndex).getC();
 
-   if (distanceFromVertexToClosestPointOnWall < depthEpsilon)
+   glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, mWalls->at(bodyWallCollision.collidingWallIndex).getStartPoint(), mWalls->at(bodyWallCollision.collidingWallIndex).getEndPoint());
+
+   if ((distanceFromVertexToClosestPointOnWall < depthEpsilon) &&
+       (glm::length(vertexPos - closestPointOnWall) < depthEpsilon) &&
+       doesPointProjectOntoSegment(vertexPos, mWalls->at(bodyWallCollision.collidingWallIndex).getStartPoint(), mWalls->at(bodyWallCollision.collidingWallIndex).getEndPoint()))
    {
       // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
       // Because the wall is not moving, the relative velocity is the velocity of the vertex
@@ -625,45 +676,6 @@ bool World::isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollisi
    }
 
    return true;
-}
-
-bool doesPointProjectOntoSegment(const glm::vec2& pointToTest, const glm::vec2& segmentStartPoint, const glm::vec2& segmentEndPoint)
-{
-   glm::vec2 segment = segmentEndPoint - segmentStartPoint;
-
-   // Project pointToTest onto segment, computing the parameterized position d(t) = segmentStartPoint + distFromSegStartPointToProjectedPointToTest * (segmentEndPoint - segmentStartPoint)
-   float distFromSegStartPointToProjectedPointToTest = glm::dot(pointToTest - segmentStartPoint, segment) / glm::dot(segment, segment);
-
-   // If pointToTest projects outside of the segment, distFromSegStartPointToProjectedPointToTest is smaller than 0 or greater than 1
-   if ((distFromSegStartPointToProjectedPointToTest < 0.0f) || (distFromSegStartPointToProjectedPointToTest > 1.0f))
-   {
-      return false;
-   }
-
-   return true;
-}
-
-glm::vec2 calculateClosestPointOnSegmentToPoint(const glm::vec2& pointToTest, const glm::vec2& segmentStartPoint, const glm::vec2& segmentEndPoint)
-{
-   glm::vec2 segment = segmentEndPoint - segmentStartPoint;
-
-   // Project pointToTest onto segment, computing the parameterized position d(t) = segmentStartPoint + distFromSegStartPointToProjectedPointToTest * (segmentEndPoint - segmentStartPoint)
-   float distFromSegStartPointToProjectedPointToTest = glm::dot(pointToTest - segmentStartPoint, segment) / glm::dot(segment, segment);
-
-   // If pointToTest projects outside of the segment, distFromSegStartPointToProjectedPointToTest is smaller than 0 or greater than 1
-   // If this is the case, clamp distFromSegStartPointToProjectedPointToTest to the closest endpoint
-   if (distFromSegStartPointToProjectedPointToTest < 0.0f)
-   {
-      distFromSegStartPointToProjectedPointToTest = 0.0f;
-   }
-   else if (distFromSegStartPointToProjectedPointToTest > 1.0f)
-   {
-      distFromSegStartPointToProjectedPointToTest = 1.0f;
-   }
-
-   glm::vec2 closestPointOnSegmentToPoint = segmentStartPoint + (distFromSegStartPointToProjectedPointToTest * segment);
-
-   return closestPointOnSegmentToPoint;
 }
 
 World::CollisionState World::checkForBodyBodyPenetration()

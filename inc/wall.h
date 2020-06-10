@@ -28,6 +28,8 @@ public:
    Wall& operator=(Wall&& rhs) noexcept;
 
    glm::vec2 getNormal() const;
+   glm::vec2 getStartPoint() const;
+   glm::vec2 getEndPoint() const;
    float     getC() const;
 
    void      bindVAO() const;
@@ -38,6 +40,8 @@ private:
                           glm::vec2 endPoint);
 
    glm::vec2    mNormal;
+   glm::vec2    mStartPoint;
+   glm::vec2    mEndPoint;
    float        mC;
 
    unsigned int mVAO;
