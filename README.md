@@ -1,8 +1,4 @@
 <p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kinematics_Test.gif"/>
-</p>
-
-<p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Dyna_Kine_No_Rem_No_Wire.gif"/>
 </p>
 
