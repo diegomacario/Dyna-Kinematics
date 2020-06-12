@@ -130,3 +130,19 @@ A 2D Rigid Body Simulator.
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_Rem.gif"/>
 </p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_No_Rem_Short.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_Rem_Short.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_No_Rem_Extra_Short.gif"/>
+</p>
+
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_Rem_Extra_Short.gif"/>
+</p>
