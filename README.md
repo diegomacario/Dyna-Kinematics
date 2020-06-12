@@ -36,6 +36,10 @@ A 2D Rigid Body Simulator.
 </p>
 
 <p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Gravity_1.gif"/>
+</p>
+
+<p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Single_Rem.gif"/>
 </p>
 

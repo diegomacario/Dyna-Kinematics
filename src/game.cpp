@@ -161,7 +161,7 @@ bool Game::initialize(const std::string& title)
    mSceneDimensions.push_back(glm::vec2(800.0f + 50.0f, 400.0f + 50.0f)); // Downward slope
    mSceneDimensions.push_back(glm::vec2(800.0f + 50.0f, 400.0f + 50.0f)); // Upward slope
    mSceneDimensions.push_back(glm::vec2(400.0f + 50.0f, 800.0f + 50.0f)); // Fall
-   mSceneDimensions.push_back(glm::vec2(800.0f + 0.0f, 200.0f + 80.0f)); // Text
+   mSceneDimensions.push_back(glm::vec2(800.0f + 0.0f, 200.0f + 80.0f));  // Text
 
    // Create the walls
    std::vector<std::vector<Wall>> walls(15);
@@ -266,6 +266,7 @@ bool Game::initialize(const std::string& title)
    walls[12].push_back(Wall(glm::vec2(-normalOfBottomPlane.x, normalOfBottomPlane.y), glm::vec2(  400.0f,  100.0f), glm::vec2( -400.0f, -200.0f))); // Bottom wall
    walls[12].push_back(Wall(glm::vec2( 1.0f,  0.0f),                                  glm::vec2( -400.0f, -200.0f), glm::vec2( -400.0f,  200.0f))); // Left wall
 
+   /*
    // Fall
    walls[13].push_back(Wall(glm::vec2(0.810962, 0.585098), glm::vec2(-154.266, 355.559), glm::vec2(-152.507, 353.121)));
    walls[13].push_back(Wall(glm::vec2(0.747306, 0.66448), glm::vec2(-152.507, 353.121), glm::vec2(-148.351, 348.448)));
@@ -5577,7 +5578,7 @@ bool Game::initialize(const std::string& title)
    walls[14].push_back(Wall(glm::vec2(-0.0246663, -0.999696), glm::vec2(350.447, -24.0014), glm::vec2(351.22, -24.0205)));
    walls[14].push_back(Wall(glm::vec2(-0.014495, -0.999895), glm::vec2(351.22, -24.0205), glm::vec2(351.993, -24.0317)));
    walls[14].push_back(Wall(glm::vec2(-0.00870608, -0.999962), glm::vec2(351.993, -24.0317), glm::vec2(352.335, -24.0346)));
-
+   */
 
    // Create the rigid bodies
    std::vector<std::vector<RigidBody2D>> scenes(15);
@@ -5596,7 +5597,8 @@ bool Game::initialize(const std::string& title)
    //rigidBodies.push_back(RigidBody2D(100.0f, 60.0f, 30.0f, 1.0f, glm::vec2(-50.0f, -50.0f), -3.14159265358979323846f / 6, glm::vec2(-80.0f, -80.0f), 0.0f));
 
    // Single
-   scenes[0].push_back(RigidBody2D(10.0f, 60.0f, 30.0f, 1.0f, glm::vec2(0.0f, 0.0f), -3.14159265358979323846f / 4, glm::vec2(20.0f, 5.0f), 0.0f,  glm::vec3(1.0f, 0.0f, 0.0f))); // Red
+   //scenes[0].push_back(RigidBody2D(10.0f, 60.0f, 30.0f, 1.0f, glm::vec2(0.0f, 0.0f), -3.14159265358979323846f / 4, glm::vec2(20.0f, 5.0f), 0.0f,  glm::vec3(1.0f, 0.0f, 0.0f))); // Red
+   scenes[0].push_back(RigidBody2D(10.0f, 60.0f, 30.0f, 1.0f, glm::vec2(-150.0f, 150.0f), 3.14159265358979323846f / 8, glm::vec2(10.0f, 0.0f), 0.0f,  glm::vec3(1.0f, 0.0f, 0.0f))); // Red
 
    // Pair
    scenes[1].push_back(RigidBody2D(10.0f, 60.0f, 30.0f, 1.0f, glm::vec2(15.0f, 15.0f), -3.14159265358979323846f / 4, glm::vec2(17.0f, 14.0f), 0.0f,  glm::vec3(0.0f, 1.0f, 0.0f))); // Green
