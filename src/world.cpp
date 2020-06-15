@@ -350,11 +350,11 @@ World::CollisionState World::checkForBodyWallPenetration()
             // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
             float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, wallIter->getNormal()) + wallIter->getC();
 
-            glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint());
+            //glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint()); // TODO: Concave shape support
 
-            if ((distanceFromVertexToClosestPointOnWall < -depthEpsilon) &&
+            if ((distanceFromVertexToClosestPointOnWall < -depthEpsilon) /*&&
                 (glm::length(vertexPos - closestPointOnWall) < depthEpsilon) &&
-                doesPointProjectOntoSegment(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint()))
+                doesPointProjectOntoSegment(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint())*/) // TODO: Concave shape support
             {
                return CollisionState::penetrating;
             }
@@ -401,11 +401,11 @@ World::CollisionState World::checkForBodyWallCollision()
             // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
             float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, wallIter->getNormal()) + wallIter->getC();
 
-            glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint());
+            //glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint()); // TODO: Concave shape support
 
-            if ((distanceFromVertexToClosestPointOnWall < depthEpsilon) &&
+            if ((distanceFromVertexToClosestPointOnWall < depthEpsilon) /*&&
                 (glm::length(vertexPos - closestPointOnWall) < depthEpsilon) &&
-                doesPointProjectOntoSegment(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint()))
+                doesPointProjectOntoSegment(vertexPos, wallIter->getStartPoint(), wallIter->getEndPoint())*/) // TODO: Concave shape support
             {
                // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
                // Because the wall is not moving, the relative velocity is the velocity of the vertex
@@ -658,11 +658,11 @@ bool World::isBodyWallCollisionResolved(const BodyWallCollision& bodyWallCollisi
    // dot((Pv - Po), N) = dot(Pv, N) - dot(Po, N) = dot(Pv, N) + C
    float distanceFromVertexToClosestPointOnWall = glm::dot(vertexPos, bodyWallCollision.collisionNormal) + mWalls->at(bodyWallCollision.collidingWallIndex).getC();
 
-   glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, mWalls->at(bodyWallCollision.collidingWallIndex).getStartPoint(), mWalls->at(bodyWallCollision.collidingWallIndex).getEndPoint());
+   //glm::vec2 closestPointOnWall = calculateClosestPointOnSegmentToPoint(vertexPos, mWalls->at(bodyWallCollision.collidingWallIndex).getStartPoint(), mWalls->at(bodyWallCollision.collidingWallIndex).getEndPoint()); // TODO: Concave shape support
 
-   if ((distanceFromVertexToClosestPointOnWall < depthEpsilon) &&
+   if ((distanceFromVertexToClosestPointOnWall < depthEpsilon) /*&&
        (glm::length(vertexPos - closestPointOnWall) < depthEpsilon) &&
-       doesPointProjectOntoSegment(vertexPos, mWalls->at(bodyWallCollision.collidingWallIndex).getStartPoint(), mWalls->at(bodyWallCollision.collidingWallIndex).getEndPoint()))
+       doesPointProjectOntoSegment(vertexPos, mWalls->at(bodyWallCollision.collidingWallIndex).getStartPoint(), mWalls->at(bodyWallCollision.collidingWallIndex).getEndPoint())*/) // TODO: Concave shape support
    {
       // The relative normal velocity is the component of the relative velocity in the direction of the collision normal
       // Because the wall is not moving, the relative velocity is the velocity of the vertex
