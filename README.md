@@ -2,9 +2,9 @@
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Title_Long.gif"/>
 </p>
 
-# 2D-Rigid-Body-Simulator
+# Dyna-Kinematics
 
-A 2D Rigid Body Simulator.
+A 2D rigid-body dynamics simulator with some cool features for generating "modern art".
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Cool_Dino.gif"/>
