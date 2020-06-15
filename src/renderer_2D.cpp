@@ -118,9 +118,9 @@ void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe)
    if (wireframe)
    {
       glBindVertexArray(mRealColoredQuadVAO);
-      //glLineWidth(2);
+      glLineWidth(2);
       glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
-      //glLineWidth(1);
+      glLineWidth(1);
       glBindVertexArray(0);
    }
    else
@@ -137,9 +137,9 @@ void Renderer2D::renderLine(const Wall& wall) const
 
    // Render line
    wall.bindVAO();
-   //glLineWidth(2);
+   glLineWidth(2);
    glDrawArrays(GL_LINES, 0, 2);
-   //glLineWidth(1);
+   glLineWidth(1);
    glBindVertexArray(0);
 }
 

@@ -267,7 +267,6 @@ bool Game::initialize(const std::string& title)
    walls[12].push_back(Wall(glm::vec2(-normalOfBottomPlane.x, normalOfBottomPlane.y), glm::vec2(  400.0f,  100.0f), glm::vec2( -400.0f, -200.0f))); // Bottom wall
    walls[12].push_back(Wall(glm::vec2( 1.0f,  0.0f),                                  glm::vec2( -400.0f, -200.0f), glm::vec2( -400.0f,  200.0f))); // Left wall
 
-   /*
    // Fall
    walls[13].push_back(Wall(glm::vec2(0.810962, 0.585098), glm::vec2(-154.266, 355.559), glm::vec2(-152.507, 353.121)));
    walls[13].push_back(Wall(glm::vec2(0.747306, 0.66448), glm::vec2(-152.507, 353.121), glm::vec2(-148.351, 348.448)));
@@ -5579,7 +5578,6 @@ bool Game::initialize(const std::string& title)
    walls[14].push_back(Wall(glm::vec2(-0.0246663, -0.999696), glm::vec2(350.447, -24.0014), glm::vec2(351.22, -24.0205)));
    walls[14].push_back(Wall(glm::vec2(-0.014495, -0.999895), glm::vec2(351.22, -24.0205), glm::vec2(351.993, -24.0317)));
    walls[14].push_back(Wall(glm::vec2(-0.00870608, -0.999962), glm::vec2(351.993, -24.0317), glm::vec2(352.335, -24.0346)));
-   */
 
    halfWidth  = 174.0f;
    halfHeight = 174.0f;
@@ -5590,6 +5588,7 @@ bool Game::initialize(const std::string& title)
    //walls[15].push_back(Wall(glm::vec2(-1.0f,  0.0f), glm::vec2(  halfWidth,  halfHeight), glm::vec2(  halfWidth, -halfHeight))); // Right wall
    //walls[15].push_back(Wall(glm::vec2( 1.0f,  0.0f), glm::vec2( -halfWidth, -halfHeight), glm::vec2( -halfWidth,  halfHeight))); // Left wall
 
+   /*
    walls[15].push_back(Wall(glm::vec2(-0.464458, 0.885595), glm::vec2(-144.092, 145.338), glm::vec2(-143.764, 145.51)));
    walls[15].push_back(Wall(glm::vec2(-0.457574, 0.889172), glm::vec2(-143.764, 145.51), glm::vec2(-143.436, 145.679)));
    walls[15].push_back(Wall(glm::vec2(-0.443824, 0.896114), glm::vec2(-143.436, 145.679), glm::vec2(-143.105, 145.843)));
@@ -10703,6 +10702,7 @@ bool Game::initialize(const std::string& title)
    walls[15].push_back(Wall(glm::vec2(-0.38189, 0.924208), glm::vec2(40.2731, -140.87), glm::vec2(40.6007, -140.734)));
    walls[15].push_back(Wall(glm::vec2(-0.259733, 0.965681), glm::vec2(40.6007, -140.734), glm::vec2(40.8071, -140.679)));
    walls[15].push_back(Wall(glm::vec2(-0.00522437, -0.999986), glm::vec2(40.8071, -140.679), glm::vec2(21.817, -140.58)));
+   */
 
    // Create the rigid bodies
    std::vector<std::vector<RigidBody2D>> scenes(16);
