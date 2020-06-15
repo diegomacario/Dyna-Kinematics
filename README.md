@@ -27,8 +27,8 @@
 A 2D Rigid Body Simulator.
 
 <p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Mini_Long.gif"/>
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/readme_images/Simulation_Controller_Running_No_Title.PNG"/>
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Cool_Dino.gif"/>
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/readme_images/Simulation_Controller_Dino.PNG"/>
 </p>
 
 <p align="center">

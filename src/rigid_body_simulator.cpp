@@ -47,6 +47,7 @@ RigidBodySimulator::RigidBodySimulator(QWidget *parent)
    ui.sceneComboBox->addItem("Upward Slope");
    ui.sceneComboBox->addItem("Fall");
    ui.sceneComboBox->addItem("Text");
+   ui.sceneComboBox->addItem("Dinosaur");
 
    ui.antiAliasingModeComboBox->addItem("2x MSAA");
    ui.antiAliasingModeComboBox->addItem("4x MSAA");
@@ -213,6 +214,14 @@ void RigidBodySimulator::onSceneComboBoxCurrentIndexChanged(int index)
          ui.gravityRadioButton->setChecked(true);
          ui.timeStepSpinBox->setValue(0.020f);
          ui.coefficientOfRestitutionSpinBox->setValue(0.500f);
+         ui.rememberFramesSpinBox->setValue(25);
+         ui.rememberFramesCheckBox->setChecked(false);
+         ui.wireFrameModeCheckBox->setChecked(true);
+         break;
+      case 15: // Dinosaur
+         ui.gravityRadioButton->setChecked(true);
+         ui.timeStepSpinBox->setValue(0.020f);
+         ui.coefficientOfRestitutionSpinBox->setValue(0.100f);
          ui.rememberFramesSpinBox->setValue(25);
          ui.rememberFramesCheckBox->setChecked(false);
          ui.wireFrameModeCheckBox->setChecked(true);
