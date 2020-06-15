@@ -1,8 +1,4 @@
 <p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Title_Short.gif"/>
-</p>
-
-<p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Title_Long.gif"/>
 </p>
 
@@ -17,14 +13,6 @@ A 2D Rigid Body Simulator.
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Single_No_Rem_Long.gif"/>
-</p>
-
-<p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Gravity_1.gif"/>
-</p>
-
-<p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Gravity_2.gif"/>
 </p>
 
 <p align="center">
@@ -116,25 +104,9 @@ A 2D Rigid Body Simulator.
 </p>
 
 <p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_No_Rem.gif"/>
-</p>
-
-<p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_Rem.gif"/>
-</p>
-
-<p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_No_Rem_Short.gif"/>
 </p>
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_Rem_Short.gif"/>
-</p>
-
-<p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_No_Rem_Extra_Short.gif"/>
-</p>
-
-<p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Fall_Rem_Extra_Short.gif"/>
 </p>
