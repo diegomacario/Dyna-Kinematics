@@ -15,7 +15,7 @@ A 2D rigid-body dynamics simulator with some cool features for generating beauti
 
 ## How this project evolved over time
 
-### 1) Body-wall collisions
+### 1) Body-wall collision detection and resolution
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Single_No_Rem_Long.gif"/>
@@ -25,13 +25,13 @@ A 2D rigid-body dynamics simulator with some cool features for generating beauti
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Single_Rem.gif"/>
 </p>
 
-### 2) Body-body collisions
+### 2) Body-body collision detection and resolution
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Pair_No_Rem.gif"/>
 </p>
 
-### 3) Forces
+### 3) Momentum, torque and gravity
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Momentum_No_Rem_Short.gif"/>
