@@ -27,6 +27,10 @@ A 2D rigid-body dynamics simulator with some cool features for generating beauti
 
 ### 2) Body-body collisions
 
+<p align="center">
+ <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Pair_No_Rem.gif"/>
+</p>
+
 ### 3) Forces
 
 <p align="center">
@@ -69,10 +73,6 @@ A 2D rigid-body dynamics simulator with some cool features for generating beauti
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Multiplication_Sign_2.gif"/>
-</p>
-
-<p align="center">
- <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Star_Failure_Short.gif"/>
 </p>
 
 <p align="center">
