@@ -65,49 +65,6 @@ Renderer2D& Renderer2D::operator=(Renderer2D&& rhs) noexcept
    return *this;
 }
 
-void Renderer2D::renderTexturedQuad(const GameObject2D& gameObj2D, bool wireframe) const
-{
-   mTexShader->use();
-   mTexShader->setMat4("model", gameObj2D.getModelMatrix());
-
-   glActiveTexture(GL_TEXTURE0);
-   gameObj2D.getTexture()->bind();
-
-   // Render textured quad
-   if (wireframe)
-   {
-      glBindVertexArray(mRealTexturedQuadVAO);
-      glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
-   }
-   else
-   {
-      glBindVertexArray(mTexturedQuadVAO);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
-   }
-}
-
-void Renderer2D::renderColoredQuad(const GameObject2D& gameObj2D, bool wireframe) const
-{
-   mColorShader->use();
-   mColorShader->setMat4("model", gameObj2D.getModelMatrix());
-
-   // Render quad
-   if (wireframe)
-   {
-      glBindVertexArray(mRealColoredQuadVAO);
-      glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
-   }
-   else
-   {
-      glBindVertexArray(mColoredQuadVAO);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
-   }
-}
-
 void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe) const
 {
    mColorShader->use();

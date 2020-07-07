@@ -9,7 +9,6 @@ public:
 
    MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
              const std::shared_ptr<Window>&             window,
-             const std::shared_ptr<Camera>&             camera,
              const std::shared_ptr<Renderer2D>&         renderer2D,
              const std::shared_ptr<World>&              world);
    ~MenuState();
@@ -65,8 +64,6 @@ private:
    std::shared_ptr<FiniteStateMachine> mFSM;
 
    std::shared_ptr<Window>             mWindow;
-
-   std::shared_ptr<Camera>             mCamera;
 
    std::shared_ptr<Renderer2D>         mRenderer2D;
 

@@ -8,7 +8,6 @@
 
 MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachine,
                      const std::shared_ptr<Window>&             window,
-                     const std::shared_ptr<Camera>&             camera,
                      const std::shared_ptr<Renderer2D>&         renderer2D,
                      const std::shared_ptr<World>&              world)
    : mChangeScene(false)
@@ -29,7 +28,6 @@ MenuState::MenuState(const std::shared_ptr<FiniteStateMachine>& finiteStateMachi
    , mRecordedFrameData(nullptr)
    , mFSM(finiteStateMachine)
    , mWindow(window)
-   , mCamera(camera)
    , mRenderer2D(renderer2D)
    , mWorld(world)
 {

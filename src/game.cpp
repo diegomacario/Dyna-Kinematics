@@ -1,11 +1,9 @@
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <iostream>
 
 #include "shader_loader.h"
-#include "texture_loader.h"
-#include "model_loader.h"
 #include "menu_state.h"
-#include "play_state.h"
-#include "pause_state.h"
 #include "game.h"
 
 Game::Game(QObject* parent)
@@ -18,11 +16,7 @@ Game::Game(QObject* parent)
    , mRecordGIF(false)
    , mFSM()
    , mWindow()
-   //, mSoundEngine(irrklang::createIrrKlangDevice(), [=](irrklang::ISoundEngine* soundEngine){soundEngine->drop();})
-   , mCamera()
    , mRenderer2D()
-   , mModelManager()
-   , mTextureManager()
    , mShaderManager()
    , mWorld()
 {
@@ -109,17 +103,6 @@ bool Game::initialize(const std::string& title)
    float widthInPix  = 450.0f;
    float heightInPix = 450.0f;
    float aspectRatio = (widthInPix / heightInPix);
-
-   mCamera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 95.0f),
-                                      glm::vec3(0.0f, 1.0f, 0.0f),
-                                      0.0f,
-                                      0.0f,
-                                      45.0f,       // Fovy
-                                      aspectRatio, // Aspect ratio
-                                      0.1f,        // Near
-                                      130.0f,      // Far
-                                      20.0f,       // Movement speed
-                                      0.1f);       // Mouse sensitivity
 
    glm::mat4 orthoProj = glm::ortho(-widthInPix / 2,  // Left
                                      widthInPix / 2,  // Right
@@ -455,20 +438,8 @@ bool Game::initialize(const std::string& title)
 
    mStates["menu"] = std::make_shared<MenuState>(mFSM,
                                                  mWindow,
-                                                 mCamera,
                                                  mRenderer2D,
                                                  mWorld);
-
-   mStates["play"] = std::make_shared<PlayState>(mFSM,
-                                                 mWindow,
-                                                 mSoundEngine,
-                                                 mCamera,
-                                                 mRenderer2D);
-
-   mStates["pause"] = std::make_shared<PauseState>(mFSM,
-                                                   mWindow,
-                                                   mCamera,
-                                                   mRenderer2D);
 
    // Initialize the FSM
    mFSM->initialize(std::move(mStates), "menu");

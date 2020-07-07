@@ -2,7 +2,6 @@
 #define RENDERER_2D_H
 
 #include "shader.h"
-#include "game_object_2D.h"
 #include "rigid_body_2D.h"
 #include "wall.h"
 
@@ -21,8 +20,6 @@ public:
    Renderer2D(Renderer2D&& rhs) noexcept;
    Renderer2D& operator=(Renderer2D&& rhs) noexcept;
 
-   void renderTexturedQuad(const GameObject2D& gameObj2D, bool wireframe) const;
-   void renderColoredQuad(const GameObject2D& gameObj2D, bool wireframe) const;
    void renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe) const;
    void renderLine(const Wall& wall) const;
 

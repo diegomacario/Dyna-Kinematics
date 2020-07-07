@@ -74,7 +74,7 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc142-mtd.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -88,60 +88,38 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc142-mt.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\inc\camera.h" />
     <ClInclude Include="..\inc\collision.h" />
     <ClInclude Include="..\inc\finite_state_machine.h" />
     <QtMoc Include="..\inc\game.h" />
-    <ClInclude Include="..\inc\game_object_2D.h" />
-    <ClInclude Include="..\inc\game_object_3D.h" />
     <ClInclude Include="..\inc\menu_state.h" />
-    <ClInclude Include="..\inc\mesh.h" />
-    <ClInclude Include="..\inc\model.h" />
-    <ClInclude Include="..\inc\model_loader.h" />
-    <ClInclude Include="..\inc\pause_state.h" />
-    <ClInclude Include="..\inc\play_state.h" />
     <ClInclude Include="..\inc\renderer_2D.h" />
     <ClInclude Include="..\inc\resource_manager.h" />
     <ClInclude Include="..\inc\rigid_body_2D.h" />
     <ClInclude Include="..\inc\shader.h" />
     <ClInclude Include="..\inc\shader_loader.h" />
     <ClInclude Include="..\inc\state.h" />
-    <ClInclude Include="..\inc\stb_image.h" />
     <ClInclude Include="..\inc\stb_image_write.h" />
-    <ClInclude Include="..\inc\texture.h" />
-    <ClInclude Include="..\inc\texture_loader.h" />
     <ClInclude Include="..\inc\wall.h" />
     <ClInclude Include="..\inc\window.h" />
     <ClInclude Include="..\inc\world.h" />
     <QtMoc Include="..\inc\rigid_body_simulator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\finite_state_machine.cpp" />
     <ClCompile Include="..\src\game.cpp" />
-    <ClCompile Include="..\src\game_object_2D.cpp" />
-    <ClCompile Include="..\src\game_object_3D.cpp" />
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\menu_state.cpp" />
-    <ClCompile Include="..\src\mesh.cpp" />
-    <ClCompile Include="..\src\model.cpp" />
-    <ClCompile Include="..\src\model_loader.cpp" />
-    <ClCompile Include="..\src\pause_state.cpp" />
-    <ClCompile Include="..\src\play_state.cpp" />
     <ClCompile Include="..\src\renderer_2D.cpp" />
     <ClCompile Include="..\src\rigid_body_2D.cpp" />
     <ClCompile Include="..\src\rigid_body_simulator.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\shader_loader.cpp" />
-    <ClCompile Include="..\src\stb_image.cpp" />
     <ClCompile Include="..\src\stb_image_write.cpp" />
-    <ClCompile Include="..\src\texture.cpp" />
-    <ClCompile Include="..\src\texture_loader.cpp" />
     <ClCompile Include="..\src\wall.cpp" />
     <ClCompile Include="..\src\window.cpp" />
     <ClCompile Include="..\src\world.cpp" />

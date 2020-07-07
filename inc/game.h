@@ -2,13 +2,11 @@
 #define GAME_H
 
 #include <QThread>
-#include <irrklang/irrKlang.h>
 
 #include "rigid_body_simulator.h"
 #include "world.h"
-#include "model.h"
+#include "resource_manager.h"
 #include "renderer_2D.h"
-#include "camera.h"
 #include "window.h"
 #include "state.h"
 #include "finite_state_machine.h"
@@ -73,14 +71,8 @@ private:
 
    std::shared_ptr<Window>                 mWindow;
 
-   std::shared_ptr<irrklang::ISoundEngine> mSoundEngine;
-
-   std::shared_ptr<Camera>                 mCamera;
-
    std::shared_ptr<Renderer2D>             mRenderer2D;
 
-   ResourceManager<Model>                  mModelManager;
-   ResourceManager<Texture>                mTextureManager;
    ResourceManager<Shader>                 mShaderManager;
 
    std::shared_ptr<World>                  mWorld;
