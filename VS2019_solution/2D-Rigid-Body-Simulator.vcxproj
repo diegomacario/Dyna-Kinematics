@@ -92,7 +92,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\inc\collision.h" />
     <ClInclude Include="..\inc\finite_state_machine.h" />
     <QtMoc Include="..\inc\game.h" />
     <ClInclude Include="..\inc\menu_state.h" />
