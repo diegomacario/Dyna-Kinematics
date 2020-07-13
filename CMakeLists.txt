@@ -3,13 +3,12 @@ cmake_minimum_required(VERSION 3.17.3 FATAL_ERROR)
 project(Dyna-Kinematics LANGUAGES C CXX)
 
 include_directories("${CMAKE_SOURCE_DIR}/inc"
-                    "${CMAKE_SOURCE_DIR}/dependencies/win/inc")
+                    "${CMAKE_SOURCE_DIR}/dependencies")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-link_directories("${CMAKE_SOURCE_DIR}/dependencies/win/lib")
-
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
+find_package(glfw3 3.3 REQUIRED)
 
 set(project_ui
     ui/rigid_body_simulator.ui)
@@ -59,6 +58,5 @@ add_definitions(-DUNICODE -D_UNICODE)
 add_executable(${PROJECT_NAME} ${project_headers} ${project_sources} ${project_sources_moc} ${project_headers_moc})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-                      general   Qt5::Core Qt5::Gui Qt5::Widgets
-                      debug     debug/glfw3
-                      optimized release/glfw3)
+                      Qt5::Core Qt5::Gui Qt5::Widgets
+                      glfw)
