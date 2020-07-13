@@ -1,6 +1,9 @@
-#include <windows.h>
-#include <locale>
-#include <codecvt>
+#include <sys/stat.h>
+#include <errno.h>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include <direct.h>
+#endif
 
 #include <stb_image_write.h>
 
@@ -214,12 +217,9 @@ void MenuState::render()
       glPixelStorei(GL_PACK_ALIGNMENT, 1);
       glReadPixels(0, 0, mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
 
-      std::wstring imgName = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory) + L"\\Frames\\" + std::to_wstring(mRecordedFrameCounter) + L".png";
+      std::string imgName = "GIFs\\GIF_" + std::to_string(mRecordingDirectory) + "\\Frames\\" + std::to_string(mRecordedFrameCounter) + ".png";
 
-      static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-      std::string imgNameForWrite = converter.to_bytes(imgName);
-
-      stbi_write_png(imgNameForWrite.c_str(), mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, 3, mRecordedFrameData, mCurrentSceneDimensions.x * 3);
+      stbi_write_png(imgName.c_str(), mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, 3, mRecordedFrameData, mCurrentSceneDimensions.x * 3);
       mRecordedFrameCounter++;
    }
 
@@ -300,43 +300,38 @@ void MenuState::enableRecording(bool enable)
       mRecordedFrameData = nullptr;
       mRecordedFrameData = new GLubyte[3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y];
 
-      std::wstring gifFilePath = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory);
-      CreateDirectory(gifFilePath.c_str(), nullptr);
+      std::string gifsDirectory = "GIFs";
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+      _mkdir(gifsDirectory.c_str());
+#else
+      mkdir(gifsDirectory.c_str() , 0775);
+#endif
 
-      while (GetLastError() == ERROR_ALREADY_EXISTS)
+      std::string gifFilePath = gifsDirectory + "\\GIF_" + std::to_string(mRecordingDirectory);
+      errno = 0;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+      _mkdir(gifFilePath.c_str());
+#else
+      mkdir(gifFilePath.c_str() , 0775);
+#endif
+      while (errno == EEXIST)
       {
-         SetLastError(0);
          mRecordingDirectory++;
-         gifFilePath = L"GIFs\\GIF_" + std::to_wstring(mRecordingDirectory);
-         CreateDirectory(gifFilePath.c_str(), nullptr);
+         gifFilePath = "GIFs\\GIF_" + std::to_string(mRecordingDirectory);
+         errno = 0;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+         _mkdir(gifFilePath.c_str());
+#else
+         mkdir(gifFilePath.c_str() , 0775);
+#endif
       }
 
-      std::wstring framesFilePath = gifFilePath + L"\\Frames";
-      CreateDirectory(framesFilePath.c_str(), nullptr);
-
-      // Delete all frames
-      //int frameNum = 0;
-      //std::wstring frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
-      //while (DeleteFile(frameFilename.c_str()) != 0)
-      //{
-      //   frameNum++;
-      //   frameFilename = framesFilePath + L"\\" + std::to_wstring(frameNum) + L".png";
-      //}
-
-      // Delete the Frames directory
-      //RemoveDirectory(framesFilePath.c_str());
-
-      // Delete the slow and fast gifs
-      //std::wstring slowGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.png";
-      //std::wstring fastGifFilename = gifFilePath + L"\\GIF_" + std::to_wstring(mRecordingDirectory) + L"_Fast.png";
-      //DeleteFile(slowGifFilename.c_str());
-      //DeleteFile(fastGifFilename.c_str());
-
-      // Delete the GIF directory
-      //RemoveDirectory(gifFilePath.c_str());
-
-      //CreateDirectory(gifFilePath.c_str(), nullptr);
-      //CreateDirectory(framesFilePath.c_str(), nullptr);
+      std::string framesFilePath = gifFilePath + "\\Frames";
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+      _mkdir(framesFilePath.c_str());
+#else
+      mkdir(framesFilePath.c_str() , 0775);
+#endif
    }
 
    mRecord = enable;
@@ -344,13 +339,11 @@ void MenuState::enableRecording(bool enable)
 
 void MenuState::generateGIF()
 {
-   std::wstring changeDirectoryCmd = L"cd GIFs\\GIF_" + std::to_wstring(mRecordingDirectory) + L" & ";
-   std::wstring generateGifCmd     = L"ffmpeg -y -framerate 50 -i Frames\\%01d.png GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.gif & \
-                                       ffmpeg -y -i GIF_" + std::to_wstring(mRecordingDirectory) + L"_Slow.gif -filter:v \"setpts=0.25*PTS\" \
-                                       GIF_" + std::to_wstring(mRecordingDirectory) + L"_Fast.gif";
-   std::wstring fullCmd            = changeDirectoryCmd + generateGifCmd;
+   std::string changeDirectoryCmd = "cd GIFs\\GIF_" + std::to_string(mRecordingDirectory) + " & ";
+   std::string generateGifCmd     = "ffmpeg -y -framerate 50 -i Frames\\%01d.png GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif & \
+                                     ffmpeg -y -i GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif -filter:v \"setpts=0.25*PTS\" \
+                                     GIF_" + std::to_string(mRecordingDirectory) + "_Fast.gif";
+   std::string fullCmd            = changeDirectoryCmd + generateGifCmd;
 
-   static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-   std::string fullCmdForSystemCall = converter.to_bytes(fullCmd);
-   system(fullCmdForSystemCall.c_str());
+   system(fullCmd.c_str());
 }
