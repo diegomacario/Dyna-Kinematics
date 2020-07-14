@@ -79,6 +79,7 @@ private:
    int                            mHeightOfWindowInPix;
    int                            mWidthOfFramebufferInPix;
    int                            mHeightOfFramebufferInPix;
+   int                            mScaleFactor;
    std::string                    mTitle;
    bool                           mIsFullScreen;
 
@@ -103,6 +104,8 @@ private:
    int                            mLowerLeftCornerOfViewportY;
    int                            mWidthOfScene;
    int                            mHeightOfScene;
+   int                            mScaledWidthOfScene;
+   int                            mScaledHeightOfScene;
 };
 
 #endif

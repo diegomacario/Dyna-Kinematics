@@ -8,9 +8,11 @@
 #include "rigid_body_simulator.h"
 #include "game.h"
 
-//#include <Windows.h>
-//#include <stdio.h>
-//#include <stdlib.h>
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include <Windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -45,10 +47,12 @@ int main(int argc, char *argv[])
 
    RigidBodySimulator w;
    w.show();
-   w.move(1175, 225);
+   w.move(895, 180);
 
-   //AllocConsole();
-   //freopen("CONOUT$", "w", stdout);
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+   AllocConsole();
+   freopen("CONOUT$", "w", stdout);
+#endif
 
    // Initialize the window
    std::shared_ptr<Window> glfwWindow = std::make_shared<Window>("Simulation Viewer");
@@ -63,6 +67,9 @@ int main(int argc, char *argv[])
 
    Game game(&w, glfwWindow);
    game.start();
+
+   w.raise();
+   w.activateWindow();
 
    return a.exec();
 }
