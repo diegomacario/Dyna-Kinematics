@@ -50,7 +50,18 @@ int main(int argc, char *argv[])
    //AllocConsole();
    //freopen("CONOUT$", "w", stdout);
 
-   Game game(&w);
+   // Initialize the window
+   std::shared_ptr<Window> glfwWindow = std::make_shared<Window>("Simulation Viewer");
+
+   if (!glfwWindow->initialize())
+   {
+      std::cout << "Error - Game::initialize - Failed to initialize the window" << "\n";
+      return false;
+   }
+
+   glfwMakeContextCurrent(NULL);
+
+   Game game(&w, glfwWindow);
    game.start();
 
    return a.exec();

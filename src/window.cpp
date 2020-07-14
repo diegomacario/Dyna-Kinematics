@@ -139,6 +139,18 @@ bool Window::initialize()
    return true;
 }
 
+void Window::makeContextCurrent(bool enable)
+{
+   if (enable)
+   {
+      glfwMakeContextCurrent(mWindow);
+   }
+   else
+   {
+      glfwMakeContextCurrent(NULL);
+   }
+}
+
 bool Window::shouldClose() const
 {
    int windowShouldClose = glfwWindowShouldClose(mWindow);

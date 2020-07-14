@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.17.3 FATAL_ERROR)
 
 project(Dyna-Kinematics LANGUAGES C CXX)
 
+set(CMAKE_CXX_STANDARD 14)
+
 include_directories("${CMAKE_SOURCE_DIR}/inc"
                     "${CMAKE_SOURCE_DIR}/dependencies")
 

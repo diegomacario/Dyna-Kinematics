@@ -192,7 +192,6 @@ void MenuState::render()
    mWindow->generateAntiAliasedImage();
 
    mWindow->swapBuffers();
-   mWindow->pollEvents();
 }
 
 void MenuState::exit()

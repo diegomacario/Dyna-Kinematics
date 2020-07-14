@@ -22,6 +22,8 @@ public:
 
    bool         initialize();
 
+   void         makeContextCurrent(bool enable);
+
    bool         shouldClose() const;
    void         setShouldClose(bool shouldClose); // TODO: Could this be considered to be const?
    void         swapBuffers();                    // TODO: Could this be considered to be const?

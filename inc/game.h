@@ -17,7 +17,7 @@ class Game : public QThread
 
 public:
 
-   Game(QObject* parent);
+   Game(QObject* parent, const std::shared_ptr<Window>& glfwWindow);
    ~Game();
 
    Game(const Game&) = delete;
@@ -26,7 +26,7 @@ public:
    Game(Game&&) = delete;
    Game& operator=(Game&&) = delete;
 
-   bool  initialize(const std::string& title);
+   bool  initialize();
    void  executeGameLoop();
 
 public slots:
@@ -67,9 +67,9 @@ private:
 
    bool                                    mRecordGIF;
 
-   std::shared_ptr<FiniteStateMachine>     mFSM;
-
    std::shared_ptr<Window>                 mWindow;
+
+   std::shared_ptr<FiniteStateMachine>     mFSM;
 
    std::shared_ptr<Renderer2D>             mRenderer2D;
 

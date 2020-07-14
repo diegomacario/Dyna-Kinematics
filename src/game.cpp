@@ -6,7 +6,7 @@
 #include "menu_state.h"
 #include "game.h"
 
-Game::Game(QObject* parent)
+Game::Game(QObject* parent, const std::shared_ptr<Window>& glfwWindow)
    : QThread(parent)
    , mInitialized(false)
    , mSimulate(false)
@@ -14,8 +14,8 @@ Game::Game(QObject* parent)
    , mTimeStep(0.02f)
    , mSceneDimensions()
    , mRecordGIF(false)
+   , mWindow(glfwWindow)
    , mFSM()
-   , mWindow()
    , mRenderer2D()
    , mShaderManager()
    , mWorld()
@@ -88,16 +88,9 @@ glm::vec2 calcNormal(glm::vec2 deltas, bool invert = false)
    }
 }
 
-bool Game::initialize(const std::string& title)
+bool Game::initialize()
 {
-   // Initialize the window
-   mWindow = std::make_shared<Window>(title);
-
-   if (!mWindow->initialize())
-   {
-      std::cout << "Error - Game::initialize - Failed to initialize the window" << "\n";
-      return false;
-   }
+   mWindow->makeContextCurrent(true);
 
    // Initialize the camera
    float widthInPix  = 450.0f;
@@ -593,7 +586,7 @@ void Game::run()
 {
    if (!mInitialized)
    {
-      if (initialize("Simulation Viewer"))
+      if (initialize())
       {
          mInitialized = true;
       }
