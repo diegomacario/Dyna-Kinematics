@@ -10,16 +10,6 @@ Window::Window(const std::string& title)
    , mHeightOfFramebufferInPix(0)
    , mTitle(title)
    , mIsFullScreen(true)
-   , mKeys()
-   , mProcessedKeys()
-   , mMouseMoved(false)
-   , mFirstCursorPosCallback(true)
-   , mLastCursorXPos(0.0)
-   , mLastCursorYPos(0.0)
-   , mCursorXOffset(0.0)
-   , mCursorYOffset(0.0)
-   , mScrollWheelMoved(false)
-   , mScrollYOffset(0.0)
    , mMultisampleFBO(0)
    , mMultisampleTexture(0)
    , mMultisampleRBO(0)
@@ -233,66 +223,6 @@ void Window::setSceneLimits(int width, int height)
    mHeightOfScene = height;
 }
 
-bool Window::keyIsPressed(int key) const
-{
-   return mKeys.test(key);
-}
-
-bool Window::keyHasBeenProcessed(int key) const
-{
-   return mProcessedKeys.test(key);
-}
-
-void Window::setKeyAsProcessed(int key)
-{
-   mProcessedKeys.set(key);
-}
-
-bool Window::mouseMoved() const
-{
-   return mMouseMoved;
-}
-
-void Window::resetMouseMoved()
-{
-   mMouseMoved = false;
-}
-
-void Window::resetFirstMove()
-{
-   mFirstCursorPosCallback = true;
-}
-
-float Window::getCursorXOffset() const
-{
-   return mCursorXOffset;
-}
-
-float Window::getCursorYOffset() const
-{
-   return mCursorYOffset;
-}
-
-void Window::enableCursor(bool enable)
-{
-   glfwSetInputMode(mWindow, GLFW_CURSOR, enable ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-}
-
-bool Window::scrollWheelMoved() const
-{
-   return mScrollWheelMoved;
-}
-
-void Window::resetScrollWheelMoved()
-{
-   mScrollWheelMoved = false;
-}
-
-float Window::getScrollYOffset() const
-{
-   return mScrollYOffset;
-}
-
 void Window::setInputCallbacks()
 {
    glfwSetWindowUserPointer(mWindow, this);
@@ -302,25 +232,7 @@ void Window::setInputCallbacks()
       static_cast<Window*>(glfwGetWindowUserPointer(window))->framebufferSizeCallback(window, width, height);
    };
 
-   auto keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods)
-   {
-      static_cast<Window*>(glfwGetWindowUserPointer(window))->keyCallback(window, key, scancode, action, mods);
-   };
-
-   auto cursorPosCallback = [](GLFWwindow* window, double xPos, double yPos)
-   {
-      static_cast<Window*>(glfwGetWindowUserPointer(window))->cursorPosCallback(window, xPos, yPos);
-   };
-
-   auto scrollCallback = [](GLFWwindow* window, double xOffset, double yOffset)
-   {
-      static_cast<Window*>(glfwGetWindowUserPointer(window))->scrollCallback(window, xOffset, yOffset);
-   };
-
    glfwSetFramebufferSizeCallback(mWindow, framebufferSizeCallback);
-   glfwSetKeyCallback(mWindow, keyCallback);
-   glfwSetCursorPosCallback(mWindow, cursorPosCallback);
-   glfwSetScrollCallback(mWindow, scrollCallback);
 }
 
 void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -339,52 +251,6 @@ void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
    mLowerLeftCornerOfViewportY = (mHeightOfWindowInPix - mHeightOfScene) / 2.0f;
 
    glViewport(0, 0, mWidthOfScene, mHeightOfScene);
-}
-
-void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-   if (key != -1)
-   {
-      if (action == GLFW_PRESS)
-      {
-         mKeys.set(key);
-      }
-      else if (action == GLFW_RELEASE)
-      {
-         mKeys.reset(key);
-      }
-
-      mProcessedKeys.reset(key);
-   }
-}
-
-void Window::cursorPosCallback(GLFWwindow* window, double xPos, double yPos)
-{
-   if (mFirstCursorPosCallback)
-   {
-      mLastCursorXPos = xPos;
-      mLastCursorYPos = yPos;
-      mFirstCursorPosCallback = false;
-   }
-
-   // TODO: Ideally this function would tell the camera to update its position based on the offsets.
-   // I'm going to make the camera ask the window if it should update its position. Is there a better way to do this?
-   mCursorXOffset = static_cast<float>(xPos - mLastCursorXPos);
-   mCursorYOffset = static_cast<float>(mLastCursorYPos - yPos); // Reversed since the Y-coordinates of the mouse go from the bottom to the top
-
-   mLastCursorXPos = xPos;
-   mLastCursorYPos = yPos;
-
-   mMouseMoved = true;
-}
-
-void Window::scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
-{
-   // TODO: Ideally this function would tell the camera to update its FOVY based on the Y offset.
-   // I'm going to make the camera ask the window if it should update its FOVY. Is there a better way to do this?
-   mScrollYOffset = static_cast<float>(yOffset);
-
-   mScrollWheelMoved = true;
 }
 
 bool Window::configureAntiAliasingSupport()

@@ -37,24 +37,6 @@ public:
    void         setSizeLimits(int width, int height);
    void         setSceneLimits(int width, int height);
 
-   // Keyboard
-   bool         keyIsPressed(int key) const;
-   bool         keyHasBeenProcessed(int key) const;
-   void         setKeyAsProcessed(int key);
-
-   // Cursor
-   bool         mouseMoved() const;
-   void         resetMouseMoved();
-   void         resetFirstMove();
-   float        getCursorXOffset() const;
-   float        getCursorYOffset() const;
-   void         enableCursor(bool enable);
-
-   // Scroll wheel
-   bool         scrollWheelMoved() const;
-   void         resetScrollWheelMoved();
-   float        getScrollYOffset() const;
-
    // Anti aliasing support
    bool         configureAntiAliasingSupport();
    bool         createMultisampleFramebuffer();
@@ -88,9 +70,6 @@ private:
 
    void         setInputCallbacks();
    void         framebufferSizeCallback(GLFWwindow* window, int width, int height);
-   void         keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-   void         cursorPosCallback(GLFWwindow* window, double xPos, double yPos);
-   void         scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 
    // Window
    GLFWwindow*                    mWindow;
@@ -100,22 +79,6 @@ private:
    int                            mHeightOfFramebufferInPix;
    std::string                    mTitle;
    bool                           mIsFullScreen;
-
-   // Keyboard
-   std::bitset<GLFW_KEY_LAST + 1> mKeys;
-   std::bitset<GLFW_KEY_LAST + 1> mProcessedKeys;
-
-   // Cursor
-   bool                           mMouseMoved;
-   bool                           mFirstCursorPosCallback;
-   double                         mLastCursorXPos;
-   double                         mLastCursorYPos;
-   float                          mCursorXOffset;
-   float                          mCursorYOffset;
-
-   // Scroll wheel
-   bool                           mScrollWheelMoved;
-   float                          mScrollYOffset;
 
    // Anti aliasing support
    unsigned int                   mMultisampleFBO;

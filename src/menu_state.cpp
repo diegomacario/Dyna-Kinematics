@@ -44,45 +44,11 @@ MenuState::~MenuState()
 
 void MenuState::enter()
 {
-   // In the menu state, the cursor is disabled when fullscreen and enabled when windowed
-   mWindow->enableCursor(!mWindow->isFullScreen());
+
 }
 
 void MenuState::processInput(float deltaTime)
 {
-   // Close the game
-   if (mWindow->keyIsPressed(GLFW_KEY_ESCAPE)) { mWindow->setShouldClose(true); }
-
-   // Make the game full screen or windowed
-   if (mWindow->keyIsPressed(GLFW_KEY_F) && !mWindow->keyHasBeenProcessed(GLFW_KEY_F))
-   {
-      mWindow->setKeyAsProcessed(GLFW_KEY_F);
-      mWindow->setFullScreen(!mWindow->isFullScreen());
-      mWindow->enableCursor(!mWindow->isFullScreen());
-   }
-
-   // Change the number of samples used for anti aliasing
-   if (mWindow->keyIsPressed(GLFW_KEY_1) && !mWindow->keyHasBeenProcessed(GLFW_KEY_1))
-   {
-      mWindow->setKeyAsProcessed(GLFW_KEY_1);
-      mWindow->setNumberOfSamples(1);
-   }
-   else if (mWindow->keyIsPressed(GLFW_KEY_2) && !mWindow->keyHasBeenProcessed(GLFW_KEY_2))
-   {
-      mWindow->setKeyAsProcessed(GLFW_KEY_2);
-      mWindow->setNumberOfSamples(2);
-   }
-   else if (mWindow->keyIsPressed(GLFW_KEY_4) && !mWindow->keyHasBeenProcessed(GLFW_KEY_4))
-   {
-      mWindow->setKeyAsProcessed(GLFW_KEY_4);
-      mWindow->setNumberOfSamples(4);
-   }
-   else if (mWindow->keyIsPressed(GLFW_KEY_8) && !mWindow->keyHasBeenProcessed(GLFW_KEY_8))
-   {
-      mWindow->setKeyAsProcessed(GLFW_KEY_8);
-      mWindow->setNumberOfSamples(8);
-   }
-
    if (mResetMemoryFramebuffer)
    {
       mWindow->clearMemoryFramebuffer();
