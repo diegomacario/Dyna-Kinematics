@@ -579,8 +579,8 @@ void Window::updateBufferAndViewportSizes()
 
    resizeFramebuffers();
 
-   mLowerLeftCornerOfViewportX = (mWidthOfFramebufferInPix - (mScaledWidthOfScene * mScaleFactor)) / 2.0f;
-   mLowerLeftCornerOfViewportY = (mHeightOfFramebufferInPix - (mScaledHeightOfScene * mScaleFactor)) / 2.0f;
+   mLowerLeftCornerOfViewportX = (mWidthOfFramebufferInPix - mScaledWidthOfScene) / 2.0f;
+   mLowerLeftCornerOfViewportY = (mHeightOfFramebufferInPix - mScaledHeightOfScene) / 2.0f;
 
    glViewport(0, 0, mScaledWidthOfScene, mScaledHeightOfScene);
 }
