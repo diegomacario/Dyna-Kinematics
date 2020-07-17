@@ -120,7 +120,7 @@ bool Game::initialize()
    line2DShader->use();
    line2DShader->setMat4("projection", orthoProj);
 
-   mRenderer2D = std::make_unique<Renderer2D>(texture2DShader, color2DShader, line2DShader);
+   mRenderer2D = std::make_unique<Renderer2D>(texture2DShader, color2DShader, line2DShader, glm::vec2(450.0f, 450.0f), mWindow->getScaleFactor());
 
    // Creat the scene dimensions
    mSceneDimensions.push_back(glm::vec2(400.0f + 50.0f, 400.0f + 50.0f)); // Single

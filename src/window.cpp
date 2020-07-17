@@ -163,7 +163,7 @@ bool Window::initialize()
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
    // For debugging purposes
-   glClearColor(0.0f, 1.0f, 0.5f, 1.0f);
+   //glClearColor(0.0f, 1.0f, 0.5f, 1.0f);
 
    return true;
 }
@@ -229,6 +229,11 @@ unsigned int Window::getHeightOfFramebufferInPix() const
    return mHeightOfFramebufferInPix;
 }
 
+unsigned int Window::getScaleFactor() const
+{
+   return mScaleFactor;
+}
+
 bool Window::isFullScreen() const
 {
    return mIsFullScreen;
@@ -285,13 +290,14 @@ void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
    mWidthOfFramebufferInPix = width;
    mHeightOfFramebufferInPix = height;
 
-   resizeFramebuffers();
-   clearMemoryFramebuffer();
-   clearMultisampleFramebuffer();
-   clearGifFramebuffer();
-
    mLowerLeftCornerOfViewportX = (mWidthOfFramebufferInPix - mScaledWidthOfScene) / 2.0f;
    mLowerLeftCornerOfViewportY = (mHeightOfFramebufferInPix - mScaledHeightOfScene) / 2.0f;
+
+   clearMultisampleFramebuffer();
+   clearMemoryFramebuffer();
+   clearGifFramebuffer();
+
+   resizeFramebuffers();
 
    glViewport(0, 0, mScaledWidthOfScene, mScaledHeightOfScene);
 
@@ -373,6 +379,10 @@ void Window::bindMultisampleFramebuffer()
 void Window::generateAntiAliasedImage()
 {
    static bool first = true;
+
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
    glBindFramebuffer(GL_READ_FRAMEBUFFER, mMultisampleFBO);
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
    glBlitFramebuffer(0, 0,
@@ -573,14 +583,14 @@ void Window::updateBufferAndViewportSizes()
    glfwGetWindowSize(mWindow, &mWidthOfWindowInPix, &mHeightOfWindowInPix);
    glfwGetFramebufferSize(mWindow, &mWidthOfFramebufferInPix, &mHeightOfFramebufferInPix);
 
-   clearMemoryFramebuffer();
+   mLowerLeftCornerOfViewportX = (mWidthOfFramebufferInPix - mScaledWidthOfScene) / 2.0f;
+   mLowerLeftCornerOfViewportY = (mHeightOfFramebufferInPix - mScaledHeightOfScene) / 2.0f;
+
    clearMultisampleFramebuffer();
+   clearMemoryFramebuffer();
    clearGifFramebuffer();
 
    resizeFramebuffers();
-
-   mLowerLeftCornerOfViewportX = (mWidthOfFramebufferInPix - mScaledWidthOfScene) / 2.0f;
-   mLowerLeftCornerOfViewportY = (mHeightOfFramebufferInPix - mScaledHeightOfScene) / 2.0f;
 
    glViewport(0, 0, mScaledWidthOfScene, mScaledHeightOfScene);
 }

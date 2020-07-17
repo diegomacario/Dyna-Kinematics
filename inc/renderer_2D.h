@@ -11,7 +11,9 @@ public:
 
    Renderer2D(const std::shared_ptr<Shader>& texShader,
               const std::shared_ptr<Shader>& colorShader,
-              const std::shared_ptr<Shader>& lineShader);
+              const std::shared_ptr<Shader>& lineShader,
+              const glm::vec2&               currentSceneDimensions,
+              unsigned int                   scaleFactor);
    ~Renderer2D();
 
    Renderer2D(const Renderer2D&) = delete;
@@ -24,6 +26,8 @@ public:
    void renderLine(const Wall& wall) const;
 
    void updateOrthographicProjection(float width, float height) const;
+   void updateSceneDimensions(const glm::vec2& currentSceneDimensions);
+   void updateScaleFactor(unsigned int scaleFactor);
 
 private:
 
@@ -34,6 +38,9 @@ private:
    std::shared_ptr<Shader> mTexShader;
    std::shared_ptr<Shader> mColorShader;
    std::shared_ptr<Shader> mLineShader;
+
+   glm::vec2               mCurrentSceneDimensions;
+   unsigned int            mScaleFactor;
 
    unsigned int            mTexturedQuadVAO;
    unsigned int            mColoredQuadVAO;

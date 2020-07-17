@@ -68,6 +68,8 @@ void MenuState::processInput(float deltaTime)
       mWindow->updateBufferAndViewportSizes();
 
       mRenderer2D->updateOrthographicProjection(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y);
+      mRenderer2D->updateSceneDimensions(mCurrentSceneDimensions);
+      mRenderer2D->updateScaleFactor(mWindow->getScaleFactor());
 
       mChangeScene = false;
    }

@@ -34,6 +34,7 @@ public:
    unsigned int getHeightOfWindowInPix() const;
    unsigned int getWidthOfFramebufferInPix() const;
    unsigned int getHeightOfFramebufferInPix() const;
+   unsigned int getScaleFactor() const;
    bool         isFullScreen() const;
    void         setFullScreen(bool fullScreen);
    void         setSizeLimits(int width, int height);
