@@ -50,7 +50,7 @@ RigidBodySimulator::RigidBodySimulator(QWidget *parent)
    ui.antiAliasingModeComboBox->addItem("4x MSAA");
    ui.antiAliasingModeComboBox->addItem("8x MSAA");
 
-   setWindowFlags(Qt::Widget | Qt::MSWindowsFixedSizeDialogHint);
+   //setWindowFlags(Qt::Widget | Qt::MSWindowsFixedSizeDialogHint);
 
    // Simulation
    connect(ui.sceneComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &RigidBodySimulator::onSceneComboBoxCurrentIndexChanged);
