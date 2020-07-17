@@ -261,6 +261,20 @@ void Window::setFullScreen(bool fullScreen)
 void Window::setSizeLimits(int width, int height)
 {
    glfwSetWindowSizeLimits(mWindow, width, height, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+   glfwGetWindowSize(mWindow, &mWidthOfWindowInPix, &mHeightOfWindowInPix);
+   if (width > mWidthOfWindowInPix && height > mHeightOfWindowInPix)
+   {
+      glfwSetWindowSize(mWindow, width, height);
+   }
+   else if (width > mWidthOfWindowInPix)
+   {
+      glfwSetWindowSize(mWindow, width, mHeightOfWindowInPix);
+   }
+   else if (height > mHeightOfWindowInPix)
+   {
+      glfwSetWindowSize(mWindow, mWidthOfWindowInPix, height);
+   }
 }
 
 void Window::setSceneLimits(int width, int height)

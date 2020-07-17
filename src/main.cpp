@@ -46,6 +46,9 @@ int main(int argc, char *argv[])
    a.setPalette(darkPalette);
 
    RigidBodySimulator w;
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32__) && !defined(__NT__)
+   w.setFixedSize(430, 425);
+#endif
    w.show();
    w.move(895, 180);
 
