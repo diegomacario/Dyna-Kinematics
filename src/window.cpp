@@ -540,40 +540,16 @@ void Window::updateBufferAndViewportSizes()
 
    float aspectRatioOfScene  = ((float) mScaledWidthOfScene) / mScaledHeightOfScene;
 
-   if (aspectRatioOfScene == 1.0f)
-   {
-      std::cout << "The aspect ratio of the scene is equal to 1" << '\n';
-      if (mWidthOfFramebufferInPix <= mHeightOfFramebufferInPix)
-      {
-         float requiredHeight = mWidthOfFramebufferInPix;
-         std::cout << "Using the required height: " << requiredHeight << '\n';
-         float heightOfTheTwoHorizontalBars = mHeightOfFramebufferInPix - requiredHeight;
-         std::cout << "Viewport dimensions: " << 0 << " " << heightOfTheTwoHorizontalBars / 2.0f << " " << mWidthOfFramebufferInPix << " " << requiredHeight << '\n';
-         glViewport(0, heightOfTheTwoHorizontalBars / 2.0f, mWidthOfFramebufferInPix, requiredHeight);
-      }
-      else
-      {
-         float requiredWidth = mHeightOfFramebufferInPix;
-         std::cout << "Using the required width: " << requiredWidth << '\n';
-         float widthOfTheTwoVerticalBars = mWidthOfFramebufferInPix - requiredWidth;
-         std::cout << "Viewport dimensions: " << widthOfTheTwoVerticalBars / 2.0f << " " << 0 << " " << requiredWidth << " " << mHeightOfFramebufferInPix << '\n';
-         glViewport(widthOfTheTwoVerticalBars / 2.0f, 0, requiredWidth, mHeightOfFramebufferInPix);
-      }
-
-      std::cout << '\n';
-      return;
-   }
-
    // Let's say we want to use the width of the window for the viewport
    // What height would we need to keep the aspect ratio of the scene?
-   float requiredHeight = mHeightOfFramebufferInPix * (1.0f / aspectRatioOfScene);
+   float requiredHeight = mWidthOfFramebufferInPix * (1.0f / aspectRatioOfScene);
 
    // If the required height is greater than the height of the window, then we use the height of the window for the viewport
    if (requiredHeight > mHeightOfFramebufferInPix)
    {
       std::cout << "The required height is greater than the height of the framebuffer: " << requiredHeight << " > " << mHeightOfFramebufferInPix << '\n';
       // What width would we need to keep the aspect ratio of the scene?
-      float requiredWidth = mWidthOfFramebufferInPix * (aspectRatioOfScene / 1.0f);
+      float requiredWidth = mHeightOfFramebufferInPix * aspectRatioOfScene;
       if (requiredWidth > mWidthOfFramebufferInPix)
       {
          std::cout << "The required width is greater than the width of the framebuffer: " << requiredWidth << " > " << mWidthOfFramebufferInPix << '\n';
