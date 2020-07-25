@@ -25,7 +25,7 @@ public:
    void renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe) const;
    void renderLine(const Wall& wall) const;
 
-   void updateOrthographicProjection(float width, float height) const;
+   void updateOrthographicProjection(float width, float height, float aspectRatio) const;
    void updateSceneDimensions(const glm::vec2& currentSceneDimensions);
    void updateScaleFactor(unsigned int scaleFactor);
 

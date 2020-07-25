@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <bitset>
+#include <mutex>
 
 // TODO: Take advantage of inlining in this class.
 class Window
@@ -37,7 +38,6 @@ public:
    unsigned int getScaleFactor() const;
    bool         isFullScreen() const;
    void         setFullScreen(bool fullScreen);
-   void         setSizeLimits(int width, int height);
    void         setSceneLimits(int width, int height);
 
    // Anti aliasing support
@@ -68,6 +68,8 @@ public:
 
    // Resize support
    void         updateBufferAndViewportSizes();
+   bool         sizeChanged();
+   void         resetSizeChanged();
 
 private:
 
@@ -101,12 +103,13 @@ private:
    unsigned int                   mNumOfSamples;
 
    // Resize support
-   int                            mLowerLeftCornerOfViewportX;
-   int                            mLowerLeftCornerOfViewportY;
    int                            mWidthOfScene;
    int                            mHeightOfScene;
    int                            mScaledWidthOfScene;
    int                            mScaledHeightOfScene;
+   bool                           mWindowSizeChanged;
+public:
+   std::mutex                     mMutex;
 };
 
 #endif

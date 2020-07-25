@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
    if (!glfwWindow->initialize())
    {
       std::cout << "Error - Game::initialize - Failed to initialize the window" << "\n";
-      return false;
+      return 1;
    }
 
    glfwMakeContextCurrent(NULL);

@@ -80,7 +80,7 @@ void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe)
    {
       glBindVertexArray(mRealColoredQuadVAO);
       //glLineWidth(2);
-      glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
+      //glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
       glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
       //glLineWidth(1);
       glBindVertexArray(0);
@@ -88,7 +88,7 @@ void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe)
    else
    {
       glBindVertexArray(mColoredQuadVAO);
-      glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
+      //glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
    }
@@ -101,20 +101,33 @@ void Renderer2D::renderLine(const Wall& wall) const
    // Render line
    wall.bindVAO();
    //glLineWidth(2);
-   glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
+   //glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
    glDrawArrays(GL_LINES, 0, 2);
    //glLineWidth(1);
    glBindVertexArray(0);
 }
 
-void Renderer2D::updateOrthographicProjection(float width, float height) const
+void Renderer2D::updateOrthographicProjection(float width, float height, float aspectRatio) const
 {
-   glm::mat4 orthoProj = glm::ortho(-width / 2,  // Left
-                                     width / 2,  // Right
-                                    -height / 2, // Bottom
-                                     height / 2, // Top
-                                    -1.0f,       // Near
-                                     1.0f);      // Far
+   glm::mat4 orthoProj;
+   if (aspectRatio >= 1.0f)
+   {
+      orthoProj = glm::ortho((-width  / 2) * aspectRatio,  // Left
+                             ( width  / 2) * aspectRatio,  // Right
+                             (-height / 2),                // Bottom
+                             ( height / 2),                // Top
+                             -1.0f,                        // Near
+                              1.0f);                       // Far
+   }
+   else
+   {
+      orthoProj = glm::ortho((-width  / 2),               // Left
+                             ( width  / 2),               // Right
+                             (-height / 2) / aspectRatio, // Bottom
+                             ( height / 2) / aspectRatio, // Top
+                             -1.0f,                       // Near
+                              1.0f);                      // Far
+   }
 
    mTexShader->use();
    mTexShader->setMat4("projection", orthoProj);
