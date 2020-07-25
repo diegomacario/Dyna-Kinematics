@@ -49,14 +49,14 @@ void MenuState::enter()
 
 void MenuState::processInput(float deltaTime)
 {
-   glViewport(0, 0, mWindow->getWidthOfFramebufferInPix(), mWindow->getHeightOfFramebufferInPix());
+   //glViewport(0, 0, mWindow->getWidthOfFramebufferInPix(), mWindow->getHeightOfFramebufferInPix());
    if (mWindow->sizeChanged())
    {
       std::lock_guard<std::mutex> guard(mWindow->mMutex);
       mWindow->resetSizeChanged();
       mWindow->updateBufferAndViewportSizes();
-      float aspectRatio = ((float) mWindow->getWidthOfFramebufferInPix()) / mWindow->getHeightOfFramebufferInPix();
-      mRenderer2D->updateOrthographicProjection(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, aspectRatio);
+      //float aspectRatio = ((float) mWindow->getWidthOfFramebufferInPix()) / mWindow->getHeightOfFramebufferInPix();
+      //mRenderer2D->updateOrthographicProjection(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, aspectRatio);
    }
 
    if (mResetMemoryFramebuffer)
@@ -76,10 +76,10 @@ void MenuState::processInput(float deltaTime)
       mWindow->setSceneLimits(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y);
       mWindow->updateBufferAndViewportSizes();
 
-      float aspectRatio = ((float) mWindow->getWidthOfFramebufferInPix()) / mWindow->getHeightOfFramebufferInPix();
+      //float aspectRatio = ((float) mWindow->getWidthOfFramebufferInPix()) / mWindow->getHeightOfFramebufferInPix();
       mRenderer2D->updateSceneDimensions(mCurrentSceneDimensions);
       mRenderer2D->updateScaleFactor(mWindow->getScaleFactor());
-      mRenderer2D->updateOrthographicProjection(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, aspectRatio);
+      mRenderer2D->updateOrthographicProjection(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, 1.0f);
 
       mChangeScene = false;
    }
