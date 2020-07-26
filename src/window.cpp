@@ -23,6 +23,10 @@ Window::Window(const std::string& title)
    , mHeightOfScene(450)
    , mScaledWidthOfScene(0)
    , mScaledHeightOfScene(0)
+   , mLowerLeftCornerOfViewportX(0.0f)
+   , mLowerLeftCornerOfViewportY(0.0f)
+   , mWidthOfViewport(0.0f)
+   , mHeightOfViewport(0.0f)
    , mWindowSizeChanged(false)
    , mMutex()
 {
@@ -103,7 +107,11 @@ bool Window::initialize()
       return false;
    }
 
-   glViewport(0, 0, mWidthOfFramebufferInPix, mHeightOfFramebufferInPix);
+   mLowerLeftCornerOfViewportX = 0.0f;
+   mLowerLeftCornerOfViewportY = 0.0f;
+   mWidthOfViewport            = mWidthOfFramebufferInPix;
+   mHeightOfViewport           = mHeightOfFramebufferInPix;
+   glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport);
    glEnable(GL_CULL_FACE);
 
    if (!configureAntiAliasingSupport())
@@ -205,9 +213,9 @@ unsigned int Window::getHeightOfFramebufferInPix() const
 
 void Window::setSceneLimits(int width, int height)
 {
-   mWidthOfScene = width;
+   mWidthOfScene  = width;
    mHeightOfScene = height;
-   mScaledWidthOfScene = width * mScaleFactor;
+   mScaledWidthOfScene  = width * mScaleFactor;
    mScaledHeightOfScene = height * mScaleFactor;
 }
 
@@ -526,7 +534,12 @@ void Window::updateBufferAndViewportSizes()
          //std::cout << "Using the required width: " << requiredWidth << '\n';
          float widthOfTheTwoVerticalBars = mWidthOfFramebufferInPix - requiredWidth;
          //std::cout << "Viewport dimensions: " << widthOfTheTwoVerticalBars / 2.0f << " " << 0 << " " << requiredWidth << " " << mHeightOfFramebufferInPix << '\n';
-         glViewport(widthOfTheTwoVerticalBars / 2.0f, 0, requiredWidth, mHeightOfFramebufferInPix);
+
+         mLowerLeftCornerOfViewportX = widthOfTheTwoVerticalBars / 2.0f;
+         mLowerLeftCornerOfViewportY = 0.0f;
+         mWidthOfViewport            = requiredWidth;
+         mHeightOfViewport           = mHeightOfFramebufferInPix;
+         glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport);
       }
    }
    else
@@ -534,7 +547,12 @@ void Window::updateBufferAndViewportSizes()
       //std::cout << "Using the required height: " << requiredHeight << '\n';
       float heightOfTheTwoHorizontalBars = mHeightOfFramebufferInPix - requiredHeight;
       //std::cout << "Viewport dimensions: " << 0 << " " << heightOfTheTwoHorizontalBars / 2.0f << " " << mWidthOfFramebufferInPix << " " << requiredHeight << '\n';
-      glViewport(0, heightOfTheTwoHorizontalBars / 2.0f, mWidthOfFramebufferInPix, requiredHeight);
+
+      mLowerLeftCornerOfViewportX = 0.0f;
+      mLowerLeftCornerOfViewportY = heightOfTheTwoHorizontalBars / 2.0f;
+      mWidthOfViewport            = mWidthOfFramebufferInPix;
+      mHeightOfViewport           = requiredHeight;
+      glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport);
    }
 
    //std::cout << '\n';

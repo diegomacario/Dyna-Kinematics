@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <bitset>
 #include <mutex>
 
 // TODO: Take advantage of inlining in this class.
@@ -65,6 +64,10 @@ public:
 
    // Resize support
    void         updateBufferAndViewportSizes();
+   float        getLowerLeftCornerOfViewportX() const { return mLowerLeftCornerOfViewportX; };
+   float        getLowerLeftCornerOfViewportY() const { return mLowerLeftCornerOfViewportY; };
+   float        getWidthOfViewport() const            { return mWidthOfViewport; };
+   float        getHeightOfViewport() const           { return mHeightOfViewport; };
    bool         sizeChanged();
    void         resetSizeChanged();
    std::mutex&  getMutex();
@@ -104,6 +107,10 @@ private:
    int                            mHeightOfScene;
    int                            mScaledWidthOfScene;
    int                            mScaledHeightOfScene;
+   float                          mLowerLeftCornerOfViewportX;
+   float                          mLowerLeftCornerOfViewportY;
+   float                          mWidthOfViewport;
+   float                          mHeightOfViewport;
    bool                           mWindowSizeChanged;
    std::mutex                     mMutex;
 };

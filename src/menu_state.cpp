@@ -49,6 +49,8 @@ void MenuState::enter()
 
 void MenuState::processInput(float deltaTime)
 {
+   glViewport(mWindow->getLowerLeftCornerOfViewportX(), mWindow->getLowerLeftCornerOfViewportY(), mWindow->getWidthOfViewport(), mWindow->getHeightOfViewport());
+
    if (mWindow->sizeChanged())
    {
       std::lock_guard<std::mutex> guard(mWindow->getMutex());
