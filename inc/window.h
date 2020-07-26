@@ -35,6 +35,7 @@ public:
    unsigned int getWidthOfFramebufferInPix() const;
    unsigned int getHeightOfFramebufferInPix() const;
    void         setSceneLimits(int width, int height);
+   void         enableResizing(bool enable);
 
    // Anti aliasing support
    bool         configureAntiAliasingSupport();

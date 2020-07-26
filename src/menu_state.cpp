@@ -186,16 +186,19 @@ void MenuState::render()
 
       stbi_flip_vertically_on_write(true);
 
-      memset(mRecordedFrameData, 0, 3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y);
+      unsigned int width  = mWindow->getWidthOfFramebufferInPix();
+      unsigned int height = mWindow->getHeightOfFramebufferInPix();
+
+      memset(mRecordedFrameData, 0, 3 * width * height);
 
       mWindow->bindGifFramebuffer();
 
       glPixelStorei(GL_PACK_ALIGNMENT, 1);
-      glReadPixels(0, 0, mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
+      glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
 
       std::string imgName = "GIFs\\GIF_" + std::to_string(mRecordingDirectory) + "\\Frames\\" + std::to_string(mRecordedFrameCounter) + ".png";
 
-      stbi_write_png(imgName.c_str(), mCurrentSceneDimensions.x, mCurrentSceneDimensions.y, 3, mRecordedFrameData, mCurrentSceneDimensions.x * 3);
+      stbi_write_png(imgName.c_str(), width, height, 3, mRecordedFrameData, width * 3);
       mRecordedFrameCounter++;
    }
 
@@ -268,12 +271,14 @@ void MenuState::enableRecording(bool enable)
 {
    if (enable)
    {
+      mWindow->enableResizing(false);
+
       mRecordedFrameCounter = 0;
       mRecordingDirectory++;
 
       delete [] mRecordedFrameData;
       mRecordedFrameData = nullptr;
-      mRecordedFrameData = new GLubyte[3 * mCurrentSceneDimensions.x * mCurrentSceneDimensions.y];
+      mRecordedFrameData = new GLubyte[3 * mWindow->getWidthOfFramebufferInPix() * mWindow->getHeightOfFramebufferInPix()];
 
       std::string gifsDirectory = "GIFs";
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -307,6 +312,10 @@ void MenuState::enableRecording(bool enable)
 #else
       mkdir(framesFilePath.c_str() , 0775);
 #endif
+   }
+   else
+   {
+      mWindow->enableResizing(true);
    }
 
    mRecord = enable;

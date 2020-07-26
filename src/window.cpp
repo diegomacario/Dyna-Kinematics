@@ -219,6 +219,19 @@ void Window::setSceneLimits(int width, int height)
    mScaledHeightOfScene = height * mScaleFactor;
 }
 
+void Window::enableResizing(bool enable)
+{
+   if (enable)
+   {
+      glfwSetWindowSizeLimits(mWindow, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
+   }
+   else
+   {
+      glfwGetWindowSize(mWindow, &mWidthOfWindowInPix, &mHeightOfWindowInPix);
+      glfwSetWindowSizeLimits(mWindow, mWidthOfWindowInPix, mHeightOfWindowInPix, mWidthOfWindowInPix, mHeightOfWindowInPix);
+   }
+}
+
 void Window::setInputCallbacks()
 {
    glfwSetWindowUserPointer(mWindow, this);
