@@ -10,7 +10,6 @@ Window::Window(const std::string& title)
    , mHeightOfFramebufferInPix(0)
    , mScaleFactor(1)
    , mTitle(title)
-   , mIsFullScreen(true)
    , mMultisampleFBO(0)
    , mMultisampleTexture(0)
    , mMultisampleRBO(0)
@@ -74,7 +73,6 @@ bool Window::initialize()
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-   mIsFullScreen = false;
    mWidthOfWindowInPix = 650;
    mHeightOfWindowInPix = 650;
    mWindow = glfwCreateWindow(mWidthOfWindowInPix, mHeightOfWindowInPix, mTitle.c_str(), nullptr, nullptr);
@@ -95,7 +93,7 @@ bool Window::initialize()
    mScaledWidthOfScene  = mWidthOfScene * mScaleFactor;
    mScaledHeightOfScene = mHeightOfScene * mScaleFactor;
 
-   glfwSetWindowPos(mWindow, 35, 35);
+   glfwSetWindowPos(mWindow, 170, 70);
 
    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
    {
@@ -139,7 +137,7 @@ bool Window::initialize()
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
    // For debugging purposes
-   glClearColor(0.0f, 1.0f, 0.5f, 1.0f);
+   //glClearColor(0.0f, 1.0f, 0.5f, 1.0f);
 
    return true;
 }
@@ -205,35 +203,6 @@ unsigned int Window::getHeightOfFramebufferInPix() const
    return mHeightOfFramebufferInPix;
 }
 
-unsigned int Window::getScaleFactor() const
-{
-   return mScaleFactor;
-}
-
-bool Window::isFullScreen() const
-{
-   return mIsFullScreen;
-}
-
-void Window::setFullScreen(bool fullScreen)
-{
-   if (fullScreen)
-   {
-      const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-      mWidthOfWindowInPix = mode->width;
-      mHeightOfWindowInPix = mode->height;
-      glfwSetWindowMonitor(mWindow, glfwGetPrimaryMonitor(), 0, 0, mWidthOfWindowInPix, mHeightOfWindowInPix, GLFW_DONT_CARE);
-   }
-   else
-   {
-      mWidthOfWindowInPix = 1280;
-      mHeightOfWindowInPix = 720;
-      glfwSetWindowMonitor(mWindow, NULL, 20, 50, mWidthOfWindowInPix, mHeightOfWindowInPix, GLFW_DONT_CARE);
-   }
-
-   mIsFullScreen = fullScreen;
-}
-
 void Window::setSceneLimits(int width, int height)
 {
    mWidthOfScene = width;
@@ -257,12 +226,11 @@ void Window::setInputCallbacks()
 void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
    std::lock_guard<std::mutex> guard(mMutex);
+
    glfwGetWindowSize(window, &mWidthOfWindowInPix, &mHeightOfWindowInPix);
 
    mWidthOfFramebufferInPix = width;
    mHeightOfFramebufferInPix = height;
-
-   //updateBufferAndViewportSizes();
 
    mWindowSizeChanged = true;
 }
@@ -305,7 +273,7 @@ bool Window::createMultisampleFramebuffer()
 
    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
    {
-      std::cout << "Error - Window::configureAntiAliasingSupport - Multisample framebuffer is not complete" << "\n";
+      std::cout << "Error - Window::createMultisampleFramebuffer - Multisample framebuffer is not complete" << "\n";
       return false;
    }
 
@@ -348,8 +316,6 @@ void Window::generateAntiAliasedImage()
 
 void Window::resizeFramebuffers()
 {
-   //glViewport(0, 0, mWidthOfFramebufferInPix, mHeightOfFramebufferInPix);
-
    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mMultisampleTexture);
    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, mNumOfSamples, GL_RGB, mWidthOfFramebufferInPix, mHeightOfFramebufferInPix, GL_TRUE);
    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
@@ -430,7 +396,7 @@ bool Window::createMemoryFramebuffer()
 
    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
    {
-      std::cout << "Error - Window::configureMemorySupport - Memory framebuffer is not complete" << "\n";
+      std::cout << "Error - Window::createMemoryFramebuffer - Memory framebuffer is not complete" << "\n";
       return false;
    }
 
@@ -493,7 +459,7 @@ bool Window::createGifFramebuffer()
 
    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
    {
-      std::cout << "Error - Window::configureMemorySupport - Gif framebuffer is not complete" << "\n";
+      std::cout << "Error - Window::createGifFramebuffer - Gif framebuffer is not complete" << "\n";
       return false;
    }
 
@@ -547,31 +513,31 @@ void Window::updateBufferAndViewportSizes()
    // If the required height is greater than the height of the window, then we use the height of the window for the viewport
    if (requiredHeight > mHeightOfFramebufferInPix)
    {
-      std::cout << "The required height is greater than the height of the framebuffer: " << requiredHeight << " > " << mHeightOfFramebufferInPix << '\n';
+      //std::cout << "The required height is greater than the height of the framebuffer: " << requiredHeight << " > " << mHeightOfFramebufferInPix << '\n';
       // What width would we need to keep the aspect ratio of the scene?
       float requiredWidth = mHeightOfFramebufferInPix * aspectRatioOfScene;
       if (requiredWidth > mWidthOfFramebufferInPix)
       {
-         std::cout << "The required width is greater than the width of the framebuffer: " << requiredWidth << " > " << mWidthOfFramebufferInPix << '\n';
-         std::cout << "Error: Couldn't calculate dimensions that preserve the aspect ratio of the scene!" << '\n';
+         //std::cout << "The required width is greater than the width of the framebuffer: " << requiredWidth << " > " << mWidthOfFramebufferInPix << '\n';
+         std::cout << "Error - Window::updateBufferAndViewportSizes - Couldn't calculate dimensions that preserve the aspect ratio of the scene" << '\n';
       }
       else
       {
-         std::cout << "Using the required width: " << requiredWidth << '\n';
+         //std::cout << "Using the required width: " << requiredWidth << '\n';
          float widthOfTheTwoVerticalBars = mWidthOfFramebufferInPix - requiredWidth;
-         std::cout << "Viewport dimensions: " << widthOfTheTwoVerticalBars / 2.0f << " " << 0 << " " << requiredWidth << " " << mHeightOfFramebufferInPix << '\n';
+         //std::cout << "Viewport dimensions: " << widthOfTheTwoVerticalBars / 2.0f << " " << 0 << " " << requiredWidth << " " << mHeightOfFramebufferInPix << '\n';
          glViewport(widthOfTheTwoVerticalBars / 2.0f, 0, requiredWidth, mHeightOfFramebufferInPix);
       }
    }
    else
    {
-      std::cout << "Using the required height: " << requiredHeight << '\n';
+      //std::cout << "Using the required height: " << requiredHeight << '\n';
       float heightOfTheTwoHorizontalBars = mHeightOfFramebufferInPix - requiredHeight;
-      std::cout << "Viewport dimensions: " << 0 << " " << heightOfTheTwoHorizontalBars / 2.0f << " " << mWidthOfFramebufferInPix << " " << requiredHeight << '\n';
+      //std::cout << "Viewport dimensions: " << 0 << " " << heightOfTheTwoHorizontalBars / 2.0f << " " << mWidthOfFramebufferInPix << " " << requiredHeight << '\n';
       glViewport(0, heightOfTheTwoHorizontalBars / 2.0f, mWidthOfFramebufferInPix, requiredHeight);
    }
 
-   std::cout << '\n';
+   //std::cout << '\n';
 }
 
 bool Window::sizeChanged()
@@ -582,4 +548,9 @@ bool Window::sizeChanged()
 void Window::resetSizeChanged()
 {
    mWindowSizeChanged = false;
+}
+
+std::mutex& Window::getMutex()
+{
+   return mMutex;
 }

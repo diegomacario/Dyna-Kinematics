@@ -18,7 +18,7 @@ void FiniteStateMachine::initialize(std::unordered_map<std::string, std::shared_
    }
    else
    {
-      std::cout << "Error - FiniteStateMachine::FiniteStateMachine - A state with the following ID does not exist: " << initialStateID << "\n";
+      std::cout << "Error - FiniteStateMachine::initialize - A state with the following ID does not exist: " << initialStateID << "\n";
    }
 }
 

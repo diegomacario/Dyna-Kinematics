@@ -8,12 +8,6 @@
 #include "rigid_body_simulator.h"
 #include "game.h"
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#include <Windows.h>
-#include <stdio.h>
-#include <stdlib.h>
-#endif
-
 int main(int argc, char *argv[])
 {
    QApplication a(argc, argv);
@@ -50,19 +44,14 @@ int main(int argc, char *argv[])
    w.setFixedSize(430, 425);
 #endif
    w.show();
-   w.move(895, 180);
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-   AllocConsole();
-   freopen("CONOUT$", "w", stdout);
-#endif
+   w.move(830, 180);
 
    // Initialize the window
    std::shared_ptr<Window> glfwWindow = std::make_shared<Window>("Simulation Viewer");
 
    if (!glfwWindow->initialize())
    {
-      std::cout << "Error - Game::initialize - Failed to initialize the window" << "\n";
+      std::cout << "Error - main - Failed to initialize the window" << "\n";
       return 1;
    }
 

@@ -35,9 +35,6 @@ public:
    unsigned int getHeightOfWindowInPix() const;
    unsigned int getWidthOfFramebufferInPix() const;
    unsigned int getHeightOfFramebufferInPix() const;
-   unsigned int getScaleFactor() const;
-   bool         isFullScreen() const;
-   void         setFullScreen(bool fullScreen);
    void         setSceneLimits(int width, int height);
 
    // Anti aliasing support
@@ -70,6 +67,7 @@ public:
    void         updateBufferAndViewportSizes();
    bool         sizeChanged();
    void         resetSizeChanged();
+   std::mutex&  getMutex();
 
 private:
 
@@ -84,7 +82,6 @@ private:
    int                            mHeightOfFramebufferInPix;
    int                            mScaleFactor;
    std::string                    mTitle;
-   bool                           mIsFullScreen;
 
    // Anti aliasing support
    unsigned int                   mMultisampleFBO;
@@ -108,7 +105,6 @@ private:
    int                            mScaledWidthOfScene;
    int                            mScaledHeightOfScene;
    bool                           mWindowSizeChanged;
-public:
    std::mutex                     mMutex;
 };
 

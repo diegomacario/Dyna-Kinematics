@@ -7,14 +7,10 @@
 
 Renderer2D::Renderer2D(const std::shared_ptr<Shader>& texShader,
                        const std::shared_ptr<Shader>& colorShader,
-                       const std::shared_ptr<Shader>& lineShader,
-                       const glm::vec2&               currentSceneDimensions,
-                       unsigned int                   scaleFactor)
+                       const std::shared_ptr<Shader>& lineShader)
    : mTexShader(texShader)
    , mColorShader(colorShader)
    , mLineShader(lineShader)
-   , mCurrentSceneDimensions(currentSceneDimensions)
-   , mScaleFactor(scaleFactor)
 {
    configureVAOs();
    configureRealVAOs();
@@ -107,27 +103,14 @@ void Renderer2D::renderLine(const Wall& wall) const
    glBindVertexArray(0);
 }
 
-void Renderer2D::updateOrthographicProjection(float width, float height, float aspectRatio) const
+void Renderer2D::updateOrthographicProjection(float width, float height) const
 {
-   glm::mat4 orthoProj;
-   if (aspectRatio >= 1.0f)
-   {
-      orthoProj = glm::ortho((-width  / 2) * aspectRatio,  // Left
-                             ( width  / 2) * aspectRatio,  // Right
-                             (-height / 2),                // Bottom
-                             ( height / 2),                // Top
-                             -1.0f,                        // Near
-                              1.0f);                       // Far
-   }
-   else
-   {
-      orthoProj = glm::ortho((-width  / 2),               // Left
-                             ( width  / 2),               // Right
-                             (-height / 2) / aspectRatio, // Bottom
-                             ( height / 2) / aspectRatio, // Top
-                             -1.0f,                       // Near
-                              1.0f);                      // Far
-   }
+   glm::mat4 orthoProj = glm::ortho((-width  / 2), // Left
+                                    ( width  / 2), // Right
+                                    (-height / 2), // Bottom
+                                    ( height / 2), // Top
+                                    -1.0f,         // Near
+                                     1.0f);        // Far
 
    mTexShader->use();
    mTexShader->setMat4("projection", orthoProj);
@@ -137,16 +120,6 @@ void Renderer2D::updateOrthographicProjection(float width, float height, float a
 
    mLineShader->use();
    mLineShader->setMat4("projection", orthoProj);
-}
-
-void Renderer2D::updateSceneDimensions(const glm::vec2& currentSceneDimensions)
-{
-   mCurrentSceneDimensions = currentSceneDimensions;
-}
-
-void Renderer2D::updateScaleFactor(unsigned int scaleFactor)
-{
-   mScaleFactor = scaleFactor;
 }
 
 void Renderer2D::configureVAOs()
