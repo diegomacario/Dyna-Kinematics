@@ -323,8 +323,8 @@ void MenuState::enableRecording(bool enable)
 
 void MenuState::generateGIF()
 {
-   std::string changeDirectoryCmd = "cd GIFs/GIF_" + std::to_string(mRecordingDirectory) + " & ";
-   std::string generateGifCmd     = "ffmpeg -y -framerate 50 -i Frames/%01d.png GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif & \
+   std::string changeDirectoryCmd = "cd GIFs/GIF_" + std::to_string(mRecordingDirectory) + " && ";
+   std::string generateGifCmd     = "ffmpeg -y -framerate 50 -i Frames/%d.png GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif && \
                                      ffmpeg -y -i GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif -filter:v \"setpts=0.25*PTS\" \
                                      GIF_" + std::to_string(mRecordingDirectory) + "_Fast.gif";
    std::string fullCmd            = changeDirectoryCmd + generateGifCmd;
