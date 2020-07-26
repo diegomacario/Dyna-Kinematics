@@ -506,11 +506,11 @@ void Window::updateBufferAndViewportSizes()
    glfwGetWindowSize(mWindow, &mWidthOfWindowInPix, &mHeightOfWindowInPix);
    glfwGetFramebufferSize(mWindow, &mWidthOfFramebufferInPix, &mHeightOfFramebufferInPix);
 
+   resizeFramebuffers();
+
    clearMultisampleFramebuffer();
    clearMemoryFramebuffer();
    clearGifFramebuffer();
-
-   resizeFramebuffers();
 
    float aspectRatioOfScene  = ((float) mScaledWidthOfScene) / mScaledHeightOfScene;
 
@@ -539,7 +539,6 @@ void Window::updateBufferAndViewportSizes()
          mLowerLeftCornerOfViewportY = 0.0f;
          mWidthOfViewport            = requiredWidth;
          mHeightOfViewport           = mHeightOfFramebufferInPix;
-         glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport);
       }
    }
    else
@@ -552,7 +551,6 @@ void Window::updateBufferAndViewportSizes()
       mLowerLeftCornerOfViewportY = heightOfTheTwoHorizontalBars / 2.0f;
       mWidthOfViewport            = mWidthOfFramebufferInPix;
       mHeightOfViewport           = requiredHeight;
-      glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport);
    }
 
    //std::cout << '\n';

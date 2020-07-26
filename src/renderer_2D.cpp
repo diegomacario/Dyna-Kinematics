@@ -11,6 +11,10 @@ Renderer2D::Renderer2D(const std::shared_ptr<Shader>& texShader,
    : mTexShader(texShader)
    , mColorShader(colorShader)
    , mLineShader(lineShader)
+   , mLowerLeftCornerOfViewportX(0.0f)
+   , mLowerLeftCornerOfViewportY(0.0f)
+   , mWidthOfViewport(0.0f)
+   , mHeightOfViewport(0.0f)
 {
    configureVAOs();
    configureRealVAOs();
@@ -76,7 +80,7 @@ void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe)
    {
       glBindVertexArray(mRealColoredQuadVAO);
       //glLineWidth(2);
-      //glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
+      glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
       glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
       //glLineWidth(1);
       glBindVertexArray(0);
@@ -84,7 +88,7 @@ void Renderer2D::renderRigidBody(const RigidBody2D& rigidBody2D, bool wireframe)
    else
    {
       glBindVertexArray(mColoredQuadVAO);
-      //glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
+      glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
    }
@@ -97,7 +101,7 @@ void Renderer2D::renderLine(const Wall& wall) const
    // Render line
    wall.bindVAO();
    //glLineWidth(2);
-   //glViewport(0, 0, mScaleFactor * mCurrentSceneDimensions.x, mScaleFactor * mCurrentSceneDimensions.y); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
+   glViewport(mLowerLeftCornerOfViewportX, mLowerLeftCornerOfViewportY, mWidthOfViewport, mHeightOfViewport); // This is here because of a bug in GLFW that can only be seen in certain versions of macOS
    glDrawArrays(GL_LINES, 0, 2);
    //glLineWidth(1);
    glBindVertexArray(0);
@@ -120,6 +124,14 @@ void Renderer2D::updateOrthographicProjection(float width, float height) const
 
    mLineShader->use();
    mLineShader->setMat4("projection", orthoProj);
+}
+
+void Renderer2D::updateViewportDimensions(float lowerLeftCornerOfViewportX, float lowerLeftCornerOfViewportY, float widthOfViewport, float heightOfViewport)
+{
+   mLowerLeftCornerOfViewportX = lowerLeftCornerOfViewportX;
+   mLowerLeftCornerOfViewportY = lowerLeftCornerOfViewportY;
+   mWidthOfViewport            = widthOfViewport;
+   mHeightOfViewport           = heightOfViewport;
 }
 
 void Renderer2D::configureVAOs()

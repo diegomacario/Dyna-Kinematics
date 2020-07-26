@@ -24,6 +24,7 @@ public:
    void renderLine(const Wall& wall) const;
 
    void updateOrthographicProjection(float width, float height) const;
+   void updateViewportDimensions(float lowerLeftCornerOfViewportX, float lowerLeftCornerOfViewportY, float widthOfViewport, float heightOfViewport);
 
 private:
 
@@ -46,6 +47,11 @@ private:
 
    unsigned int            mRealQuadVBO;
    unsigned int            mRealQuadEBO;
+
+   float                   mLowerLeftCornerOfViewportX;
+   float                   mLowerLeftCornerOfViewportY;
+   float                   mWidthOfViewport;
+   float                   mHeightOfViewport;
 };
 
 #endif

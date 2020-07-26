@@ -49,15 +49,6 @@ void MenuState::enter()
 
 void MenuState::processInput(float deltaTime)
 {
-   glViewport(mWindow->getLowerLeftCornerOfViewportX(), mWindow->getLowerLeftCornerOfViewportY(), mWindow->getWidthOfViewport(), mWindow->getHeightOfViewport());
-
-   if (mWindow->sizeChanged())
-   {
-      std::lock_guard<std::mutex> guard(mWindow->getMutex());
-      mWindow->updateBufferAndViewportSizes();
-      mWindow->resetSizeChanged();
-   }
-
    if (mResetMemoryFramebuffer)
    {
       mWindow->clearMemoryFramebuffer();
@@ -76,6 +67,7 @@ void MenuState::processInput(float deltaTime)
       mWindow->updateBufferAndViewportSizes();
 
       mRenderer2D->updateOrthographicProjection(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y);
+      mRenderer2D->updateViewportDimensions(mWindow->getLowerLeftCornerOfViewportX(), mWindow->getLowerLeftCornerOfViewportY(), mWindow->getWidthOfViewport(), mWindow->getHeightOfViewport());
 
       mChangeScene = false;
    }
@@ -125,6 +117,16 @@ int MenuState::update(float deltaTime)
 
 void MenuState::render()
 {
+   std::lock_guard<std::mutex> guard(mWindow->getMutex());
+
+   if (mWindow->sizeChanged())
+   {
+      mWindow->updateBufferAndViewportSizes();
+      mWindow->resetSizeChanged();
+   }
+
+   mRenderer2D->updateViewportDimensions(mWindow->getLowerLeftCornerOfViewportX(), mWindow->getLowerLeftCornerOfViewportY(), mWindow->getWidthOfViewport(), mWindow->getHeightOfViewport());
+
    if (mRememberFramesIsEnabled)
    {
       if (mFrameCounter % mRememberFramesFrequency == 0 && !mPauseRememberFrames)
