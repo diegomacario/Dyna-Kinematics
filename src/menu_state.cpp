@@ -196,7 +196,7 @@ void MenuState::render()
       glPixelStorei(GL_PACK_ALIGNMENT, 1);
       glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
 
-      std::string imgName = "GIFs\\GIF_" + std::to_string(mRecordingDirectory) + "\\Frames\\" + std::to_string(mRecordedFrameCounter) + ".png";
+      std::string imgName = "GIFs/GIF_" + std::to_string(mRecordingDirectory) + "/Frames/" + std::to_string(mRecordedFrameCounter) + ".png";
 
       stbi_write_png(imgName.c_str(), width, height, 3, mRecordedFrameData, width * 3);
       mRecordedFrameCounter++;
@@ -287,7 +287,7 @@ void MenuState::enableRecording(bool enable)
       mkdir(gifsDirectory.c_str() , 0775);
 #endif
 
-      std::string gifFilePath = gifsDirectory + "\\GIF_" + std::to_string(mRecordingDirectory);
+      std::string gifFilePath = gifsDirectory + "/GIF_" + std::to_string(mRecordingDirectory);
       errno = 0;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
       _mkdir(gifFilePath.c_str());
@@ -297,7 +297,7 @@ void MenuState::enableRecording(bool enable)
       while (errno == EEXIST)
       {
          mRecordingDirectory++;
-         gifFilePath = "GIFs\\GIF_" + std::to_string(mRecordingDirectory);
+         gifFilePath = "GIFs/GIF_" + std::to_string(mRecordingDirectory);
          errno = 0;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
          _mkdir(gifFilePath.c_str());
@@ -306,7 +306,7 @@ void MenuState::enableRecording(bool enable)
 #endif
       }
 
-      std::string framesFilePath = gifFilePath + "\\Frames";
+      std::string framesFilePath = gifFilePath + "/Frames";
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
       _mkdir(framesFilePath.c_str());
 #else
@@ -323,8 +323,8 @@ void MenuState::enableRecording(bool enable)
 
 void MenuState::generateGIF()
 {
-   std::string changeDirectoryCmd = "cd GIFs\\GIF_" + std::to_string(mRecordingDirectory) + " & ";
-   std::string generateGifCmd     = "ffmpeg -y -framerate 50 -i Frames\\%01d.png GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif & \
+   std::string changeDirectoryCmd = "cd GIFs/GIF_" + std::to_string(mRecordingDirectory) + " & ";
+   std::string generateGifCmd     = "ffmpeg -y -framerate 50 -i Frames/%01d.png GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif & \
                                      ffmpeg -y -i GIF_" + std::to_string(mRecordingDirectory) + "_Slow.gif -filter:v \"setpts=0.25*PTS\" \
                                      GIF_" + std::to_string(mRecordingDirectory) + "_Fast.gif";
    std::string fullCmd            = changeDirectoryCmd + generateGifCmd;
