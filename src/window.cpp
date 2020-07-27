@@ -191,30 +191,10 @@ void Window::pollEvents()
    glfwPollEvents();
 }
 
-unsigned int Window::getWidthOfWindowInPix() const
-{
-   return mWidthOfWindowInPix;
-}
-
-unsigned int Window::getHeightOfWindowInPix() const
-{
-   return mHeightOfWindowInPix;
-}
-
-unsigned int Window::getWidthOfFramebufferInPix() const
-{
-   return mWidthOfFramebufferInPix;
-}
-
-unsigned int Window::getHeightOfFramebufferInPix() const
-{
-   return mHeightOfFramebufferInPix;
-}
-
 void Window::setSceneLimits(int width, int height)
 {
-   mWidthOfScene  = width;
-   mHeightOfScene = height;
+   mWidthOfScene        = width;
+   mHeightOfScene       = height;
    mScaledWidthOfScene  = width * mScaleFactor;
    mScaledHeightOfScene = height * mScaleFactor;
 }
@@ -321,7 +301,7 @@ void Window::bindMultisampleFramebuffer()
    glBindFramebuffer(GL_FRAMEBUFFER, mMultisampleFBO);
 }
 
-void Window::generateAntiAliasedImage()
+void Window::generateAntiAliasedImage(unsigned int width, unsigned int height)
 {
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -329,9 +309,9 @@ void Window::generateAntiAliasedImage()
    glBindFramebuffer(GL_READ_FRAMEBUFFER, mMultisampleFBO);
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
    glBlitFramebuffer(0, 0,
-                     mWidthOfFramebufferInPix, mHeightOfFramebufferInPix,
+                     width, height,
                      0, 0,
-                     mWidthOfFramebufferInPix, mHeightOfFramebufferInPix,
+                     width, height,
                      GL_COLOR_BUFFER_BIT, GL_NEAREST); // TODO: Should this be GL_LINEAR?
 }
 
@@ -444,11 +424,11 @@ void Window::bindMemoryFramebuffer()
    glBindFramebuffer(GL_FRAMEBUFFER, mMemoryFBO);
 }
 
-void Window::copyMemoryFramebufferIntoMultisampleFramebuffer()
+void Window::copyMemoryFramebufferIntoMultisampleFramebuffer(unsigned int width, unsigned int height)
 {
    glBindFramebuffer(GL_READ_FRAMEBUFFER, mMemoryFBO);
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mMultisampleFBO);
-   glBlitFramebuffer(0, 0, mWidthOfFramebufferInPix, mHeightOfFramebufferInPix, 0, 0, mWidthOfFramebufferInPix, mHeightOfFramebufferInPix, GL_COLOR_BUFFER_BIT, GL_NEAREST); // TODO: Should this be GL_LINEAR?
+   glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST); // TODO: Should this be GL_LINEAR?
 }
 
 bool Window::configureGifSupport()
@@ -507,11 +487,11 @@ void Window::bindGifFramebuffer()
    glBindFramebuffer(GL_FRAMEBUFFER, mGifFBO);
 }
 
-void Window::copyMultisampleFramebufferIntoGifFramebuffer()
+void Window::copyMultisampleFramebufferIntoGifFramebuffer(unsigned int width, unsigned int height)
 {
    glBindFramebuffer(GL_READ_FRAMEBUFFER, mMultisampleFBO);
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mGifFBO);
-   glBlitFramebuffer(0, 0, mWidthOfFramebufferInPix, mHeightOfFramebufferInPix, 0, 0, mWidthOfFramebufferInPix, mHeightOfFramebufferInPix, GL_COLOR_BUFFER_BIT, GL_NEAREST); // TODO: Should this be GL_LINEAR?
+   glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST); // TODO: Should this be GL_LINEAR?
 }
 
 void Window::updateBufferAndViewportSizes()
@@ -567,19 +547,4 @@ void Window::updateBufferAndViewportSizes()
    }
 
    //std::cout << '\n';
-}
-
-bool Window::sizeChanged()
-{
-   return mWindowSizeChanged;
-}
-
-void Window::resetSizeChanged()
-{
-   mWindowSizeChanged = false;
-}
-
-std::mutex& Window::getMutex()
-{
-   return mMutex;
 }

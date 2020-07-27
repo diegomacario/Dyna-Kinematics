@@ -58,9 +58,9 @@ void MenuState::processInput(float deltaTime)
    if (mChangeScene)
    {
       mWindow->clearMultisampleFramebuffer();
-      mWindow->generateAntiAliasedImage();
+      mWindow->generateAntiAliasedImage(mWindow->getWidthOfFramebufferInPix(), mWindow->getHeightOfFramebufferInPix());
       mWindow->swapBuffers();
-      mWindow->generateAntiAliasedImage();
+      mWindow->generateAntiAliasedImage(mWindow->getWidthOfFramebufferInPix(), mWindow->getHeightOfFramebufferInPix());
       mWindow->swapBuffers();
 
       mWindow->setSceneLimits(mCurrentSceneDimensions.x, mCurrentSceneDimensions.y);
@@ -117,15 +117,31 @@ int MenuState::update(float deltaTime)
 
 void MenuState::render()
 {
-   std::lock_guard<std::mutex> guard(mWindow->getMutex());
+   unsigned int widthOfFramebuffer;
+   unsigned int heightOfFramebuffer;
+   float        lowerLeftCornerOfViewportX;
+   float        lowerLeftCornerOfViewportY;
+   float        widthOfViewport;
+   float        heightOfViewport;
 
-   if (mWindow->sizeChanged())
    {
-      mWindow->updateBufferAndViewportSizes();
-      mWindow->resetSizeChanged();
+      std::lock_guard<std::mutex> guard(mWindow->getMutex());
+
+      if (mWindow->sizeChanged())
+      {
+         mWindow->updateBufferAndViewportSizes();
+         mWindow->resetSizeChanged();
+      }
+
+      widthOfFramebuffer         = mWindow->getWidthOfFramebufferInPix();
+      heightOfFramebuffer        = mWindow->getHeightOfFramebufferInPix();
+      lowerLeftCornerOfViewportX = mWindow->getLowerLeftCornerOfViewportX();
+      lowerLeftCornerOfViewportY = mWindow->getLowerLeftCornerOfViewportY();
+      widthOfViewport            = mWindow->getWidthOfViewport();
+      heightOfViewport           = mWindow->getHeightOfViewport();
    }
 
-   mRenderer2D->updateViewportDimensions(mWindow->getLowerLeftCornerOfViewportX(), mWindow->getLowerLeftCornerOfViewportY(), mWindow->getWidthOfViewport(), mWindow->getHeightOfViewport());
+   mRenderer2D->updateViewportDimensions(lowerLeftCornerOfViewportX, lowerLeftCornerOfViewportY, widthOfViewport, heightOfViewport);
 
    if (mRememberFramesIsEnabled)
    {
@@ -142,7 +158,7 @@ void MenuState::render()
 
       // Render objects
 
-      mWindow->copyMemoryFramebufferIntoMultisampleFramebuffer();
+      mWindow->copyMemoryFramebufferIntoMultisampleFramebuffer(widthOfFramebuffer, heightOfFramebuffer);
 
       if (mFrameCounter % mRememberFramesFrequency == 0 && !mPauseRememberFrames)
       {
@@ -157,7 +173,7 @@ void MenuState::render()
 
       if (mFrameCounter % mRememberFramesFrequency == 0 && !mPauseRememberFrames)
       {
-         mWindow->copyMemoryFramebufferIntoMultisampleFramebuffer();
+         mWindow->copyMemoryFramebufferIntoMultisampleFramebuffer(widthOfFramebuffer, heightOfFramebuffer);
       }
 
       if (!mPauseRememberFrames)
@@ -182,27 +198,24 @@ void MenuState::render()
 
    if (mRecord && mRecordedFrameData)
    {
-      mWindow->copyMultisampleFramebufferIntoGifFramebuffer();
+      mWindow->copyMultisampleFramebufferIntoGifFramebuffer(widthOfFramebuffer, heightOfFramebuffer);
 
       stbi_flip_vertically_on_write(true);
 
-      unsigned int width  = mWindow->getWidthOfFramebufferInPix();
-      unsigned int height = mWindow->getHeightOfFramebufferInPix();
-
-      memset(mRecordedFrameData, 0, 3 * width * height);
+      memset(mRecordedFrameData, 0, 3 * widthOfFramebuffer * heightOfFramebuffer);
 
       mWindow->bindGifFramebuffer();
 
       glPixelStorei(GL_PACK_ALIGNMENT, 1);
-      glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
+      glReadPixels(0, 0, widthOfFramebuffer, heightOfFramebuffer, GL_RGB, GL_UNSIGNED_BYTE, mRecordedFrameData);
 
       std::string imgName = "GIFs/GIF_" + std::to_string(mRecordingDirectory) + "/Frames/" + std::to_string(mRecordedFrameCounter) + ".png";
 
-      stbi_write_png(imgName.c_str(), width, height, 3, mRecordedFrameData, width * 3);
+      stbi_write_png(imgName.c_str(), widthOfFramebuffer, heightOfFramebuffer, 3, mRecordedFrameData, widthOfFramebuffer * 3);
       mRecordedFrameCounter++;
    }
 
-   mWindow->generateAntiAliasedImage();
+   mWindow->generateAntiAliasedImage(widthOfFramebuffer, heightOfFramebuffer);
 
    mWindow->swapBuffers();
 }

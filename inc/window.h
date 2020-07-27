@@ -30,10 +30,10 @@ public:
    void         pollEvents();                     // TODO: Could this be considered to be const?
 
    // Window
-   unsigned int getWidthOfWindowInPix() const;
-   unsigned int getHeightOfWindowInPix() const;
-   unsigned int getWidthOfFramebufferInPix() const;
-   unsigned int getHeightOfFramebufferInPix() const;
+   unsigned int getWidthOfWindowInPix() const         { return mWidthOfWindowInPix; };
+   unsigned int getHeightOfWindowInPix() const        { return mHeightOfWindowInPix; };
+   unsigned int getWidthOfFramebufferInPix() const    { return mWidthOfFramebufferInPix; };
+   unsigned int getHeightOfFramebufferInPix() const   { return mHeightOfFramebufferInPix; };
    void         setSceneLimits(int width, int height);
    void         enableResizing(bool enable);
 
@@ -43,7 +43,7 @@ public:
    void         clearAndBindMultisampleFramebuffer();
    void         clearMultisampleFramebuffer();
    void         bindMultisampleFramebuffer();
-   void         generateAntiAliasedImage();
+   void         generateAntiAliasedImage(unsigned int width, unsigned int height);
    void         resizeFramebuffers();
    void         setNumberOfSamples(unsigned int numOfSamples);
 
@@ -53,7 +53,7 @@ public:
    void         clearAndBindMemoryFramebuffer();
    void         clearMemoryFramebuffer();
    void         bindMemoryFramebuffer();
-   void         copyMemoryFramebufferIntoMultisampleFramebuffer();
+   void         copyMemoryFramebufferIntoMultisampleFramebuffer(unsigned int width, unsigned int height);
 
    // Gif support
    bool         configureGifSupport();
@@ -61,7 +61,7 @@ public:
    void         clearAndBindGifFramebuffer();
    void         clearGifFramebuffer();
    void         bindGifFramebuffer();
-   void         copyMultisampleFramebufferIntoGifFramebuffer();
+   void         copyMultisampleFramebufferIntoGifFramebuffer(unsigned int width, unsigned int height);
 
    // Resize support
    void         updateBufferAndViewportSizes();
@@ -69,9 +69,9 @@ public:
    float        getLowerLeftCornerOfViewportY() const { return mLowerLeftCornerOfViewportY; };
    float        getWidthOfViewport() const            { return mWidthOfViewport; };
    float        getHeightOfViewport() const           { return mHeightOfViewport; };
-   bool         sizeChanged();
-   void         resetSizeChanged();
-   std::mutex&  getMutex();
+   bool         sizeChanged()                         { return mWindowSizeChanged; };
+   void         resetSizeChanged()                    { mWindowSizeChanged = false; };
+   std::mutex&  getMutex()                            { return mMutex; };
 
 private:
 
