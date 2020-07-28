@@ -8,7 +8,6 @@ Window::Window(const std::string& title)
    , mHeightOfWindowInPix(0)
    , mWidthOfFramebufferInPix(0)
    , mHeightOfFramebufferInPix(0)
-   , mScaleFactor(1)
    , mTitle(title)
    , mMultisampleFBO(0)
    , mMultisampleTexture(0)
@@ -21,8 +20,6 @@ Window::Window(const std::string& title)
    , mNumOfSamples(1)
    , mWidthOfScene(450)
    , mHeightOfScene(450)
-   , mScaledWidthOfScene(0)
-   , mScaledHeightOfScene(0)
    , mLowerLeftCornerOfViewportX(0.0f)
    , mLowerLeftCornerOfViewportY(0.0f)
    , mWidthOfViewport(0.0f)
@@ -92,10 +89,6 @@ bool Window::initialize()
 
    glfwGetWindowSize(mWindow, &mWidthOfWindowInPix, &mHeightOfWindowInPix);
    glfwGetFramebufferSize(mWindow, &mWidthOfFramebufferInPix, &mHeightOfFramebufferInPix);
-
-   mScaleFactor = mWidthOfFramebufferInPix / mWidthOfWindowInPix;
-   mScaledWidthOfScene  = mWidthOfScene * mScaleFactor;
-   mScaledHeightOfScene = mHeightOfScene * mScaleFactor;
 
    glfwSetWindowPos(mWindow, 170, 70);
 
@@ -193,10 +186,8 @@ void Window::pollEvents()
 
 void Window::setSceneLimits(int width, int height)
 {
-   mWidthOfScene        = width;
-   mHeightOfScene       = height;
-   mScaledWidthOfScene  = width * mScaleFactor;
-   mScaledHeightOfScene = height * mScaleFactor;
+   mWidthOfScene  = width;
+   mHeightOfScene = height;
 }
 
 void Window::enableResizing(bool enable)
@@ -505,7 +496,7 @@ void Window::updateBufferAndViewportSizes()
    clearMemoryFramebuffer();
    clearGifFramebuffer();
 
-   float aspectRatioOfScene  = ((float) mScaledWidthOfScene) / mScaledHeightOfScene;
+   float aspectRatioOfScene  = ((float) mWidthOfScene) / mHeightOfScene;
 
    // Let's say we want to use the width of the window for the viewport
    // What height would we need to keep the aspect ratio of the scene?

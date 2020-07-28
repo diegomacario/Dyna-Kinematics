@@ -30,10 +30,10 @@ public:
    void         pollEvents();                     // TODO: Could this be considered to be const?
 
    // Window
-   unsigned int getWidthOfWindowInPix() const         { return mWidthOfWindowInPix; };
-   unsigned int getHeightOfWindowInPix() const        { return mHeightOfWindowInPix; };
-   unsigned int getWidthOfFramebufferInPix() const    { return mWidthOfFramebufferInPix; };
-   unsigned int getHeightOfFramebufferInPix() const   { return mHeightOfFramebufferInPix; };
+   unsigned int getWidthOfWindowInPix() const       { return mWidthOfWindowInPix; };
+   unsigned int getHeightOfWindowInPix() const      { return mHeightOfWindowInPix; };
+   unsigned int getWidthOfFramebufferInPix() const  { return mWidthOfFramebufferInPix; };
+   unsigned int getHeightOfFramebufferInPix() const { return mHeightOfFramebufferInPix; };
    void         setSceneLimits(int width, int height);
    void         enableResizing(bool enable);
 
@@ -84,7 +84,6 @@ private:
    int                            mHeightOfWindowInPix;
    int                            mWidthOfFramebufferInPix;
    int                            mHeightOfFramebufferInPix;
-   int                            mScaleFactor;
    std::string                    mTitle;
 
    // Anti aliasing support
@@ -106,8 +105,6 @@ private:
    // Resize support
    int                            mWidthOfScene;
    int                            mHeightOfScene;
-   int                            mScaledWidthOfScene;
-   int                            mScaledHeightOfScene;
    float                          mLowerLeftCornerOfViewportX;
    float                          mLowerLeftCornerOfViewportY;
    float                          mWidthOfViewport;
