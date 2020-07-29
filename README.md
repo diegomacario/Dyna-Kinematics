@@ -284,7 +284,7 @@ Below is the same simulation but with the "Remember Frames" feature enabled:
  </p>
 </p>
 
-Second up is a simulation of eighty bees inside a behive:
+Second up is a simulation of eighty bees inside a beehive:
 
 <p align="center">
  <img src="https://github.com/diegomacario/2D-Rigid-Body-Simulator/blob/master/GIFs/Hexagon_No_Rem.gif"/>
