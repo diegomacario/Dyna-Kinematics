@@ -80,7 +80,7 @@
   - Qt5Cored.dll
   - Qt5Guid.dll
   - Qt5Widgetsd.dll
-- You should now be able to launch Dyna-Kinematics successfully!
+- You should now be able to launch Dyna-Kinematics!
 
 ## macOS
 
@@ -127,23 +127,49 @@ $ brew install qt
 
 ### Using CMake to generate the files that you can use to build this project
 
-- Launch CMake
-- In the "Where is the source code:" field, enter the path to the root of this repository, that is, the directory that contains CMakeLists.txt
-- In the "Where to build the binaries:" field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
-- Click on the "Configure" button. You will see an error like this:
-- To fix it, enter the path to the following directory of your Qt installation in the "Qt5_DIR-NOTFOUND" field: /Qt/5.15.0/clang_64/cmake/qt5. In my case, the full path is /Users/diegomacario/Qt/5.15.0/clang_64/cmake/qt5, but this might change depending on where you installed Qt and what compiler you are using.
-- Click on the "Configure" button again.
-- The configuration should succeed.
-- Click on the "Generate" button.
-- The generation should succeed.
-- You should now be able to build the project by executing the following command in the directory that you entered for the "Where to build the binaries:" field:
+- Launch CMake.
+- In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the `CMakeLists.txt` file.
+- In the `Where to build the binaries:` field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
+- Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using X, so I chose the `X` option:
+
+<p align="center">
+ <img src=""/>
+</p>
+
+- After selecting the generator, you might see an error that looks like this:
+
+<p align="center">
+ <img src=""/>
+</p>
+
+- To fix it, enter the path to the following directory of your Qt installation in the `Qt5_DIR-NOTFOUND` field: `/Qt/5.15.0/clang_64/cmake/qt5`. In my case, the full path is `/Users/diegomacario/Qt/5.15.0/clang_64/cmake/qt5`, but this might change depending on where you installed Qt and what compiler you are using.
+
+<p align="center">
+ <img src=""/>
+</p>
+
+- Click on the `Configure` button again. You might see an error that looks like this:
+
+<p align="center">
+ <img src=""/>
+</p>
+
+- To fix it, enter the path to the following directory of your GLFW installation in the `glfw3_DIR-NOTFOUND` field: `X`. In my case, the full path is `X`, but this might change depending on where you installed GLFW.
+
+<p align="center">
+ <img src=""/>
+</p>
+
+- Click on the `Configure` button again. The configuration should succeed.
+- Click on the `Generate` button. The generation should succeed.
+- You should now be able to build the project by executing the following command in the directory that you entered for the `Where to build the binaries:` field:
 
 ```sh
 $ make
 ```
 
 - The build should succeed.
-- Finally, you should be able to launch this project by executing the following command in the same directory:
+- You should now be able to launch Dyna-Kinematics by executing the following command in the same directory:
 
 ```sh
 $ ./Dyna-Kinematics
