@@ -33,9 +33,9 @@
 ### Using CMake to generate the files that you can use to build this project
 
 - Launch CMake.
-- In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the CMakeLists.txt file.
+- In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the `CMakeLists.txt` file.
 - In the `Where to build the binaries:` field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
-- Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using Visual Studio 2019, so I choose the `Visual Studio 16 2019` option:
+- Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using Visual Studio 2019, so I chose the `Visual Studio 16 2019` option:
 
 <p align="center">
  <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Choose_Generator_Windows.PNG"/>
