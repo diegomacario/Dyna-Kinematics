@@ -84,27 +84,48 @@
 
 ## macOS
 
-- CMake version 3.17.3 or newer. Download the binary distribution from [here](https://cmake.org/download/) or execute this command:
+#### CMake
+
+- You will need CMake version 3.17.3 or newer to generate the files that you can use to build this project.
+- You can download CMake from [here](https://cmake.org/download/) or using this command:
 
 ```sh
 $ brew install cmake
 ```
 
-- GLFW version 3.3 or newer. Download the binary distribution from [here](https://www.glfw.org/download.html) or execute this command:
+#### GLFW
+
+- You will need GLFW version 3.3 or newer, since that library is used for the window of the simulator viewer.
+- You can download GLFW from [here](https://www.glfw.org/download.html) or using this command:
 
 ```sh
 $ brew install glfw
 ```
 
-- Qt. I use version 5.15.0, but older ones should work too.
- - Download the Qt Online Installer from [here](https://www.qt.io/download-qt-installer) and launch it to install Qt for open source development.
- - If you don't have Xcode installed, you will see a warning that says "You need to install Xcode and set up Xcode command line tools...". You can ignore it.
- - In the "Select Components" page, select the "macOS" option that's under "5.15.0" and don't change anything else.
- - Alternatively, you can also install Qt using the command below, although I have never done it this way so I don't know which components it installs.
+#### Qt
+
+- You will need Qt version 5.15.0 or newer (although older versions should work too), since that library is used for the UI of the simulation controller.
+- You can download the Qt Online Installer from [here](https://www.qt.io/download-qt-installer). Use it to install Qt for open source development.
+- If you don't have Xcode installed, you will see a warning that says `You need to install Xcode and set up Xcode command line tools...`. You can ignore it.
+- In the `Select Components` page of the Qt Online Installer, select the `macOS` option that's under `5.15.0` and don't change anything else.
+
+<p align="center">
+ <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/Qt_Online_Installer_Select_Components_macOS.PNG"/>
+</p>
+
+- Alternatively, you can also install Qt using the command below, although I have never done it this way so I don't know which components it installs.
 
 ```sh
 $ brew install qt
 ```
+
+#### FFmpeg
+
+- You will need FFmpeg, since that application is used to generate GIFs when you record simulations.
+- You can download FFmpeg from [here](https://ffmpeg.org/download.html).
+- Make sure to add the path of the directory that contains `ffmpeg.exe` to your `PATH` environment variable, since this project expects to be able to invoke it globally.
+
+### Using CMake to generate the files that you can use to build this project
 
 - Launch CMake
 - In the "Where is the source code:" field, enter the path to the root of this repository, that is, the directory that contains CMakeLists.txt
