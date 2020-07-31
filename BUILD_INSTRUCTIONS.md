@@ -3,7 +3,7 @@
 ## Windows
 
 <details>
-  <summary>Click to expand!</summary>
+  <summary>Click to expand</summary>
   
   ### Installing the required tools and dependencies
 
@@ -59,7 +59,7 @@
    <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Qt_Fix_Windows.PNG"/>
   </p>
 
-  - Click on the `Configure` button again. You might the same error again, but this time the logs will say this:
+  - Click on the `Configure` button again. You might see the same error again, but this time the logs will say this:
 
   ```
   Could not find a package configuration file provided by "glfw3" (requested version 3.3) with any of the following names:
@@ -95,7 +95,7 @@
 ## macOS
 
 <details>
-  <summary>Click to expand!</summary>
+  <summary>Click to expand</summary>
 
   ### Installing the required tools and dependencies
 
@@ -171,7 +171,7 @@
    <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Qt_Fix_macOS.PNG"/>
   </p>
 
-  - Click on the `Configure` button again. You might the same error again, but this time the logs will say this:
+  - Click on the `Configure` button again. You might see the same error again, but this time the logs will say this:
 
   ```
   Could not find a package configuration file provided by "glfw3" (requested version 3.3) with any of the following names:
@@ -202,7 +202,9 @@
 ## Linux
 
 <details>
-  <summary>Click to expand!</summary>
+  <summary>Click to expand</summary>
 
+  ### Summary
+  
   I have not tried building this project on a Linux machine because I don't have access to one, but it should be possible to do so by following steps that are very similar to the ones listed in the macOS section of this document.
 </details>
