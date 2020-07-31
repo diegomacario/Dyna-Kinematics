@@ -206,5 +206,5 @@
 
   ### Summary
   
-  I have not tried building this project on a Linux machine because I don't have access to one, but it should be possible to do so by following steps that are very similar to the ones listed in the macOS section of this document.
+  I have not tried building this project on a Linux machine because I don't have access to one, but it should be possible to do so by following steps that are very similar to the ones listed in the "macOS" section of this document.
 </details>
