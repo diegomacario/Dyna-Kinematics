@@ -150,10 +150,10 @@
   - Launch CMake.
   - In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the `CMakeLists.txt` file.
   - In the `Where to build the binaries:` field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
-  - Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using X, so I chose the `X` option:
+  - Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using an Unix Makefile, so I chose the `Unix Makefiles` option:
 
   <p align="center">
-   <img src=""/>
+   <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Choose_Generator_macOS.png"/>
   </p>
 
   - After selecting the generator, you might see an error that says `Error in configuration process, project files may be invalid`. The logs at the bottom give more details:
