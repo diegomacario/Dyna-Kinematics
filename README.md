@@ -38,7 +38,7 @@ The simulation controller allows users to:
 - Play, pause, reset and record simulations as GIFs.
 - Change certain simulation and display settings.
 
-The simulation viewer displays simulations in real-time and it can be resized to fit the bounds of a scene.
+The simulation viewer displays simulations in real-time and it can be resized in any way the user wants while maintaining the aspect ratio of the current scene.
 
 The libraries used by this project and their purposes are the following:
 
