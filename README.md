@@ -49,9 +49,9 @@ The libraries used by this project and their purposes are the following:
 - [stb_image_write](https://github.com/nothings/stb) is used to save frames as PNGs.
 - [FFmpeg](https://ffmpeg.org/) is used to generate GIFs.
 
-For information on the techniques used by this project to detect and resolve collisions, see the "Physics" section at the end of this document.
-
 For instructions on how to build this project on **Windows**, **macOS** or **Linux**, see [this](https://github.com/diegomacario/Dyna-Kinematics/blob/master/BUILD_INSTRUCTIONS.md) document.
+
+For information on the techniques used by this project to detect and resolve collisions, see the "Physics" section at the end of this document.
 
 ## Evolution
 
