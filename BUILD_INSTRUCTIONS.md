@@ -86,7 +86,7 @@ Could not find a package configuration file provided by "glfw3" (requested versi
   - Qt5Cored.dll
   - Qt5Guid.dll
   - Qt5Widgetsd.dll
-- You should now be able to launch Dyna-Kinematics!
+- You should now be able to launch Dyna-Kinematics.
 
 ## macOS
 
@@ -180,8 +180,6 @@ Could not find a package configuration file provided by "glfw3" (requested versi
 $ make
 ```
 
-- The build should succeed.
-
 ### Before launching Dyna-Kinematics
 
 - Copy the `resources` folder, which is at the root of this repository, to the directory that contains the Dyna-Kinematics executable. This is necessary because the `resources` folder contains a series of shaders that are compiled at runtime.
@@ -192,3 +190,5 @@ $ ./Dyna-Kinematics
 ```
 
 ## Linux
+
+I have not tried building this project on a Linux machine because I don't have access to one, but it should be possible to do so by following steps that are very similar to the ones listed in the macOS section of this document.
