@@ -51,6 +51,8 @@ The libraries used by this project and their purposes are the following:
 
 For information on the techniques used by this project to detect and resolve collisions, see the "Physics" section at the end of this document.
 
+For instructions on how to build this project on **Windows**, **macOS** or **Linux**, see [this](https://github.com/diegomacario/Dyna-Kinematics/blob/master/BUILD_INSTRUCTIONS.md) document.
+
 ## Evolution
 
 Below you will find a description of how this simulator evolved over time, each step illustrated with GIFs recorded in the simulator itself.
@@ -356,7 +358,7 @@ I always try to keep the code of my open source projects clean so that it can be
 
 I got carried away exploring new ideas and libraries, and I ended up neglecting clarity and organization in the process. The end result is perfectly stable and really fun to use, but not something worth studying yet.
 
-Once I clean up the code and add a feature that allows users to describe scenes in text files using a simple scene description language (so that they don't have to modify the code to create new scenes), I will update this readme with instructions on how to build this project.
+Once I clean up the code and add a feature that allows users to describe scenes in text files using a simple scene description language (so that they don't have to modify the code to create new scenes), I will add release v1.0.0 to the Releases page of this repository.
 
 For now, if you are interesting in learning more about rigid-body dynamics and physics simulation in general, I recommend you get started here:
 
