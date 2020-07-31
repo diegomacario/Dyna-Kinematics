@@ -2,193 +2,207 @@
 
 ## Windows
 
-### Installing the required tools and dependencies
+<details>
+  <summary>Click to expand!</summary>
+  
+  ### Installing the required tools and dependencies
 
-#### CMake
+  #### CMake
 
-- You will need CMake version 3.17.3 or newer to generate the files that you can use to build this project.
-- You can download CMake from [here](https://cmake.org/download/).
+  - You will need CMake version 3.17.3 or newer to generate the files that you can use to build this project.
+  - You can download CMake from [here](https://cmake.org/download/).
 
-#### GLFW
+  #### GLFW
 
-- You will need GLFW version 3.3 or newer, since that library is used for the window of the simulator viewer.
-- You can download GLFW from [here](https://www.glfw.org/download.html).
+  - You will need GLFW version 3.3 or newer, since that library is used for the window of the simulator viewer.
+  - You can download GLFW from [here](https://www.glfw.org/download.html).
 
-#### Qt
+  #### Qt
 
-- You will need Qt version 5.15.0 or newer (although older versions should work too), since that library is used for the UI of the simulation controller.
-- You can download the Qt Online Installer from [here](https://www.qt.io/download-qt-installer). Use it to install Qt for open source development.
-- In the `Select Components` page of the Qt Online Installer, select the option that corresponds to the compiler that you will be using that's under `5.15.0` and don't change anything else. In my case I'm using Visual Studio 2019, so I chose the `MSVC 2019 64-bit` option:
+  - You will need Qt version 5.15.0 or newer (although older versions should work too), since that library is used for the UI of the simulation controller.
+  - You can download the Qt Online Installer from [here](https://www.qt.io/download-qt-installer). Use it to install Qt for open source development.
+  - In the `Select Components` page of the Qt Online Installer, select the option that corresponds to the compiler that you will be using that's under `5.15.0` and don't change anything else. In my case I'm using Visual Studio 2019, so I chose the `MSVC 2019 64-bit` option:
 
-<p align="center">
- <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/Qt_Online_Installer_Select_Components_Windows.PNG"/>
-</p>
+  <p align="center">
+   <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/Qt_Online_Installer_Select_Components_Windows.PNG"/>
+  </p>
 
-#### FFmpeg
+  #### FFmpeg
 
-- You will need FFmpeg, since that executable is used to generate GIFs when you record simulations.
-- You can download FFmpeg from [here](https://ffmpeg.org/download.html).
-- Make sure to add the path of the directory that contains `ffmpeg.exe` to your `PATH` environment variable, since this project expects to be able to invoke it globally.
+  - You will need FFmpeg, since that executable is used to generate GIFs when you record simulations.
+  - You can download FFmpeg from [here](https://ffmpeg.org/download.html).
+  - Make sure to add the path of the directory that contains `ffmpeg.exe` to your `PATH` environment variable, since this project expects to be able to invoke it globally.
 
-### Using CMake to generate the files that you can use to build this project
+  ### Using CMake to generate the files that you can use to build this project
 
-- Launch CMake.
-- In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the `CMakeLists.txt` file.
-- In the `Where to build the binaries:` field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
-- Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using Visual Studio 2019, so I chose the `Visual Studio 16 2019` option:
+  - Launch CMake.
+  - In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the `CMakeLists.txt` file.
+  - In the `Where to build the binaries:` field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
+  - Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using Visual Studio 2019, so I chose the `Visual Studio 16 2019` option:
 
-<p align="center">
- <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Choose_Generator_Windows.PNG"/>
-</p>
+  <p align="center">
+   <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Choose_Generator_Windows.PNG"/>
+  </p>
 
-- After selecting the generator, you might see an error that says `Error in configuration process, project files may be invalid`. The logs at the bottom give more details:
+  - After selecting the generator, you might see an error that says `Error in configuration process, project files may be invalid`. The logs at the bottom give more details:
 
-```
-Could not find a package configuration file provided by "Qt5" with any of the following names:
+  ```
+  Could not find a package configuration file provided by "Qt5" with any of the following names:
+  
+    Qt5Config.cmake
+    qt5-config.cmake
+  ```
 
-  Qt5Config.cmake
-  qt5-config.cmake
-```
+  - To fix it, enter the path to the following directory of your Qt installation in the `Qt5_DIR-NOTFOUND` field: `\Qt\5.15.0\msvc2019_64\lib\cmake\Qt5`. In my case, the full path is `C:\Qt\5.15.0\msvc2019_64\lib\cmake\Qt5`, but this might change depending on where you installed Qt and what compiler you are using.
 
-- To fix it, enter the path to the following directory of your Qt installation in the `Qt5_DIR-NOTFOUND` field: `\Qt\5.15.0\msvc2019_64\lib\cmake\Qt5`. In my case, the full path is `C:\Qt\5.15.0\msvc2019_64\lib\cmake\Qt5`, but this might change depending on where you installed Qt and what compiler you are using.
+  <p align="center">
+   <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Qt_Fix_Windows.PNG"/>
+  </p>
 
-<p align="center">
- <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Qt_Fix_Windows.PNG"/>
-</p>
+  - Click on the `Configure` button again. You might the same error again, but this time the logs will say this:
 
-- Click on the `Configure` button again. You might the same error again, but this time the logs will say this:
+  ```
+  Could not find a package configuration file provided by "glfw3" (requested version 3.3) with any of the following names:
+  
+    glfw3Config.cmake
+    glfw3-config.cmake
+  ```
 
-```
-Could not find a package configuration file provided by "glfw3" (requested version 3.3) with any of the following names:
+  - To fix it, enter the path to the following directory of your GLFW installation in the `glfw3_DIR-NOTFOUND` field: `\GLFW\lib\cmake\glfw3`. In my case, the full path is `C:\Program Files (x86)\GLFW\lib\cmake\glfw3`, but this might change depending on where you installed GLFW.
 
-  glfw3Config.cmake
-  glfw3-config.cmake
-```
+  <p align="center">
+   <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_GLFW_Fix_Windows.PNG"/>
+  </p>
 
-- To fix it, enter the path to the following directory of your GLFW installation in the `glfw3_DIR-NOTFOUND` field: `\GLFW\lib\cmake\glfw3`. In my case, the full path is `C:\Program Files (x86)\GLFW\lib\cmake\glfw3`, but this might change depending on where you installed GLFW.
+  - Click on the `Configure` button again. The configuration should succeed.
+  - Click on the `Generate` button. The generation should succeed.
+  - You should now be able to build the project using the files generated by CMake. Since I selected Visual Studio 2019 as my generator, CMake created a Visual Studio 2019 solution called `Dyna-Kinematics.sln` for me.
 
-<p align="center">
- <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_GLFW_Fix_Windows.PNG"/>
-</p>
+  ### Before launching Dyna-Kinematics
 
-- Click on the `Configure` button again. The configuration should succeed.
-- Click on the `Generate` button. The generation should succeed.
-- You should now be able to build the project using the files generated by CMake. Since I selected Visual Studio 2019 as my generator, CMake created a Visual Studio 2019 solution called `Dyna-Kinematics.sln` for me.
-
-### Before launching Dyna-Kinematics
-
-- Copy the `resources` folder, which is at the root of this repository, to the directory that contains the Dyna-Kinematics executable. This is necessary because the `resources` folder contains a series of shaders that are compiled at runtime.
-- Copy the DLLs listed below from the following directory of your Qt installation to the directory that contains the Dyna-Kinematics executable: `\Qt\5.15.0\msvc2019_64\bin`. In my case, the full path is `C:\Qt\5.15.0\msvc2019_64\bin`, but this might change depending on where you installed Qt and what compiler you are using.
-  - Qt5Core.dll
-  - Qt5Gui.dll
-  - Qt5Widgets.dll
-- Note that if you built the project in `Debug` mode, you should copy the debug DLLs instead:
-  - Qt5Cored.dll
-  - Qt5Guid.dll
-  - Qt5Widgetsd.dll
-- You should now be able to launch Dyna-Kinematics.
+  - Copy the `resources` folder, which is at the root of this repository, to the directory that contains the Dyna-Kinematics executable. This is necessary because the `resources` folder contains a series of shaders that are compiled at runtime.
+  - Copy the DLLs listed below from the following directory of your Qt installation to the directory that contains the Dyna-Kinematics executable: `\Qt\5.15.0\msvc2019_64\bin`. In my case, the full path is `C:\Qt\5.15.0\msvc2019_64\bin`, but this might change depending on where you installed Qt and what compiler you are using.
+    - Qt5Core.dll
+    - Qt5Gui.dll
+    - Qt5Widgets.dll
+  - Note that if you built the project in `Debug` mode, you should copy the debug DLLs instead:
+    - Qt5Cored.dll
+    - Qt5Guid.dll
+    - Qt5Widgetsd.dll
+  - You should now be able to launch Dyna-Kinematics.
+</details>
 
 ## macOS
 
-#### CMake
+<details>
+  <summary>Click to expand!</summary>
 
-- You will need CMake version 3.17.3 or newer to generate the files that you can use to build this project.
-- You can download CMake from [here](https://cmake.org/download/) or using this command:
+  ### Installing the required tools and dependencies
 
-```sh
-$ brew install cmake
-```
+  #### CMake
 
-#### GLFW
+  - You will need CMake version 3.17.3 or newer to generate the files that you can use to build this project.
+  - You can download CMake from [here](https://cmake.org/download/) or using this command:
 
-- You will need GLFW version 3.3 or newer, since that library is used for the window of the simulator viewer.
-- You can download GLFW from [here](https://www.glfw.org/download.html) or using this command:
+  ```sh
+  $ brew install cmake
+  ```
 
-```sh
-$ brew install glfw
-```
+  #### GLFW
 
-#### Qt
+  - You will need GLFW version 3.3 or newer, since that library is used for the window of the simulator viewer.
+  - You can download GLFW from [here](https://www.glfw.org/download.html) or using this command:
 
-- You will need Qt version 5.15.0 or newer (although older versions should work too), since that library is used for the UI of the simulation controller.
-- You can download the Qt Online Installer from [here](https://www.qt.io/download-qt-installer). Use it to install Qt for open source development.
-- If you don't have Xcode installed, you will see a warning that says `You need to install Xcode and set up Xcode command line tools...`. You can ignore it.
-- In the `Select Components` page of the Qt Online Installer, select the `macOS` option that's under `5.15.0` and don't change anything else.
+  ```sh
+  $ brew install glfw
+  ```
 
-<p align="center">
- <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/Qt_Online_Installer_Select_Components_macOS.PNG"/>
-</p>
+  #### Qt
 
-- Alternatively, you can also install Qt using the command below, although I have never done it this way so I don't know which components it installs.
+  - You will need Qt version 5.15.0 or newer (although older versions should work too), since that library is used for the UI of the simulation controller.
+  - You can download the Qt Online Installer from [here](https://www.qt.io/download-qt-installer). Use it to install Qt for open source development.
+  - If you don't have Xcode installed, you will see a warning that says `You need to install Xcode and set up Xcode command line tools...`. You can ignore it.
+  - In the `Select Components` page of the Qt Online Installer, select the `macOS` option that's under `5.15.0` and don't change anything else.
 
-```sh
-$ brew install qt
-```
+  <p align="center">
+   <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/Qt_Online_Installer_Select_Components_macOS.PNG"/>
+  </p>
 
-#### FFmpeg
+  - Alternatively, you can also install Qt using the command below, although I have never done it this way so I don't know which components it installs.
 
-- You will need FFmpeg, since that application is used to generate GIFs when you record simulations.
-- You can download FFmpeg from [here](https://ffmpeg.org/download.html) or using this command:
+  ```sh
+  $ brew install qt
+  ```
 
-```sh
-$ brew install ffmpeg
-```
+  #### FFmpeg
 
-- If you download FFmpeg manually from the FFmpeg website, make sure to place it in a directory that's part of your `PATH` environment variable, since this project expects to be able to invoke it globally.
+  - You will need FFmpeg, since that application is used to generate GIFs when you record simulations.
+  - You can download FFmpeg from [here](https://ffmpeg.org/download.html) or using this command:
 
-### Using CMake to generate the files that you can use to build this project
+  ```sh
+  $ brew install ffmpeg
+  ```
 
-- Launch CMake.
-- In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the `CMakeLists.txt` file.
-- In the `Where to build the binaries:` field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
-- Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using X, so I chose the `X` option:
+  - If you download FFmpeg manually from the FFmpeg website, make sure to place it in a directory that's part of your `PATH` environment variable, since this project expects to be able to invoke it globally.
 
-<p align="center">
- <img src=""/>
-</p>
+  ### Using CMake to generate the files that you can use to build this project
 
-- After selecting the generator, you might see an error that says `Error in configuration process, project files may be invalid`. The logs at the bottom give more details:
+  - Launch CMake.
+  - In the `Where is the source code:` field, enter the path to the root of this repository, that is, the path to the directory that contains the `CMakeLists.txt` file.
+  - In the `Where to build the binaries:` field, enter the path to the directory where you want the project to be built. Make sure this directory is outside of the repository.
+  - Click on the `Configure` button. You will be asked which generator you would like to use. In my case I would like to build the project using X, so I chose the `X` option:
 
-```
-Could not find a package configuration file provided by "Qt5" with any of the following names:
+  <p align="center">
+   <img src=""/>
+  </p>
 
-  Qt5Config.cmake
-  qt5-config.cmake
-```
+  - After selecting the generator, you might see an error that says `Error in configuration process, project files may be invalid`. The logs at the bottom give more details:
 
-- To fix it, enter the path to the following directory of your Qt installation in the `Qt5_DIR-NOTFOUND` field: `/Qt/5.15.0/clang_64/cmake/qt5`. In my case, the full path is `/Users/diegomacario/Qt/5.15.0/clang_64/cmake/qt5`, but this might change depending on where you installed Qt and what compiler you are using.
+  ```
+  Could not find a package configuration file provided by "Qt5" with any of the following names:
+  
+    Qt5Config.cmake
+    qt5-config.cmake
+  ```
 
-<p align="center">
- <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Qt_Fix_macOS.PNG"/>
-</p>
+  - To fix it, enter the path to the following directory of your Qt installation in the `Qt5_DIR-NOTFOUND` field: `/Qt/5.15.0/clang_64/cmake/qt5`. In my case, the full path is `/Users/diegomacario/Qt/5.15.0/clang_64/cmake/qt5`, but this might change depending on where you installed Qt and what compiler you are using.
 
-- Click on the `Configure` button again. You might the same error again, but this time the logs will say this:
+  <p align="center">
+   <img src="https://github.com/diegomacario/Dyna-Kinematics/blob/master/readme_images/CMake_Qt_Fix_macOS.PNG"/>
+  </p>
 
-```
-Could not find a package configuration file provided by "glfw3" (requested version 3.3) with any of the following names:
+  - Click on the `Configure` button again. You might the same error again, but this time the logs will say this:
 
-  glfw3Config.cmake
-  glfw3-config.cmake
-```
+  ```
+  Could not find a package configuration file provided by "glfw3" (requested version 3.3) with any of the following names:
+  
+    glfw3Config.cmake
+    glfw3-config.cmake
+  ```
 
-- To fix it, enter the path to the following directory of your GLFW installation in the `glfw3_DIR-NOTFOUND` field: `/cmake/glfw3`. In my case, the full path is `/usr/local/lib/cmake/glfw3`, but this might change depending on where you installed GLFW.
-- Click on the `Configure` button again. The configuration should succeed.
-- Click on the `Generate` button. The generation should succeed.
-- You should now be able to build the project by executing the following command in the directory that you entered for the `Where to build the binaries:` field:
+  - To fix it, enter the path to the following directory of your GLFW installation in the `glfw3_DIR-NOTFOUND` field: `/cmake/glfw3`. In my case, the full path is `/usr/local/lib/cmake/glfw3`, but this might change depending on where you installed GLFW.
+  - Click on the `Configure` button again. The configuration should succeed.
+  - Click on the `Generate` button. The generation should succeed.
+  - You should now be able to build the project by executing the following command in the directory that you entered for the `Where to build the binaries:` field:
 
-```sh
-$ make
-```
+  ```sh
+  $ make
+  ```
 
-### Before launching Dyna-Kinematics
+  ### Before launching Dyna-Kinematics
 
-- Copy the `resources` folder, which is at the root of this repository, to the directory that contains the Dyna-Kinematics executable. This is necessary because the `resources` folder contains a series of shaders that are compiled at runtime.
-- You should now be able to launch Dyna-Kinematics by executing the following command in the directory that contains the Dyna-Kinematics executable:
+  - Copy the `resources` folder, which is at the root of this repository, to the directory that contains the Dyna-Kinematics executable. This is necessary because the `resources` folder contains a series of shaders that are compiled at runtime.
+  - You should now be able to launch Dyna-Kinematics by executing the following command in the directory that contains the Dyna-Kinematics executable:
 
-```sh
-$ ./Dyna-Kinematics
-```
+  ```sh
+  $ ./Dyna-Kinematics
+  ```
+</details>
 
 ## Linux
 
-I have not tried building this project on a Linux machine because I don't have access to one, but it should be possible to do so by following steps that are very similar to the ones listed in the macOS section of this document.
+<details>
+  <summary>Click to expand!</summary>
+
+  I have not tried building this project on a Linux machine because I don't have access to one, but it should be possible to do so by following steps that are very similar to the ones listed in the macOS section of this document.
+</details>
