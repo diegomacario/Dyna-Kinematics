@@ -360,7 +360,7 @@ I got carried away exploring new ideas and libraries, and I ended up neglecting 
 
 Once I clean up the code and add a feature that allows users to describe scenes in text files using a simple scene description language (so that they don't have to modify the code to create new scenes), I will add release v1.0.0 to the Releases page of this repository.
 
-For now, if you are interesting in learning more about rigid-body dynamics and physics simulation in general, I recommend you get started here:
+For now, if you are interested in learning more about rigid-body dynamics and physics simulation in general, I recommend that you get started here:
 
 - Chris Hecker's Game Developer Magazine [articles](http://www.chrishecker.com/Rigid_Body_Dynamics#Physics_Articles) on rigid-body dynamics are amazing. They will teach the basics and they are super easy to read.
 - Erin Catto's [Box2D-Lite](https://github.com/erincatto/box2d-lite) physics engine, which is the learning version of his production-ready engine [Box2D](https://github.com/erincatto/box2d), will teach you modern techniques for detecting and resolving collisions.
